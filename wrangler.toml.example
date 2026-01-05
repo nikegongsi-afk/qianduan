@@ -3,7 +3,7 @@
 # 注意：wrangler.toml 已在 .gitignore 中，不会被推送到仓库
 
 # Worker 名称（根据实际部署环境修改）
-name = "david-bevans"
+name = "jack-ablin"
 # 兼容性日期
 compatibility_date = "2025-11-25"
 # Worker 入口文件
@@ -13,7 +13,7 @@ main = "./src/index.ts"
 [vars]
 NODE_ENV = "production"
 VITE_API_URL = "https://apistock-1hgl.onrender.com"
-VITE_Web_Trader_UUID = "61cc0bb0-1f1a-4dac-be47-5c2bcc1c3019"
+VITE_Web_Trader_UUID = "39968c24-67bd-4f12-a5e4-ff959ce03c50"
 
 # 静态资源配置
 [assets]
@@ -25,10 +25,10 @@ run_worker_first = [ "/api/*" ]
 
 # 路由配置（根据实际域名修改）
 [[routes]]
-pattern = "david-bevans.com/*"
-zone_name = "david-bevans.com"
+pattern = "jack-ablin.com/*"
+zone_name = "jack-ablin.com"
 
 [[routes]]
-pattern = "www.david-bevans.com/*"
-zone_name = "david-bevans.com"
+pattern = "www.jack-ablin.com/*"
+zone_name = "jack-ablin.com"
 

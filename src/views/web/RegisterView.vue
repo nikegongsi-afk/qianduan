@@ -1,83 +1,218 @@
 <template>
-  <div class="app-container">
-    <!-- 顶部导航栏 -->
+  <div class="modern-app-container">
     <navcomponent></navcomponent>
 
-    <!-- 注册容器 -->
-    <div class="login-container">
-      <div class="login-header">
-        <div class="avatar">?</div>
-        <h1>New user registration</h1>
-        <p>Stock Trading Expert | Technical Analysis Master</p>
-      </div>
+    <div class="register-wrapper">
+      <div class="register-card">
+        <!-- 左侧表单区域 -->
+        <div class="register-form-section">
+          <div class="form-header">
+            <h1 class="form-title">Create Account</h1>
+            <p class="form-subtitle">Join our trading community today</p>
+          </div>
 
-      <form @submit.prevent="handleRegister">
-        <div class="form-group">
-          <label for="username">Login name</label>
-          <input type="text" id="username" v-model="username" placeholder="Enter your username" required>
-          <div v-if="usernameError" class="error-message">{{ usernameError }}</div>
-        </div>
-        
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" v-model="password" placeholder="Enter your password" required>
-          <div v-if="passwordError" class="error-message">{{ passwordError }}</div>
-        </div>
-        
-        <div class="form-group">
-          <label for="realname">Real name</label>
-          <input type="text" id="realname" v-model="realname" placeholder="Confirm your Real name" required>
-          <div v-if="realnameError" class="error-message">{{ realnameError }}</div>
-        </div>
-        
-        <div class="form-group">
-          <label for="email">E-mail</label>
-          <input type="email" id="email" v-model="email" placeholder="Enter your E-mail" required>
-          <div v-if="emailError" class="error-message">{{ emailError }}</div>
-        </div>
-        
-        <div class="form-group">
-          <label for="phonenumber">Mobile phone number</label>
-          <input type="tel" id="phonenumber" v-model="phonenumber" placeholder="Enter your Mobile phone number" required>
-          <div v-if="phonenumberError" class="error-message">{{ phonenumberError }}</div>
+          <form @submit.prevent="handleRegister" class="register-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="username" class="form-label">
+                  <span class="label-icon">👤</span>
+                  Username
+                </label>
+                <input 
+                  type="text" 
+                  id="username" 
+                  v-model="username" 
+                  class="form-input"
+                  placeholder="Choose a username"
+                  :class="{ 'error': usernameError }"
+                >
+                <div v-if="usernameError" class="error-message">
+                  <span class="error-icon">⚠️</span>
+                  {{ usernameError }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="password" class="form-label">
+                  <span class="label-icon">🔒</span>
+                  Password
+                </label>
+                <input 
+                  type="password" 
+                  id="password" 
+                  v-model="password" 
+                  class="form-input"
+                  placeholder="Create a password"
+                  :class="{ 'error': passwordError }"
+                >
+                <div v-if="passwordError" class="error-message">
+                  <span class="error-icon">⚠️</span>
+                  {{ passwordError }}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="realname" class="form-label">
+                <span class="label-icon">📝</span>
+                Real Name
+              </label>
+              <input 
+                type="text" 
+                id="realname" 
+                v-model="realname" 
+                class="form-input"
+                placeholder="Enter your full name"
+                :class="{ 'error': realnameError }"
+              >
+              <div v-if="realnameError" class="error-message">
+                <span class="error-icon">⚠️</span>
+                {{ realnameError }}
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="email" class="form-label">
+                  <span class="label-icon">📧</span>
+                  Email
+                </label>
+                <input 
+                  type="email" 
+                  id="email" 
+                  v-model="email" 
+                  class="form-input"
+                  placeholder="your@email.com"
+                  :class="{ 'error': emailError }"
+                >
+                <div v-if="emailError" class="error-message">
+                  <span class="error-icon">⚠️</span>
+                  {{ emailError }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="phonenumber" class="form-label">
+                  <span class="label-icon">📱</span>
+                  Phone
+                </label>
+                <input 
+                  type="tel" 
+                  id="phonenumber" 
+                  v-model="phonenumber" 
+                  class="form-input"
+                  placeholder="+1 234 567 8900"
+                  :class="{ 'error': phonenumberError }"
+                >
+                <div v-if="phonenumberError" class="error-message">
+                  <span class="error-icon">⚠️</span>
+                  {{ phonenumberError }}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="invitationcode" class="form-label">
+                <span class="label-icon">🎫</span>
+                Invitation Code
+              </label>
+              <input 
+                type="text" 
+                id="invitationcode" 
+                v-model="invitationcode" 
+                class="form-input"
+                placeholder="Enter invitation code"
+                :class="{ 'error': invitationcodeError }"
+              >
+              <div v-if="invitationcodeError" class="error-message">
+                <span class="error-icon">⚠️</span>
+                {{ invitationcodeError }}
+              </div>
+              <div class="invitation-hint" @click="toggleContactPopup">
+                <span class="hint-icon">💬</span>
+                <span>Need an invitation code? <span class="hint-link">Contact support</span></span>
+              </div>
+            </div>
+            
+            <button type="submit" class="submit-btn">
+              <span class="btn-icon">✨</span>
+              <span>Create Account</span>
+            </button>
+          </form>
+          
+          <div class="form-footer">
+            <div class="divider">
+              <span class="divider-line"></span>
+              <span class="divider-text">or</span>
+              <span class="divider-line"></span>
+            </div>
+            
+            <div class="login-prompt">
+              <span class="prompt-text">Already have an account?</span>
+              <a href="/userlogin" class="login-link">Sign In</a>
+            </div>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="phonenumber">Invitation code</label>
-          <input type="tel" id="invitationcode" v-model="invitationcode" placeholder="Enter Invitation code" required>
-          <div v-if="invitationcodeError" class="error-message">{{ invitationcodeError }}</div>
-          <div class="invitation-hint" @click="toggleContactPopup" style="cursor: pointer;"><span  style="color:chartreuse;">Contact customer service</span> to get the invitation code!</div>
+        <!-- 右侧装饰区域 -->
+        <div class="register-decoration">
+          <div class="decoration-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+          </div>
+          <div class="decoration-content">
+            <div class="decoration-icon">
+              <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="40" stroke="url(#gradient2)" stroke-width="2" fill="none"/>
+                <path d="M35 50 L45 60 L65 40" stroke="url(#gradient2)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="50" cy="30" r="8" fill="url(#gradient2)"/>
+                <defs>
+                  <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#fa709a;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#fee140;stop-opacity:1" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <h2 class="decoration-title">Start Your Journey</h2>
+            <p class="decoration-subtitle">Join thousands of traders and unlock exclusive features</p>
+            <div class="decoration-features">
+              <div class="feature-item">
+                <span class="feature-icon">🚀</span>
+                <span>Real-time Trading Signals</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon">📊</span>
+                <span>Advanced Analytics</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon">💎</span>
+                <span>VIP Access</span>
+              </div>
+            </div>
+          </div>
         </div>
-        
-        <button type="submit" class="login-btn">Register now</button>
-      </form>
-      
-      <div class="divider">
-        <span>or</span>
       </div>
-      
-      <div class="signup-link">
-        <p>I have an account? <a href="/userlogin" style="color:chartreuse;">Log in now</a></p>
-      </div>
+    </div>
+
+    <!-- Redirect Message -->
+    <div class="redirect-message" v-show="showContactPopup">
+      <span class="text">Redirecting to WhatsApp Community</span>
+      <span class="dots"></span>
     </div>
   </div>
-  <!-- Redirect Message -->
-    <div class="redirect-message" v-show="showContactPopup">
-        <span class="text">Redirecting to WhatsApp Community</span><span class="dots"></span>
-    </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import navcomponent from '../component/nav/nav.vue'
-const router = useRouter();
 import { register } from '@/api/module/web/login';
-import{get_whatsapp_link} from '../../api/module/web/index'
-// 页面数据
-const homeTopTitle = 'RenderZaice Trading Platform';
+import { get_whatsapp_link } from '../../api/module/web/index'
 
-// 表单数据
+const router = useRouter();
+
 const username = ref('');
 const password = ref('');
 const realname = ref('');
@@ -85,7 +220,6 @@ const email = ref('');
 const phonenumber = ref('');
 const invitationcode = ref('');
 
-// 错误消息
 const usernameError = ref('');
 const passwordError = ref('');
 const realnameError = ref('');
@@ -93,35 +227,30 @@ const emailError = ref('');
 const phonenumberError = ref('');
 const invitationcodeError = ref('');
 const showContactPopup = ref(false);
-// Toggle contact popup
+
 const toggleContactPopup = async () => {
   showContactPopup.value = !showContactPopup.value;
-
-  const response=await get_whatsapp_link();
-    if(response.success)
-    {
-      window.location.href = response.data;
-      setTimeout(() => {
-             showContactPopup.value = !showContactPopup.value;
-      }, 3000);
-    }
-    else
-    {
+  const response = await get_whatsapp_link();
+  if(response.success) {
+    window.location.href = response.data;
+    setTimeout(() => {
       showContactPopup.value = !showContactPopup.value;
-    }
+    }, 3000);
+  } else {
+    showContactPopup.value = !showContactPopup.value;
+  }
 };
-// 表单验证
+
 const validateForm = (): boolean => {
-  // 重置所有错误消息
   usernameError.value = '';
   passwordError.value = '';
   realnameError.value = '';
   emailError.value = '';
   phonenumberError.value = '';
+  invitationcodeError.value = '';
   
   let isValid = true;
   
-  // 验证用户名
   if (!username.value.trim()) {
     usernameError.value = 'Username is required';
     isValid = false;
@@ -130,7 +259,6 @@ const validateForm = (): boolean => {
     isValid = false;
   }
   
-  // 验证密码
   if (!password.value.trim()) {
     passwordError.value = 'Password is required';
     isValid = false;
@@ -139,13 +267,11 @@ const validateForm = (): boolean => {
     isValid = false;
   }
   
-  // 验证真实姓名
   if (!realname.value.trim()) {
     realnameError.value = 'Real name is required';
     isValid = false;
   }
   
-  // 验证电子邮件
   if (!email.value.trim()) {
     emailError.value = 'Email is required';
     isValid = false;
@@ -157,12 +283,11 @@ const validateForm = (): boolean => {
     }
   }
   
-  // 验证手机号码
   if (!phonenumber.value.trim()) {
     phonenumberError.value = 'Phone number is required';
     isValid = false;
   }
-  // 验证邀请码
+  
   if (!invitationcode.value.trim()) {
     invitationcodeError.value = 'Invitation code is required';
     isValid = false;
@@ -171,18 +296,12 @@ const validateForm = (): boolean => {
   return isValid;
 };
 
-// 处理注册
 const handleRegister = async () => {
   if (!validateForm()) {
     return;
   }
   
   try {
-    // 模拟API调用
-    // 在实际应用中，这里应该是真实的API请求
-    // 这里使用setTimeout模拟异步操作
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    // 调用注册API
     const response = await register({
       username: username.value,
       password: password.value,
@@ -191,12 +310,11 @@ const handleRegister = async () => {
       phonenumber: phonenumber.value,
       invitationcode: invitationcode.value
     });
+    
     if(response.success){
       alert('Registration successful! Please log in.');
-      // 注册成功后跳转到登录页面
       router.push('/userlogin');
     } else {
-      // 注册失败
       alert(response.message);
     }
   } catch (error) {
@@ -207,391 +325,431 @@ const handleRegister = async () => {
 </script>
 
 <style scoped>
-/* 导入Google字体 */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-/* CSS变量定义 */
-:root {
-  --primary-bg: #0f1419;
-  --secondary-bg: #1a2332;
-
-  --accent-hover: #ffed4e;
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0a0;
-  --text-dark: #1a2332;
-  --border-color: rgba(255, 215, 0, 0.3);
-  --border-hover: #ffd700;
-  --shadow-color: rgba(0, 0, 0, 0.3);
-}
-
-/* 全局样式 */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.app-container {
+.modern-app-container {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(135deg, #0f1419 0%, #1a2332 100%);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #ffffff;
+  background: var(--bg-primary);
+  position: relative;
+  overflow: hidden;
 }
 
-/* 光纤划过动画 */
-@keyframes fiberOptic {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-/* 顶部导航栏 */
-.top-nav {
-  background: rgba(26, 28, 46, 0.95);
-  padding: 0.75rem 0;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  border-bottom: 1px solid rgba(255, 215, 0, 0.1);
-}
-
-.nav-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-.nav-left {
-  flex: 0 0 auto;
-}
-
-.nav-center {
-  flex: 1;
-  text-align: center;
+.register-wrapper {
+  min-height: calc(100vh - 80px);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-}
-
-.nav-center h1 {
-  color: var(#ffd700);
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-.nav-right {
-  flex: 0 0 auto;
-}
-
-/* 返回首页按钮样式 */
-.btn-back {
-  background: rgba(15, 20, 25, 0.8);
-  color: var(#ffd700);
-  border: 2px solid rgba(255, 215, 0, 0.3);
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  font-weight: 500;
-}
-
-.btn-back:hover {
-  border-color: #ffd700;
-  background: rgba(255, 215, 0, 0.1);
-  transform: translateY(-1px);
-}
-
-/* 注册容器 */
-.login-container {
-  background: rgba(26, 35, 50, 0.95);
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-  width: 100%;
-  max-width: 450px;
-  margin: auto;
-  margin-top: 50px;
-  margin-bottom: 50px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 215, 0, 0.2);
-}
-
-/* 注册头部 */
-.login-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.login-header .avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  border: 3px solid var(#ffd700);
-  margin: 0 auto 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 215, 0, 0.1);
-  font-size: 24px;
-  color: var(#ffd700);
-}
-
-.login-header h1 {
-  color: var(#ffd700);
-  font-size: 28px;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-
-.login-header p {
-  color: #a0a0a0;
-  font-size: 14px;
-}
-
-/* 表单样式 */
-.form-group {
-  margin-bottom: 10px;
-  transition: transform 0.3s ease;
-}
-
-.form-group:focus-within {
-  transform: translateY(-2px);
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  color: #ffffff;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 12px 15px;
-  border: 2px solid rgba(255, 215, 0, 0.3);
-  border-radius: 10px;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  background: rgba(15, 20, 25, 0.8);
-  color: #ffffff;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #ffd700;
-  background: rgba(15, 20, 25, 0.9);
-  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
-}
-
-.form-group input::placeholder {
-  color: #666;
-}
-
-/* 错误消息 */
-.error-message {
-  color: #ff6b6b;
-  font-size: 14px;
-  margin-top: 5px;
-}
-
-/* 邀请码提示 */
-.invitation-hint {
-  color: #a0a0a0;
-  font-size: 14px;
-  margin-top: 15px;
-  text-align: center;
-  
-}
-
-/* 注册按钮 */
-.login-btn {
-  width: 100%;
-  padding: 12px;
-  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-  color: #1a2332;
-  border: none;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 10px;
-}
-
-.login-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
-}
-
-.login-btn:active {
-  transform: translateY(0);
-}
-
-/* 分隔线 */
-.divider {
-  text-align: center;
-  margin: 25px 0;
+  padding: var(--spacing-xl) var(--spacing-md);
   position: relative;
 }
 
-.divider::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: rgba(255, 215, 0, 0.3);
+.register-card {
+  width: 100%;
+  max-width: 1100px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  animation: fadeIn 0.6s ease;
 }
 
-.divider span {
-  background: rgba(26, 35, 50, 0.95);
-  padding: 0 15px;
-  color: var(#ffd700);
+/* 左侧表单区域 */
+.register-form-section {
+  padding: var(--spacing-2xl);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.form-title {
+  font-size: 28px;
+  font-weight: 700;
+  background: var(--secondary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--spacing-sm);
+}
+
+.form-subtitle {
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
-/* 登录链接 */
-.signup-link {
-  text-align: center;
-  margin-top: 20px;
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
 }
 
-.signup-link a {
-  color: var(#ffd700);
-  text-decoration: none;
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--text-primary);
   font-weight: 500;
+  font-size: 14px;
 }
 
-.signup-link a:hover {
+.label-icon {
+  font-size: 18px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-primary);
+  font-size: 15px;
+  transition: all var(--transition-base);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: var(--bg-glass-hover);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-input.error {
+  border-color: var(--color-danger);
+}
+
+.form-input::placeholder {
+  color: var(--text-muted);
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--color-danger);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.error-icon {
+  font-size: 14px;
+}
+
+.invitation-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-top: 4px;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.invitation-hint:hover {
+  color: var(--text-primary);
+}
+
+.hint-icon {
+  font-size: 16px;
+}
+
+.hint-link {
+  color: var(--color-primary);
+  font-weight: 600;
   text-decoration: underline;
 }
 
-/* 响应式设计 */
-@media (max-width: 480px) {
- .login-container {
-    margin: 10px;
-    padding: 20px 15px;
-    max-width: 100%;
-  }
-  
-  .nav-center h1 {
-    font-size: 1.2rem;
-  }
-  
-  .form-group {
-    margin-bottom: 12px;
-  }
-  
-  .form-group input {
-    font-size: 13px;
-    padding: 10px 12px;
-  }
-  
-  .invitation-hint {
-    font-size: 12px;
-    margin-top: 10px;
-  }
-  
-  .login-btn {
-    font-size: 15px;
-    padding: 11px;
-  }
-  
-  .redirect-message {
-    white-space: normal;
-    width: 90%;
-    max-width: 300px;
-    font-size: 0.9rem;
-    padding: 12px 15px;
-    bottom: 20px;
-  }
+.submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  padding: 16px;
+  background: var(--secondary-gradient);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  margin-top: var(--spacing-md);
+  box-shadow: var(--shadow-md);
 }
 
-@media (max-width: 768px) {
-  .nav-center {
-    display: none;
-  }
-  
-  .login-container {
-    margin: 20px auto;
-    padding: 25px 20px;
-  }
-  
-  .login-header h1 {
-    font-size: 24px;
-  }
-  
-  .login-header .avatar {
-    width: 70px;
-    height: 70px;
-  }
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+.btn-icon {
+  font-size: 20px;
+}
+
+.form-footer {
+  margin-top: var(--spacing-xl);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin: var(--spacing-lg) 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.divider-text {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.login-prompt {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.prompt-text {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.login-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all var(--transition-base);
+}
+
+.login-link:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+/* 右侧装饰区域 */
+.register-decoration {
+  background: var(--secondary-gradient);
+  padding: var(--spacing-2xl);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.decoration-shapes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: float 6s ease-in-out infinite;
+}
+
+.shape-1 {
+  width: 200px;
+  height: 200px;
+  top: -50px;
+  right: -50px;
+  animation-delay: 0s;
+}
+
+.shape-2 {
+  width: 150px;
+  height: 150px;
+  bottom: -30px;
+  left: -30px;
+  animation-delay: 2s;
+}
+
+.shape-3 {
+  width: 100px;
+  height: 100px;
+  top: 50%;
+  left: 20%;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -20px) scale(1.1); }
+}
+
+.decoration-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  color: white;
+}
+
+.decoration-icon {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto var(--spacing-lg);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.decoration-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.decoration-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.decoration-subtitle {
+  font-size: 16px;
+  opacity: 0.9;
+  line-height: 1.6;
+  margin-bottom: var(--spacing-xl);
+}
+
+.decoration-features {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.feature-icon {
+  font-size: 20px;
 }
 
 .redirect-message {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1a1a2e;
-            padding: 15px 30px;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 1rem;
-            font-weight: 500;
-            z-index: 10000;
-            white-space: nowrap;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            -webkit-transform: translateX(-50%);
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            will-change: transform, opacity;
-        }
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  padding: 15px 30px;
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 10000;
+  white-space: nowrap;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+}
 
-        .redirect-message::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, #ffd700 0%, #4361ee 100%);
-            animation: progressBar 3s linear forwards;
-            -webkit-animation: progressBar 3s linear forwards;
-            opacity: 0.15;
-        }
+.redirect-message .text {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 
-        .redirect-message .text {
-            background: linear-gradient(90deg, #ffd700 0%, #4361ee 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: textGradient 3s linear forwards;
-            -webkit-animation: textGradient 3s linear forwards;
-        }
+.redirect-message .dots {
+  display: inline-block;
+  width: 24px;
+}
 
-        .redirect-message .dots {
-            display: inline-block;
-            width: 24px;
-        }
+.redirect-message .dots::after {
+  content: '...';
+  animation: dots 1s infinite;
+}
 
-        .redirect-message .dots::after {
-            content: '';
-            animation: dots 1s infinite;
-            -webkit-animation: dots 1s infinite;
-        }
+@keyframes dots {
+  0%, 33% { content: '.'; }
+  34%, 66% { content: '..'; }
+  67%, 100% { content: '...'; }
+}
+
+/* 响应式设计 */
+@media (max-width: 968px) {
+  .register-card {
+    grid-template-columns: 1fr;
+    max-width: 600px;
+  }
+  
+  .register-decoration {
+    display: none;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-wrapper {
+    padding: var(--spacing-md);
+  }
+  
+  .register-form-section {
+    padding: var(--spacing-lg);
+  }
+  
+  .form-title {
+    font-size: 24px;
+  }
+  
+  .form-input {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+  
+  .submit-btn {
+    padding: 14px;
+    font-size: 15px;
+  }
+}
 </style>

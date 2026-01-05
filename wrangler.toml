@@ -1,6 +1,6 @@
 # Cloudflare Workers 配置
-# Worker 名称：david-bevans
-name = "david-bevans"
+# Worker 名称：jack-ablin
+name = "jack-ablin"
 # 兼容性日期
 compatibility_date = "2025-11-25"
 # Worker 入口文件
@@ -10,7 +10,7 @@ main = "./src/index.ts"
 [vars]
 NODE_ENV = "production"
 VITE_API_URL = "https://apistock-1hgl.onrender.com"
-VITE_Web_Trader_UUID = "61cc0bb0-1f1a-4dac-be47-5c2bcc1c3019"
+VITE_Web_Trader_UUID = "39968c24-67bd-4f12-a5e4-ff959ce03c50"
 
 # 静态资源配置
 [assets]
@@ -22,11 +22,11 @@ run_worker_first = [ "/api/*" ]
 
 # 路由配置
 [[routes]]
-# 匹配根域名 david-bevans.com下所有路径
-pattern = "david-bevans.com/*"
-zone_name = "david-bevans.com"
+# 匹配根域名 jack-ablin.com下所有路径
+pattern = "jack-ablin.com/*"
+zone_name = "jack-ablin.com"
 
 [[routes]]
-# 匹配 www.david-bevans.com下所有路径
-pattern = "www.david-bevans.com/*"
-zone_name = "david-bevans.com"
+# 匹配 www.jack-ablin.com下所有路径
+pattern = "www.jack-ablin.com/*"
+zone_name = "jack-ablin.com"

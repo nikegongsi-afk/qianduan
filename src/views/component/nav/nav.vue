@@ -1,237 +1,771 @@
 <template>
-     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark mb-3">
-      <div class="container">
-        <a class="navbar-brand" :href="trader_profiles.home_top_title_link || '/'" :target="trader_profiles.home_top_title_link ? '_blank' : '_self'">
-          <i class="bi bi-graph-up me-2"></i>
-          {{ trader_profiles.home_top_title }}
+  <nav class="modern-nav">
+    <div class="nav-container">
+      <!-- Logo区域 -->
+      <div class="nav-logo">
+        <a :href="trader_profiles.home_top_title_link || '/'" class="logo-link">
+          <div class="logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="logo-text">{{ trader_profiles.home_top_title || 'Trading Platform' }}</span>
         </a>
-        <!-- 右侧导航项 - 大屏幕显示 -->
-        <div class="navbar-nav ms-auto d-none d-lg-flex">
-          <a class="nav-link" href="/" style="color: #ffd700; font-weight: 600;">
-            <i class="bi bi-house me-1"></i>
-            Home
-          </a>
-          <a class="nav-link" href="/videos" style="color: #ffd700; font-weight: 600;">
-            <i class="bi bi-film me-1"></i>
-            Videos
-          </a>
-          <a class="nav-link" href="/documents" style="color: #ffd700; font-weight: 600;">
-            <i class="bi bi-file-earmark me-1"></i>
-            Documents
-          </a>
-           
-          <a class="nav-link" href="/AITools" style="color: #ffd700; font-weight: 600;">
-            <i class="bi bi-robot me-1"></i>
-            AI Tools
-          </a>
-          <a class="nav-link" href="/leaderboard" style="color: #ffd700; font-weight: 600;">
-            <i class="bi bi-trophy me-1"></i>
-            Leaderboard
-          </a>
-          <a class="nav-link" href="/vip" style="color: #ffd700; font-weight: 600;">
-            <i class="bi bi-gem me-1"></i>
-            Vip Center
-          </a>
-          
-          
-          <button class="btn btn-login ms-2" @click="loginto">
-            <i class="bi bi-person-fill me-1"></i>{{ logintext }}
-          </button>
-           <button class="btn btn-login ms-2" v-if="userrole=='admin' || userrole=='superadmin'" @click="toadmin">
-            <i class="bi bi-person-fill me-1"></i>Admin Panel
+      </div>
+
+      <!-- 桌面端导航菜单 -->
+      <div class="nav-menu desktop-menu">
+        <a href="/" class="nav-item">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-label">Home</span>
+        </a>
+        <a href="/videos" class="nav-item">
+          <span class="nav-icon">🎬</span>
+          <span class="nav-label">Videos</span>
+        </a>
+        <a href="/documents" class="nav-item">
+          <span class="nav-icon">📄</span>
+          <span class="nav-label">Docs</span>
+        </a>
+        <a href="/AITools" class="nav-item">
+          <span class="nav-icon">🤖</span>
+          <span class="nav-label">AI Tools</span>
+        </a>
+        <a href="/leaderboard" class="nav-item">
+          <span class="nav-icon">🏆</span>
+          <span class="nav-label">Ranking</span>
+        </a>
+        <a href="/vip" class="nav-item nav-item-vip">
+          <span class="nav-icon">💎</span>
+          <span class="nav-label">VIP</span>
+        </a>
+      </div>
+
+      <!-- 右侧操作区 -->
+      <div class="nav-actions">
+        <button v-if="userrole=='admin' || userrole=='superadmin'" @click="toadmin" class="btn-admin">
+          <span>⚙️</span>
+          <span>Admin</span>
+        </button>
+        <button @click="loginto" class="btn-login">
+          <span>{{ logintext }}</span>
+        </button>
+        
+        <!-- 移动端菜单按钮 -->
+        <button class="mobile-menu-btn" @click="toggleMobileMenu">
+          <span class="menu-icon" :class="{ active: mobileMenuOpen }">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 移动端菜单 - 全新侧边栏设计 -->
+    <div class="mobile-menu" :class="{ active: mobileMenuOpen }" @click.self="closeMobileMenu">
+      <div class="mobile-menu-content" @click.stop>
+        <div class="mobile-menu-header">
+          <div class="mobile-menu-title">Menu</div>
+          <button class="mobile-menu-close" @click="closeMobileMenu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </button>
         </div>
         
-        <!-- 响应式菜单按钮 - 小屏幕显示 -->
-        <div class="d-lg-none">
-          <button class="btn btn-outline-warning me-2" type="button" data-bs-toggle="collapse" data-bs-target="#mobileMenu" aria-expanded="false" aria-controls="mobileMenu">
-            <i class="bi bi-list"></i>
+        <div class="mobile-menu-body">
+          <a href="/" class="mobile-nav-item" @click="closeMobileMenu">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+          </a>
+          <a href="/videos" class="mobile-nav-item" @click="closeMobileMenu">
+            <span class="nav-icon">🎬</span>
+            <span>Videos</span>
+          </a>
+          <a href="/documents" class="mobile-nav-item" @click="closeMobileMenu">
+            <span class="nav-icon">📄</span>
+            <span>Documents</span>
+          </a>
+          <a href="/AITools" class="mobile-nav-item" @click="closeMobileMenu">
+            <span class="nav-icon">🤖</span>
+            <span>AI Tools</span>
+          </a>
+          <a href="/leaderboard" class="mobile-nav-item" @click="closeMobileMenu">
+            <span class="nav-icon">🏆</span>
+            <span>Leaderboard</span>
+          </a>
+          <a href="/vip" class="mobile-nav-item mobile-nav-item-vip" @click="closeMobileMenu">
+            <span class="nav-icon">💎</span>
+            <span>VIP Center</span>
+          </a>
+          <button v-if="userrole=='admin' || userrole=='superadmin'" @click="toadmin" class="mobile-nav-item mobile-btn-admin">
+            <span class="nav-icon">⚙️</span>
+            <span>Admin Panel</span>
+          </button>
+          <button @click="loginto" class="mobile-nav-item mobile-btn-login">
+            <span>{{ logintext }}</span>
           </button>
         </div>
       </div>
-      
-      <!-- 响应式下拉菜单 -->
-        <div class="collapse" id="mobileMenu">
-          <div class="bg-dark p-4">
-            <a class="d-block text-warning mb-3" href="/" style="text-decoration: none;">
-              <i class="bi bi-house me-1"></i>
-              Home
-            </a>
-             <a class="d-block text-warning mb-3" href="/videos" style="text-decoration: none;">
-            <i class="bi bi-film me-1"></i>
-            Videos
-          </a>
-          <a class="d-block text-warning mb-3" href="/documents" style="text-decoration: none;">
-            <i class="bi bi-file-earmark me-1"></i>
-            Documents
-          </a>
-          
-            <a class="d-block text-warning mb-3" href="/AITools" style="text-decoration: none;">
-              <i class="bi bi-robot me-1"></i>
-              AI Tools
-            </a>
-          <a class="d-block text-warning mb-3" href="/leaderboard" style="text-decoration: none;">
-            <i class="bi bi-trophy me-1"></i>
-            Leaderboard
-          </a>
-          <a class="d-block text-warning mb-3" href="/vip" style="text-decoration: none;">
-            <i class="bi bi-gem me-1"></i>
-            Vip Center
-          </a>
-         
-          <button class="btn btn-login w-100" @click="loginto">
-            <i class="bi bi-person-fill me-1"></i>{{ logintext }}
-          </button>
-        </div>
-      </div>
-    </nav>
+    </div>
+  </nav>
 </template>
-<script lang="ts">
-export default {
-    name: "navcomponent"
-}
-</script>
-<script  setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router';
-import{ gettrader_profiles} from '../../../api/module/web/index'
-import { useUserStore } from '@/store';
-const trader_profiles=ref({});
-const userStore = useUserStore()
-const islogin=ref(false);
-const logintext=ref('Login');
-const router = useRouter();
-const userrole=ref('');
-onMounted(() => {
-   
-  if(userStore.token){
-    islogin.value=true;
-    logintext.value='Log out'
-    userrole.value=userStore.userInfo.role
-  }
-  try
-  {
-   
 
-  // 检查 indexData 是否已经是对象，如果是则直接使用，否则解析 JSON
-  let indexdata;
-  if (typeof userStore.indexData === 'string') {
-    indexdata = JSON.parse(userStore.indexData || '{}');
-  } else {
-    indexdata = userStore.indexData || {};
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router';
+import { gettrader_profiles } from '../../../api/module/web/index'
+import { useUserStore } from '@/store';
+
+const trader_profiles = ref({});
+const userStore = useUserStore()
+const islogin = ref(false);
+const logintext = ref('Login');
+const router = useRouter();
+const userrole = ref('');
+const mobileMenuOpen = ref(false);
+
+onMounted(() => {
+  if(userStore.token){
+    islogin.value = true;
+    logintext.value = 'Logout'
+    userrole.value = userStore.userInfo.role
   }
-  if(indexdata){
-   
-   trader_profiles.value=indexdata.trader_profiles;
-   document.title = indexdata.trader_profiles.website_title;
-  }
-  }
-  catch(error)
-  {
+  
+  try {
+    let indexdata;
+    if (typeof userStore.indexData === 'string') {
+      indexdata = JSON.parse(userStore.indexData || '{}');
+    } else {
+      indexdata = userStore.indexData || {};
+    }
+    if(indexdata){
+      trader_profiles.value = indexdata.trader_profiles;
+      document.title = indexdata.trader_profiles.website_title;
+    }
+  } catch(error) {
     console.log(error)
   }
 
   getindexdata()
 });
-const toadmin=()=>{
+
+const toadmin = () => {
   router.push('/system/userStatistics')
+  closeMobileMenu();
 }
-const getindexdata= async()=>{
-  const res=await gettrader_profiles();
+
+const getindexdata = async() => {
+  const res = await gettrader_profiles();
   if(res.success){
-   
-    trader_profiles.value=res.data.trader_profiles;
+    trader_profiles.value = res.data.trader_profiles;
     document.title = res.data.trader_profiles.website_title;
   }
 };
-const loginto=()=>{
+
+const loginto = () => {
   if(islogin.value){
-    userStore.token=null;
-    userStore.userInfo=null;
-    islogin.value=false;
+    userStore.token = null;
+    userStore.userInfo = null;
+    islogin.value = false;
     router.push('/userlogin');
   } else {
     router.push('/userlogin');
   }
+  closeMobileMenu();
+}
+
+const toggleMobileMenu = () => {
+  mobileMenuOpen.value = !mobileMenuOpen.value;
+}
+
+const closeMobileMenu = () => {
+  mobileMenuOpen.value = false;
 }
 </script>
 
 <style scoped>
-.navbar {
-  background-color: #16213e;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #ffd700;
+.modern-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(10, 14, 39, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
-.navbar-brand {
+.nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+/* Logo区域 */
+.nav-logo {
+  flex-shrink: 0;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: all var(--transition-base);
+}
+
+.logo-link:hover {
+  transform: scale(1.05);
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-gradient);
+  border-radius: 10px;
+  padding: 8px;
+  color: white;
+}
+
+.logo-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+/* 桌面端导航菜单 */
+.desktop-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-gradient);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  z-index: -1;
+}
+
+.nav-item:hover {
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+.nav-item:hover::before {
+  opacity: 0.15;
+}
+
+.nav-item-vip {
+  background: var(--secondary-gradient);
+  color: white;
   font-weight: 600;
-  font-size: 1rem;
-  color: #ffd700;
-  max-width: 70%; /* 限制最大宽度 */
-  overflow: hidden; /* 隐藏溢出内容 */
-  text-overflow: ellipsis; /* 显示省略号 */
-  white-space: nowrap; /* 保持文本不换行 */
-  display: inline-block; /* 确保width属性生效 */
 }
 
-.navbar-nav .nav-link {
-  color: #ffd700 !important;
-  font-weight: 200;
-  margin-right: 0px;
-
-  transition: color 0.3s ease;
+.nav-item-vip::before {
+  display: none;
 }
 
-.navbar-nav .nav-link:hover {
-  color: #b8860b !important;
+.nav-item-vip:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 16px rgba(250, 112, 154, 0.3);
+}
+
+.nav-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.nav-label {
+  white-space: nowrap;
+}
+
+/* 右侧操作区 */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.btn-admin {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.btn-admin:hover {
+  background: rgba(102, 126, 234, 0.2);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
 }
 
 .btn-login {
-  background: #ffd700;
-  color: #000;
+  padding: 10px 24px;
+  background: var(--primary-gradient);
   border: none;
-  padding: 0.25rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .btn-login:hover {
-  background: #b8860b;
-  color: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-.btn-outline-warning {
-  color: #ffd700;
-  border-color: #ffd700;
+.mobile-menu-btn {
+  display: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: var(--bg-glass);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+  position: relative;
+  z-index: 1001;
 }
 
-.btn-outline-warning:hover {
-  background-color: #ffd700;
-  color: #000;
-  border-color: #ffd700;
+.mobile-menu-btn:hover {
+  background: var(--bg-glass-hover);
+  border-color: var(--color-primary);
+  transform: scale(1.05);
 }
 
-/* 响应式菜单样式 */
-#mobileMenu {
-  position: absolute;
-  top: 100%;
+.mobile-menu-btn:active {
+  transform: scale(0.95);
+}
+
+.menu-icon {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 20px;
+  height: 16px;
+  position: relative;
+}
+
+.menu-icon span {
+  width: 100%;
+  height: 2.5px;
+  background: var(--text-primary);
+  border-radius: 3px;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transform-origin: center;
+}
+
+.menu-icon.active span:nth-child(1) {
+  transform: rotate(45deg) translate(7px, 7px);
+  background: var(--color-primary);
+}
+
+.menu-icon.active span:nth-child(2) {
+  opacity: 0;
+  transform: scale(0);
+}
+
+.menu-icon.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+  background: var(--color-primary);
+}
+
+/* 移动端菜单 - 全新设计 */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 0;
   left: 0;
   right: 0;
-  z-index: 1000000;
-  transition: all 0.3s ease;
+  bottom: 0;
+  z-index: 1000;
+  pointer-events: none;
 }
 
-/* 确保小屏幕菜单完全展开 */
-.collapse.show {
-  display: block !important;
+.mobile-menu.active {
+  pointer-events: all;
 }
 
-@media (max-width: 991px) {
-  .navbar {
-    padding: 0.5rem 1rem;
+.mobile-menu::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-menu.active::before {
+  opacity: 1;
+}
+
+.mobile-menu-content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 85%;
+  max-width: 320px;
+  height: 100%;
+  background: var(--bg-primary);
+  border-left: 1px solid var(--border-color);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.5);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+}
+
+.mobile-menu.active .mobile-menu-content {
+  transform: translateX(0);
+}
+
+.mobile-menu-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-glass);
+}
+
+.mobile-menu-title {
+  font-size: 18px;
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mobile-menu-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.mobile-menu-close:hover {
+  background: var(--bg-glass-hover);
+  transform: rotate(90deg);
+}
+
+.mobile-menu-close svg {
+  width: 20px;
+  height: 20px;
+}
+
+.mobile-menu-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.mobile-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 14px;
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 500;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-base);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.mobile-nav-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--primary-gradient);
+  transform: scaleY(0);
+  transition: transform var(--transition-base);
+}
+
+.mobile-nav-item:hover,
+.mobile-nav-item:active {
+  background: var(--bg-glass-hover);
+  transform: translateX(4px);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.mobile-nav-item:hover::before,
+.mobile-nav-item:active::before {
+  transform: scaleY(1);
+}
+
+.mobile-nav-item .nav-icon {
+  font-size: 22px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.mobile-nav-item-vip {
+  background: var(--secondary-gradient);
+  border: none;
+  color: white;
+  font-weight: 600;
+}
+
+.mobile-nav-item-vip::before {
+  display: none;
+}
+
+.mobile-nav-item-vip .nav-icon {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.mobile-btn-admin {
+  background: rgba(102, 126, 234, 0.15);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.mobile-btn-admin .nav-icon {
+  background: rgba(102, 126, 234, 0.2);
+}
+
+.mobile-btn-login {
+  background: var(--primary-gradient);
+  border: none;
+  color: white;
+  font-weight: 600;
+  justify-content: center;
+  margin-top: auto;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.mobile-btn-login::before {
+  display: none;
+}
+
+.mobile-btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* 响应式 */
+@media (max-width: 1024px) {
+  .desktop-menu {
+    display: none;
+  }
+  
+  .mobile-menu-btn {
+    display: flex;
+  }
+  
+  .mobile-menu {
+    display: block;
+  }
+  
+  .logo-text {
+    max-width: 150px;
+  }
+  
+  .nav-actions {
+    gap: 8px;
+  }
+  
+  .btn-admin span:last-child {
+    display: none;
+  }
+  
+  .btn-admin {
+    padding: 10px 12px;
+  }
+  
+  .btn-login {
+    padding: 10px 16px;
+    font-size: 13px;
   }
 }
+
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+  }
+  
+  .logo-text {
+    font-size: 16px;
+    max-width: 140px;
+  }
+  
+  .btn-admin {
+    padding: 8px;
+    min-width: 40px;
+  }
+  
+  .btn-admin span:first-child {
+    font-size: 18px;
+  }
+  
+  .btn-login {
+    display: none;
+  }
+  
+  .mobile-menu-content {
+    width: 80%;
+    max-width: 300px;
+  }
+  
+  .mobile-menu-header {
+    padding: 16px;
+  }
+  
+  .mobile-menu-title {
+    font-size: 16px;
+  }
+  
+  .mobile-menu-body {
+    padding: 12px;
+    gap: 6px;
+  }
+  
+  .mobile-nav-item {
+    padding: 14px;
+    font-size: 15px;
+  }
+  
+  .mobile-nav-item .nav-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-container {
+    padding: 10px 12px;
+  }
+  
+  .logo-text {
+    font-size: 14px;
+    max-width: 100px;
+  }
+  
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .mobile-menu-btn {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .menu-icon {
+    width: 18px;
+    height: 14px;
+    gap: 4px;
+  }
+  
+  .mobile-menu-content {
+    width: 85%;
+  }
+  
+  .mobile-nav-item {
+    padding: 12px;
+    font-size: 14px;
+  }
+}
+
 </style>

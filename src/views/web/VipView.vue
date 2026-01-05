@@ -1386,7 +1386,7 @@ const createFirework = () => {
 }
 
 .app-container {
-  background: linear-gradient(120deg, #181c2b 0%, #23243a 100%);
+  background: var(--bg-primary);
   color: #ffffff;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   margin: 0;
@@ -1473,7 +1473,7 @@ const createFirework = () => {
 }
 
 .btn-login {
-  background: #ffd700;
+  background: var(--primary-gradient);
   color: #000;
   border: none;
   padding: 0.25rem 0.75rem;
@@ -4635,16 +4635,19 @@ html {
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
-  background: #1a1a2e;
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   padding: 15px 30px;
-  border-radius: 8px;
-  color: #fff;
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
   font-size: 1rem;
   font-weight: 500;
   z-index: 10000;
   white-space: nowrap;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
   -webkit-transform: translateX(-50%);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
@@ -4665,7 +4668,7 @@ html {
 }
 
 .redirect-message .text {
-  background: linear-gradient(90deg, #ffd700 0%, #4361ee 100%);
+  background: var(--primary-gradient);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

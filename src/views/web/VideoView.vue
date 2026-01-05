@@ -1,141 +1,141 @@
 <template>
-  <div class="app-container">
+  <div class="video-page-container">
     <navcomponent />
-    <div class="main-content">
-      <!-- Header Section -->
-      <div class="page-header">
-        <div class="header-left">
-          <div class="page-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8 5V19L19 12L8 5Z" fill="#FFD700"/>
+    
+    <!-- 全新的视频页面布局 -->
+    <div class="video-page-wrapper">
+      <!-- 顶部横幅区域 -->
+      <div class="video-hero-banner">
+        <div class="hero-content">
+          <div class="hero-icon-large">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
           </div>
-          <div class="header-text">
-            <h1 class="page-title">Video Tutorials</h1>
-            <p class="page-subtitle">Master exclusive trading strategies with our video library</p>
-          </div>
-        </div>
-        <div class="header-right">
-          <div class="stats-summary">
-            <span class="stat-item">{{ Object.keys(vedioslist).length || 0 }} Videos</span>
-            <span class="stat-divider">•</span>
-            <span class="stat-item vip">{{ Object.values(vedioslist).filter(v => !v.ispublic).length || 0 }} VIP</span>
+          <h1 class="hero-title">Video Library</h1>
+          <p class="hero-description">Learn from expert traders through comprehensive video tutorials</p>
+          <div class="hero-stats">
+            <div class="hero-stat-badge">
+              <span class="stat-number">{{ Object.keys(vedioslist).length || 0 }}</span>
+              <span class="stat-text">Total Videos</span>
+            </div>
+            <div class="hero-stat-badge vip">
+              <span class="stat-number">{{ Object.values(vedioslist).filter(v => !v.ispublic).length || 0 }}</span>
+              <span class="stat-text">VIP Content</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Filter Bar -->
-      <div class="filter-section">
-        <div class="filter-tabs">
-          <button 
-            class="filter-tab" 
-            :class="{ active: activeFilter === 'all' }"
-            @click="setFilter('all')"
-          >
-            All Videos
-          </button>
-          <button 
-            class="filter-tab" 
-            :class="{ active: activeFilter === 'free' }"
-            @click="setFilter('free')"
-          >
-            Free
-          </button>
-          <button 
-            class="filter-tab" 
-            :class="{ active: activeFilter === 'vip' }"
-            @click="setFilter('vip')"
-          >
-            VIP Only
-          </button>
-        </div>
-        <div class="view-options">
-          <button class="view-btn active">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="3" width="7" height="7" fill="currentColor"/>
-              <rect x="14" y="3" width="7" height="7" fill="currentColor"/>
-              <rect x="3" y="14" width="7" height="7" fill="currentColor"/>
-              <rect x="14" y="14" width="7" height="7" fill="currentColor"/>
-            </svg>
-          </button>
-          <button class="view-btn">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="6" width="18" height="2" fill="currentColor"/>
-              <rect x="3" y="12" width="18" height="2" fill="currentColor"/>
-              <rect x="3" y="18" width="18" height="2" fill="currentColor"/>
-            </svg>
-          </button>
-        </div>
-      </div>
+      <!-- 内容区域 -->
+      <div class="video-content-area">
+        <!-- 侧边栏筛选 -->
+        <aside class="video-sidebar">
+          <div class="sidebar-section">
+            <h3 class="sidebar-title">Filter</h3>
+            <div class="filter-group">
+              <button 
+                class="filter-option" 
+                :class="{ active: activeFilter === 'all' }"
+                @click="setFilter('all')"
+              >
+                <span class="filter-icon">📺</span>
+                <span>All Videos</span>
+              </button>
+              <button 
+                class="filter-option" 
+                :class="{ active: activeFilter === 'free' }"
+                @click="setFilter('free')"
+              >
+                <span class="filter-icon">🔓</span>
+                <span>Free Access</span>
+              </button>
+              <button 
+                class="filter-option" 
+                :class="{ active: activeFilter === 'vip' }"
+                @click="setFilter('vip')"
+              >
+                <span class="filter-icon">⭐</span>
+                <span>VIP Only</span>
+              </button>
+            </div>
+          </div>
+        </aside>
 
-      <!-- Video Grid -->
-      <div class="videos-section">
-
-        <div class="videos-grid">
-          <div class="video-card" v-for="value in filteredVideos" :key="value.id" :data-video-id="value.id">
-            <!-- Video Thumbnail -->
-            <div class="video-thumbnail" @click="playVideo($event, value)">
-              <video 
-                :src="(value.ispublic || userStore.token) ? value.video_url : ''" 
-                :poster="value.thumbnail || ''"
-                preload="metadata"
-                class="video-player"
-                :controls="false"
-                ref="videoPlayer"
-              ></video>
-              <div class="play-overlay" :class="{ 'playing': value.isPlaying }">
-                <div class="play-button">
-                  <svg v-if="!value.isPlaying" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M8 5V19L19 12L8 5Z" fill="white"/>
-                  </svg>
-                  <svg v-else viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6 4H10V20H6V4ZM14 4H18V20H14V4Z" fill="white"/>
-                  </svg>
+        <!-- 主内容区域 -->
+        <main class="video-main-area">
+          <div class="video-list-container">
+            <div class="video-item" v-for="value in filteredVideos" :key="value.id">
+              <div class="video-preview-container" @click="playVideo($event, value)">
+                <div class="video-preview-wrapper">
+                  <video 
+                    :src="(value.ispublic || userStore.token) ? value.video_url : ''" 
+                    :poster="value.thumbnail || ''"
+                    preload="metadata"
+                    class="video-preview"
+                    :controls="false"
+                    ref="videoPlayer"
+                  ></video>
+                  <div class="video-overlay" :class="{ 'playing': value.isPlaying }">
+                    <div class="play-indicator">
+                      <svg v-if="!value.isPlaying" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                      </svg>
+                      <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
+                      </svg>
+                    </div>
+                  </div>
+                  <div v-if="!value.ispublic" class="video-vip-tag">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+                    </svg>
+                    VIP
+                  </div>
+                  <div class="video-duration-badge" v-if="value.duration">{{ value.duration }}</div>
                 </div>
               </div>
-              <div v-if="!value.ispublic" class="vip-badge">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z" fill="#FFD700"/>
-                </svg>
-                VIP
-              </div>
-              <div class="video-duration" v-if="value.duration">{{ value.duration }}</div>
-            </div>
-
-            <!-- Video Info -->
-            <div class="video-info">
-              <h3 class="video-title">{{ value.title }}</h3>
-              <p class="video-description">{{ value.description }}</p>
               
-              <div class="video-meta">
-                <div class="meta-item">
-                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C6.48 2 2 6.48 2 12S6.48 22 12 22 22 17.52 22 12 17.52 2 12 2ZM13 17H11V11H13V17ZM13 9H11V7H13V9Z" fill="#b0c4e6"/>
-                  </svg>
-                  <span>{{ formatUSDate(value.last_update) }}</span>
+              <div class="video-details">
+                <div class="video-header-info">
+                  <h3 class="video-name">{{ value.title }}</h3>
+                  <p class="video-summary">{{ value.description }}</p>
                 </div>
-                <div class="meta-item">
-                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M16 6L18.29 8.29L13.41 13.17L9.41 9.17L2 16.59L3.41 18L9.41 12L13.41 16L20.71 8.71L23 11V6H16Z" fill="#b0c4e6"/>
-                  </svg>
-                  <span>{{ value.difficulty || 'Intermediate' }}</span>
+                
+                <div class="video-footer-info">
+                  <div class="video-meta-info">
+                    <span class="meta-tag">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                      </svg>
+                      {{ formatUSDate(value.last_update) }}
+                    </span>
+                    <span class="meta-tag" v-if="value.difficulty">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z"></path>
+                        <path d="M2 17L12 22L22 17"></path>
+                        <path d="M2 12L12 17L22 12"></path>
+                      </svg>
+                      {{ value.difficulty }}
+                    </span>
+                  </div>
+                  
+                  <button class="video-action-button" @click.stop="watchVideo(value)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Watch
+                  </button>
                 </div>
-              </div>
-
-              <div class="video-actions">
-                <button class="watch-btn" @click="watchVideo(value)">
-                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M8 5V19L19 12L8 5Z" fill="currentColor"/>
-                  </svg>
-                  Watch Now
-                </button>
               </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
-    <!-- 合作单位 -->
+    
     <PartnerOrganizations />
   </div>
 </template>
@@ -163,18 +163,14 @@ const formatUSDate = (dateString: string) => {
   if (!dateString) return '';
   
   try {
-    // 确保正确解析UTC时间字符串
     let date: Date;
     
-    // 如果时间字符串没有时区信息，假设它是UTC时间
     if (dateString.includes('T') && !dateString.includes('Z') && !dateString.includes('+') && !dateString.includes('-', 10)) {
-      // 添加Z表示UTC时间
       date = new Date(dateString + 'Z');
     } else {
       date = new Date(dateString);
     }
     
-    // 验证日期是否有效
     if (isNaN(date.getTime())) {
       console.error('无效的时间字符串:', dateString);
       return dateString;
@@ -190,7 +186,6 @@ const formatUSDate = (dateString: string) => {
       hour12: true
     });
     
-    // 添加时区标识
     const timeZone = date.toLocaleString('en-US', {
       timeZone: 'America/New_York',
       timeZoneName: 'short'
@@ -199,23 +194,20 @@ const formatUSDate = (dateString: string) => {
     return `${usTime} ${timeZone}`;
   } catch (error) {
     console.error('时间转换错误:', error, '原始时间:', dateString);
-    return dateString; // 如果解析失败，返回原始字符串
+    return dateString;
   }
 };
 
 const getVipDashboardData = async () => {
   const res = await getvideos(null);
   if (res.success) {
-    // 确保数据格式一致
     let videosData = res.data;
-    // 如果是数组，转换为对象格式
     if (Array.isArray(videosData)) {
       videosData = videosData.reduce((acc, video, index) => {
         acc[index] = video;
         return acc;
       }, {} as any);
     }
-    // 为每个视频添加播放状态
     const videosWithState = Object.keys(videosData).reduce((acc, key) => {
       acc[key] = {
         ...videosData[key],
@@ -224,7 +216,7 @@ const getVipDashboardData = async () => {
       return acc;
     }, {} as any);
     vedioslist.value = videosWithState;
-    filteredVideos.value = videosWithState; // 初始显示所有视频
+    filteredVideos.value = videosWithState;
   }
 };
 
@@ -254,7 +246,6 @@ const playVideo = (event: Event, videoData: any) => {
   event.preventDefault();
   event.stopPropagation();
   
-  // 如果是VIP视频，检查登录状态
   if (!videoData.ispublic && !userStore.token) {
     alert('Please login to watch VIP videos');
     router.push('/userlogin');
@@ -269,12 +260,10 @@ const playVideo = (event: Event, videoData: any) => {
     return;
   }
 
-  // 暂停所有其他视频
   const allVideos = document.querySelectorAll('video');
   allVideos.forEach((v, index) => {
     if (v !== video && !v.paused) {
       v.pause();
-      // 重置其他视频的播放状态
       const otherVideoData = Object.values(vedioslist.value)[index];
       if (otherVideoData) {
         otherVideoData.isPlaying = false;
@@ -284,7 +273,6 @@ const playVideo = (event: Event, videoData: any) => {
 
   try {
     if (video.paused) {
-      // 显示控制条并播放
       video.controls = true;
       video.play().then(() => {
         videoData.isPlaying = true;
@@ -303,7 +291,6 @@ const playVideo = (event: Event, videoData: any) => {
     console.error('视频操作失败:', error);
   }
 
-  // 监听视频事件
   video.addEventListener('pause', () => {
     videoData.isPlaying = false;
   });
@@ -317,7 +304,6 @@ const playVideo = (event: Event, videoData: any) => {
 const watchVideo = (videoData: any) => {
   console.log('观看视频:', videoData);
   
-  // 如果是VIP视频，检查登录状态
   if (!videoData.ispublic && !userStore.token) {
     alert('Please login to watch VIP videos');
     router.push('/userlogin');
@@ -325,7 +311,6 @@ const watchVideo = (videoData: any) => {
   }
   
   if (videoData.video_url) {
-    // 创建一个全屏播放模态框或直接在新窗口打开
     const videoWindow = window.open('', '_blank', 'width=800,height=600');
     if (videoWindow) {
       videoWindow.document.write(`
@@ -353,530 +338,522 @@ const watchVideo = (videoData: any) => {
 </script>
 
 <style scoped>
-.app-container {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+.video-page-container {
   min-height: 100vh;
+  background: var(--bg-primary);
   width: 100%;
 }
 
-.main-content {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 32px 80px 32px;
-}
-
-/* Page Header */
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0;
-  margin: 24px 0 32px 0;
-  gap: 32px;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex: 1;
-}
-
-.page-icon {
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
-  flex-shrink: 0;
-}
-
-.page-icon svg {
-  width: 32px;
-  height: 32px;
-}
-
-.header-text {
-  flex: 1;
-}
-
-.page-title {
-  font-size: 2.5rem;
-  font-weight: 900;
-  color: #fff;
-  margin: 0 0 8px 0;
-  letter-spacing: -0.5px;
-}
-
-.page-subtitle {
-  font-size: 1.2rem;
-  color: #b0c4e6;
+/* 全新的视频页面布局 */
+.video-page-wrapper {
+  width: 100%;
+  max-width: 100%;
   margin: 0;
-  line-height: 1.4;
+  padding: 0;
 }
 
-.header-right {
-  display: flex;
-  align-items: center;
-}
-
-.stats-summary {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 1.1rem;
-  color: #b0c4e6;
-}
-
-.stat-item {
-  font-weight: 600;
-}
-
-.stat-item.vip {
-  color: #FFD700;
-}
-
-.stat-divider {
-  color: rgba(176, 196, 230, 0.5);
-  font-weight: 300;
-}
-
-/* Filter Section */
-.filter-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 40px;
-  padding: 20px 32px;
-  background: rgba(24, 31, 42, 0.6);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(20px);
-}
-
-.filter-tabs {
-  display: flex;
-  gap: 4px;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 6px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.filter-tab {
-  padding: 12px 24px;
-  background: transparent;
-  border: none;
-  color: #b0c4e6;
-  font-weight: 600;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 0.95rem;
+/* 顶部横幅区域 */
+.video-hero-banner {
   position: relative;
+  padding: 80px 40px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
   overflow: hidden;
 }
 
-.filter-tab::before {
+.video-hero-banner::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: -1;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  pointer-events: none;
 }
 
-.filter-tab.active::before,
-.filter-tab:hover::before {
-  opacity: 1;
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
 }
 
-.filter-tab.active,
-.filter-tab:hover {
-  color: #181F2A;
-  transform: translateY(-1px);
-}
-
-.view-options {
-  display: flex;
-  gap: 8px;
-}
-
-.view-btn {
-  width: 44px;
-  height: 44px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+.hero-icon-large {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 30px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  border-radius: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: #b0c4e6;
+  color: white;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
-.view-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 215, 0, 0.3);
-  color: #FFD700;
+.hero-icon-large svg {
+  width: 50px;
+  height: 50px;
 }
 
-.view-btn.active {
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-  border-color: #FFD700;
-  color: #181F2A;
+.hero-title {
+  font-size: 56px;
+  font-weight: 900;
+  color: white;
+  margin: 0 0 20px 0;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  letter-spacing: -1px;
 }
 
-.view-btn svg {
-  width: 18px;
-  height: 18px;
+.hero-description {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 40px 0;
+  line-height: 1.6;
 }
 
-/* Videos Section */
-.videos-section {
-  margin-bottom: 80px;
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
 }
 
-/* Video Grid */
-.videos-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 32px;
-  align-items: stretch; /* 让所有卡片高度一致 */
-}
-
-.video-card {
-  background: linear-gradient(135deg, rgba(35, 43, 62, 0.95) 0%, rgba(24, 31, 42, 0.9) 100%);
-  border-radius: 24px;
-  overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 8px 32px rgba(24, 31, 42, 0.4);
+.hero-stat-badge {
+  padding: 20px 40px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   display: flex;
   flex-direction: column;
-  height: 100%; /* 确保卡片填满网格高度 */
+  align-items: center;
+  gap: 8px;
+  min-width: 150px;
 }
 
-.video-card:hover {
-  transform: translateY(-12px) scale(1.02);
+.hero-stat-badge.vip {
+  background: rgba(255, 215, 0, 0.2);
   border-color: rgba(255, 215, 0, 0.4);
-  box-shadow: 0 20px 60px rgba(255, 215, 0, 0.15), 0 8px 32px rgba(24, 31, 42, 0.6);
 }
 
-/* Video Thumbnail */
-.video-thumbnail {
-  position: relative;
-  height: 220px;
+.stat-number {
+  font-size: 36px;
+  font-weight: 800;
+  color: white;
+}
+
+.stat-text {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* 内容区域 */
+.video-content-area {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 60px 40px;
+}
+
+/* 侧边栏 */
+.video-sidebar {
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+
+.sidebar-section {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 30px;
+  box-shadow: var(--shadow-md);
+}
+
+.sidebar-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 24px 0;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-align: left;
+}
+
+.filter-option:hover {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.3);
+  color: var(--text-primary);
+  transform: translateX(4px);
+}
+
+.filter-option.active {
+  background: var(--primary-gradient);
+  border-color: transparent;
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.filter-icon {
+  font-size: 20px;
+  width: 24px;
+  text-align: center;
+}
+
+/* 主内容区域 */
+.video-main-area {
+  min-width: 0;
+}
+
+.video-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.video-item {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
   overflow: hidden;
+  transition: all var(--transition-base);
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+}
+
+.video-item:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.video-preview-container {
+  flex-shrink: 0;
+  width: 320px;
   cursor: pointer;
 }
 
-.video-player {
+.video-preview-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.video-preview {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
 }
 
-.video-card:hover .video-player {
-  transform: scale(1.05);
-}
-
-.play-overlay {
+.video-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity var(--transition-base);
   pointer-events: none;
 }
 
-.video-thumbnail:hover .play-overlay {
+.video-preview-wrapper:hover .video-overlay {
   opacity: 1;
 }
 
-.play-overlay.playing {
+.video-overlay.playing {
   opacity: 1;
   background: rgba(0, 0, 0, 0.2);
 }
 
-.play-button {
-  width: 80px;
-  height: 80px;
-  background: rgba(255, 215, 0, 0.9);
+.play-indicator {
+  width: 70px;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transform: scale(0.8);
-  transition: all 0.3s ease;
+  color: var(--color-primary);
+  transform: scale(0.9);
+  transition: transform var(--transition-base);
 }
 
-.play-overlay:hover .play-button {
+.video-preview-wrapper:hover .play-indicator {
   transform: scale(1);
-  background: #FFD700;
 }
 
-.play-button svg {
-  width: 32px;
-  height: 32px;
-  margin-left: 4px;
+.play-indicator svg {
+  width: 28px;
+  height: 28px;
 }
 
-.vip-badge {
+.video-vip-tag {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-  color: #181F2A;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 900;
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.4);
-}
-
-.vip-badge svg {
-  width: 16px;
-  height: 16px;
-}
-
-.video-duration {
-  position: absolute;
-  bottom: 16px;
-  right: 16px;
-  background: rgba(0, 0, 0, 0.8);
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   color: white;
   padding: 6px 12px;
-  border-radius: 12px;
-  font-size: 0.9rem;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+.video-vip-tag svg {
+  width: 14px;
+  height: 14px;
+}
+
+.video-duration-badge {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
   font-weight: 600;
 }
 
-/* Video Info */
-.video-info {
-  padding: 32px;
-  flex: 1; /* 让信息区域占用剩余空间 */
+.video-details {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 16px;
+  min-width: 0;
 }
 
-.video-title {
-  font-size: 1.4rem;
+.video-header-info {
+  flex: 1;
+}
+
+.video-name {
+  font-size: 22px;
   font-weight: 700;
-  color: #fff;
-  margin-bottom: 16px;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
   line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 3.6rem; /* 固定标题高度 */
 }
 
-.video-description {
-  color: #b0c4e6;
+.video-summary {
+  font-size: 15px;
+  color: var(--text-secondary);
   line-height: 1.6;
-  margin-bottom: 24px;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  flex: 1; /* 让描述区域填充剩余空间 */
-  min-height: 4.8rem; /* 固定描述最小高度 */
+  margin: 0;
 }
 
-.video-meta {
+.video-footer-info {
   display: flex;
-  gap: 24px;
-  margin-bottom: 24px;
-  min-height: 2.5rem; /* 固定元数据区域高度 */
-  align-items: flex-start;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
 }
 
-.meta-item {
+.video-meta-info {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.meta-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.meta-tag svg {
+  width: 14px;
+  height: 14px;
+}
+
+.video-action-button {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #b0c4e6;
-  font-size: 0.9rem;
-}
-
-.meta-item svg {
-  width: 16px;
-  height: 16px;
-}
-
-/* Video Actions */
-.video-actions {
-  display: flex;
-  justify-content: center;
-  padding: 0 32px 32px 32px;
-  margin-top: auto; /* 将按钮推到底部 */
-}
-
-.watch-btn {
-  padding: 12px 32px;
-  border-radius: 25px;
+  padding: 12px 24px;
+  background: var(--primary-gradient);
   border: none;
-  font-weight: 700;
-  font-size: 1rem;
+  border-radius: var(--border-radius);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: all 0.3s ease;
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-  color: #181F2A;
-  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.3);
-  min-width: 140px;
-  justify-content: center;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
 }
 
-.watch-btn svg {
+.video-action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.video-action-button svg {
   width: 18px;
   height: 18px;
 }
 
-.watch-btn:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 24px rgba(255, 215, 0, 0.4);
-  background: linear-gradient(135deg, #FFE033 0%, #FFB347 100%);
-}
-
-/* Responsive Design */
+/* 响应式设计 */
 @media (max-width: 1024px) {
-  .videos-grid {
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 24px;
+  .video-content-area {
+    grid-template-columns: 240px 1fr;
+    gap: 30px;
+    padding: 40px 30px;
   }
   
-  .page-title {
-    font-size: 2.2rem;
-  }
-  
-  .filter-section {
-    padding: 16px 24px;
+  .video-preview-container {
+    width: 280px;
   }
 }
 
 @media (max-width: 768px) {
-  .main-content {
-    padding: 0 16px 60px 16px;
+  .video-hero-banner {
+    padding: 60px 24px;
   }
   
-  .page-header {
-    flex-direction: column;
-    gap: 20px;
-    align-items: flex-start;
-    margin: 20px 0 24px 0;
+  .hero-title {
+    font-size: 40px;
   }
   
-  .header-left {
-    width: 100%;
+  .hero-description {
+    font-size: 18px;
   }
   
-  .page-title {
-    font-size: 2rem;
+  .hero-stats {
+    gap: 16px;
   }
   
-  .page-subtitle {
-    font-size: 1.1rem;
+  .hero-stat-badge {
+    padding: 16px 24px;
+    min-width: 120px;
   }
   
-  .header-right {
-    align-self: flex-end;
+  .stat-number {
+    font-size: 28px;
   }
   
-  .filter-section {
-    flex-direction: column;
-    gap: 20px;
-    padding: 20px;
+  .video-content-area {
+    grid-template-columns: 1fr;
+    padding: 30px 20px;
   }
   
-  .filter-tabs {
-    align-self: stretch;
+  .video-sidebar {
+    position: static;
+  }
+  
+  .filter-group {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .filter-option {
+    flex: 1;
+    min-width: 120px;
     justify-content: center;
   }
   
-  .view-options {
-    align-self: center;
+  .video-item {
+    flex-direction: column;
+    padding: 20px;
   }
   
-  .videos-grid {
-    grid-template-columns: 1fr;
+  .video-preview-container {
+    width: 100%;
   }
   
-  .watch-btn {
-    min-width: 120px;
+  .video-footer-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .video-action-button {
+    width: 100%;
+    justify-content: center;
   }
 }
 
 @media (max-width: 480px) {
-  .header-left {
-    gap: 16px;
+  .hero-title {
+    font-size: 32px;
   }
   
-  .page-icon {
-    width: 56px;
-    height: 56px;
+  .hero-description {
+    font-size: 16px;
   }
   
-  .page-icon svg {
-    width: 28px;
-    height: 28px;
+  .hero-stat-badge {
+    padding: 12px 20px;
+    min-width: 100px;
   }
   
-  .page-title {
-    font-size: 1.8rem;
+  .stat-number {
+    font-size: 24px;
   }
   
-  .page-subtitle {
-    font-size: 1rem;
+  .video-content-area {
+    padding: 20px 16px;
   }
   
-  .stats-summary {
-    font-size: 1rem;
-  }
-  
-  .filter-section {
+  .video-item {
     padding: 16px;
   }
   
-  .filter-tabs {
-    flex-direction: column;
-    gap: 6px;
+  .video-name {
+    font-size: 18px;
   }
   
-  .filter-tab {
-    padding: 10px 20px;
-  }
-  
-  .video-info {
-    padding: 24px;
-  }
-  
-  .watch-btn {
-    min-width: 100px;
-    font-size: 0.9rem;
-    padding: 10px 24px;
+  .video-summary {
+    font-size: 14px;
   }
 }
 </style>

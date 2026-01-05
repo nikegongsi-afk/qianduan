@@ -29,188 +29,477 @@
       </div>
     </nav> -->
 
-    <div class="container">
-      <!-- Profile Section -->
-      <div class="profile-section mb-5">
-        <div class="profile-header">
-          <div class="profile-main">
-            <div class="profile-avatar" @click="openAvatarPreview">
-              <img :src="trader_profiles.profile_image_url" alt="Avatar" class="avatar-img">
-              <div class="online-status"></div>
-              <button class="avatar-upload" @click.stop="triggerAvatarUpload">
-                <i class="bi bi-camera-fill"></i>
+    <!-- 移动端抖音风格布局 -->
+    <div class="mobile-profile-hero" v-if="isMobile">
+      <!-- 顶部背景区域 -->
+      <div class="mobile-profile-header">
+        <div class="mobile-profile-bg"></div>
+        <div class="mobile-profile-content">
+          <!-- 头像和基本信息 -->
+          <div class="mobile-profile-top">
+            <div class="mobile-avatar-wrapper" @click="openAvatarPreview">
+              <img :src="trader_profiles.profile_image_url" alt="Avatar" class="mobile-avatar-img">
+              <div class="avatar-badge">✓</div>
+            </div>
+            <div class="mobile-profile-basic">
+              <h1 class="mobile-name-large">{{trader_profiles.trader_name}}</h1>
+              <div class="mobile-id-row">
+                <span class="mobile-id-text">ID: {{trader_profiles.id || 'trader'}}</span>
+                <button class="copy-id-btn" @click="copyId">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
               </button>
+            </div>
+                </div>
+                </div>
+          
+          <!-- 统计数据 -->
+          <div class="mobile-stats-row">
+            <div class="mobile-stat-item">
+              <div class="stat-number-large" :class="{ 'positive': Total >= 0, 'negative': Total < 0 }">
+                {{ Total>=0 ? '+':'' }}${{formatCurrency(Total)}}
+                </div>
+              <div class="stat-label-small">Total P&L</div>
+              </div>
+            <div class="mobile-stat-item">
+              <div class="stat-number-large" :class="{ 'positive': Monthly >= 0, 'negative': Monthly < 0 }">
+                {{ Monthly>=0 ? '+':'' }}${{formatCurrency(Monthly)}}
+            </div>
+              <div class="stat-label-small">Monthly P&L</div>
+          </div>
+            <div class="mobile-stat-item">
+              <div class="stat-number-large">{{ Activecount }}</div>
+              <div class="stat-label-small">Active</div>
+              </div>
+              </div>
+          
+          <!-- 简介 -->
+          <div class="mobile-bio-section">
+            <div class="mobile-bio-title">{{trader_profiles.professional_title}}</div>
+            <div class="mobile-bio-text" v-if="trader_profiles.bio">{{trader_profiles.bio}}</div>
+            </div>
+          
+          <!-- 操作按钮 -->
+          <div class="mobile-action-buttons">
+            <button class="mobile-follow-btn">
+              <span>+ 关注</span>
+            </button>
+            <button class="mobile-message-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </button>
+              </div>
+              </div>
+            </div>
+              </div>
+
+    <!-- 全新的网格布局系统 -->
+    <div class="modern-home-layout">
+      <!-- 左侧边栏 - 交易员资料（桌面端） -->
+      <aside class="trader-sidebar" :class="{ 'mobile-hidden': isMobile }">
+        <div class="trader-card">
+          <div class="trader-avatar-wrapper" @click="openAvatarPreview">
+            <img :src="trader_profiles.profile_image_url" alt="Avatar" class="trader-avatar">
+            <div class="avatar-overlay">
+              <button class="avatar-edit-btn" @click.stop="triggerAvatarUpload">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+            </div>
               <input type="file" ref="avatarUpload" class="avatar-upload-input" accept="image/*" @change="handleAvatarUpload">
             </div>
-            <div class="profile-details">
-              <h1 class="profile-name">{{trader_profiles.trader_name}}</h1>
-              <div class="profile-title">{{trader_profiles.professional_title}}</div>
-              <div class="profile-stats">
-                <div class="stat-item">
-                  <span class="stat-value">{{trader_profiles.years_of_experience}}</span>
-                  <span class="stat-label">Years of Experience</span>
+          
+          <div class="trader-info">
+            <h2 class="trader-name">{{trader_profiles.trader_name}}</h2>
+            <p class="trader-title">{{trader_profiles.professional_title}}</p>
+            
+            <div class="trader-metrics">
+              <div class="metric-item">
+                <div class="metric-icon" :style="{ background: Total >= 0 ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                  </svg>
                 </div>
-                <div class="stat-item">
-                  <span class="stat-value">{{trader_profiles.total_trades}}</span>
-                  <span class="stat-label">Total Trades</span>
-                </div>
-                <div class="stat-item">
-                  <span class="stat-value">{{trader_profiles.win_rate}}%</span>
-                  <span class="stat-label">Win Rate</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="profile-performance">
-            <div class="performance-card">
-              <div class="performance-header">
-                <i class="bi bi-briefcase"></i>
-                <span>Active Positions</span>
-              </div>
-              <div class="performance-value">
-                {{ Activecount }}
-              </div>
-            </div>
-            <div class="performance-card">
-              <div class="performance-header">
-                <i class="bi bi-calendar-check"></i>
-                <span>Monthly P&L</span>
-              </div>
-              <div class="performance-value" :class="{ 'profit-positive': Monthly >= 0, 'profit-negative': Monthly < 0 }">
-                {{ Monthly>=0 ? '+':'' }}${{formatCurrency(Monthly)}}
-              </div>
-            </div>
-            <div class="performance-card">
-              <div class="performance-header">
-                <i class="bi bi-graph-up"></i>
-                <span>Total P&L</span>
-              </div>
-              <div class="performance-value" :class="{ 'profit-positive': Total >= 0, 'profit-negative': Total < 0 }">
+                <div class="metric-content">
+                  <div class="metric-value" :class="{ 'positive': Total >= 0, 'negative': Total < 0 }">
                  {{ Total>=0 ? '+':'' }}${{formatCurrency(Total)}}
               </div>
+                  <div class="metric-label">Total P&L</div>
+                </div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-icon" :style="{ background: Monthly >= 0 ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+            </div>
+                <div class="metric-content">
+                  <div class="metric-value" :class="{ 'positive': Monthly >= 0, 'negative': Monthly < 0 }">
+                    {{ Monthly>=0 ? '+':'' }}${{formatCurrency(Monthly)}}
+          </div>
+                  <div class="metric-label">Monthly P&L</div>
+              </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Strategy Update Section -->
-        <div class="strategy-update" >
-          <div class="strategy-header">
-            <h3><i class="bi bi-lightbulb glow-bulb"></i> Today's Trading Strategy</h3>
-            <span class="update-time">Updated at: {{formatUSTime(strategy_info.updated_at)}}</span>
+        <!-- 快速统计卡片 -->
+          <div class="quick-stats">
+          <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="8.5" cy="7" r="4"></circle>
+                <path d="M20 8v6M23 11l-3 3-3-3"></path>
+              </svg>
           </div>
-          <div class="strategy-content">
-            <div class="market-analysis">
-              <h4>Market Analysis</h4>
-              <p>
-                {{strategy_info.market_analysis}}
-              </p>
-               <audio id="audioPlayer" :src="strategy_info.analysis_path" controls v-if="strategy_info.analysis_path &&strategy_info.stype==1"></audio>
-               <video :src="strategy_info.analysis_path" controls="" style="width:100%;height:280px;border-radius:12px;background:#232e4a;" v-if="strategy_info.analysis_path &&strategy_info.stype==2"></video>
+            <div class="stat-info">
+              <div class="stat-label">Active</div>
+              <div class="stat-number">{{ Activecount }}</div>
             </div>
-            <div class="trading-focus">
-              <h4>Focus Areas</h4>
-              <ul>
-                <li v-for="(value, index) in strategy_info.trading_focus" :key="index">
-                  {{value}}
-                </li>
-              </ul>
             </div>
-            <div class="risk-warning">
-              <h4>Risk Warning</h4>
-              <p> {{strategy_info.risk_warning}}</p>
-               <audio id="audioPlayer" :src="strategy_info.warn_path" controls v-if="strategy_info.warn_path &&strategy_info.warntype==1"></audio>
-               <video :src="strategy_info.warn_path" controls="" style="width:100%;height:280px;border-radius:12px;background:#232e4a;" v-if="strategy_info.warn_path &&strategy_info.warntype==2"></video>
+          
+          <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
             </div>
+            <div class="stat-info">
+              <div class="stat-label">Years</div>
+              <div class="stat-number">{{trader_profiles.years_of_experience}}</div>
+          </div>
+        </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+          </div>
+            <div class="stat-info">
+              <div class="stat-label">Trades</div>
+              <div class="stat-number">{{trader_profiles.total_trades}}</div>
+        </div>
+      </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="12 6 16 14 8 14"></polygon>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Win Rate</div>
+              <div class="stat-number">{{trader_profiles.win_rate}}%</div>
           </div>
         </div>
       </div>
 
-      <!-- Trading Record Divider -->
-      <div class="trade-separator">
-        <h3><i class="bi bi-clipboard-data"></i> Trading Records (Last 3 Months)</h3>
-        <div class="divider-line"></div>
+        <!-- 全新的快速操作栏 -->
+        <div class="quick-actions">
+          <a href="/leaderboard" class="action-button leaderboard-btn">
+            <div class="action-icon-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 9H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V11a2 2 0 0 0-2-2h-2"></path>
+                <rect x="6" y="1" width="12" height="8" rx="2"></rect>
+              </svg>
       </div>
-
-      <!-- Stock Trading Cards - Active Trades -->
-     
-      <div class="row">
-        <div class="col-md-6 col-lg-4" v-for="value in trades" :key="value.id || value.symbol">
-          <div class="card">
-            <div class="stock-info">
-              <div class="country-badge-container">
-                <span class="country-badge" :class="getCountryClass(value.trade_market)">
-                  <span class="country-flag">{{ getCountryFlag(value.trade_market) }}</span>
-                  <span class="country-text">{{(value.trade_market || '').toUpperCase()}}</span>
-                </span>
-              </div>
-              <div class="stock-center">
-                <div class="stock-symbol">{{value.symbol || '-'}}</div>
-              </div>
-              <div class="status-badge-container">
-                <span class="status-badge-enhanced" :class="getStatusClass(value.status, value.Ratio)">
-                  <span class="status-icon">{{ getStatusIcon(value.status) }}</span>
-                  <span class="status-text">{{getStatusText(value.status, value.Ratio)}}</span>
-                </span>
-              </div>
+            <div class="action-content">
+              <div class="action-label">Leaderboard</div>
+              <div class="action-subtitle">View Rankings</div>
             </div>
+          </a>
 
-            <img :src="value.image_url || ''" alt="AAPL" class="trade-screenshot" @click="openImageModal(value.symbol,value.image_url)" v-if="value.image_url">
-            
-            <div class="secondary-info">
-              <div class="secondary-info-item" >
-                <span class="secondary-info-label">Entry Date</span>
-                <span class="secondary-info-value">{{formatUSDate(value.entry_date)}}</span>
+          <a href="/vip" class="action-button vip-btn">
+            <div class="action-icon-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+              </svg>
+              </div>
+            <div class="action-content">
+              <div class="action-label">VIP Center</div>
+              <div class="action-value" id="vip-count">{{trader_profiles.members_count || 0}} Members</div>
+              </div>
+          </a>
+
+          <button class="action-button likes-btn" id="like-badge" @click="handleLikeClick">
+            <div class="action-icon-wrapper" id="like-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+              </div>
+            <div class="action-content">
+              <div class="action-label">Likes</div>
+              <div class="action-value" id="likes-count">{{ formatLikesCount(likesCount || trader_profiles.likes_count) }}</div>
+            </div>
+          </button>
+        </div>
+      </aside>
+
+      <!-- 主内容区域 -->
+      <main class="main-content">
+
+        <!-- 交易策略标签页 -->
+        <section class="strategy-section">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="title-icon">💡</span>
+              Trading Strategy
+            </h2>
+            <div class="update-badge">
+              <span class="badge-dot"></span>
+              Updated: {{formatUSTime(strategy_info.updated_at)}}
+              </div>
               </div>
               
-              <div class="secondary-info-item">
-                <span class="secondary-info-label">Entry Price</span>
-                <span class="secondary-info-value">{{value.currency}}{{formatCurrency(value.entry_price)}}</span>
+          <div class="strategy-tabs">
+            <button 
+              v-for="(tab, index) in strategyTabs" 
+              :key="index"
+              class="tab-button"
+              :class="{ active: activeTab === index }"
+              @click="activeTab = index"
+            >
+              {{ tab.label }}
+            </button>
               </div>
-              <div class="secondary-info-item" v-if="value.status == 'Active'">
-                <span class="secondary-info-label">Current Price</span>
-                <span class="secondary-info-value">{{value.currency}}{{formatCurrency(value.current_price)}}</span>
+
+          <div class="strategy-content-wrapper">
+            <!-- 市场分析标签页 -->
+            <div v-show="activeTab === 0" class="strategy-panel">
+              <div class="panel-header">
+                <h3>Market Analysis</h3>
               </div>
-              <div class="secondary-info-item" v-else>
-                <span class="secondary-info-label">Exit Date</span>
-                <span class="secondary-info-value">{{formatUSDate(value.exit_date)}}</span>
+              <div class="panel-body">
+                <p class="analysis-text">{{strategy_info.market_analysis}}</p>
+                <div class="media-container" v-if="strategy_info.analysis_path">
+                  <audio v-if="strategy_info.stype==1" :src="strategy_info.analysis_path" controls class="media-player"></audio>
+                  <video v-if="strategy_info.stype==2" :src="strategy_info.analysis_path" controls class="media-player"></video>
               </div>
-              <div class="secondary-info-item" v-if="value.status == 'Active'">
-                <span class="secondary-info-label">Quantity</span>
-                <span class="secondary-info-value">{{formatQuantity(value.size)}}</span>
               </div>
-              <div class="secondary-info-item" v-else>
-                <span class="secondary-info-label">Exit Price</span>
-                <span class="secondary-info-value">{{value.currency}}{{formatCurrency(value.exit_price)}}</span>
+              </div>
+              
+            <!-- 交易重点标签页 -->
+            <div v-show="activeTab === 1" class="strategy-panel">
+              <div class="panel-header">
+                <h3>Focus Areas</h3>
+              </div>
+              <div class="panel-body">
+                <div class="focus-grid">
+                  <div v-for="(value, index) in strategy_info.trading_focus" :key="index" class="focus-item">
+                    <div class="focus-icon">{{ index + 1 }}</div>
+                    <div class="focus-text">{{value}}</div>
+              </div>
+              </div>
               </div>
             </div>
 
-            <div class="main-stats">
-              <div class="main-stat-item">
-                <div class="main-stat-label">Entry Amount</div>
-                <div class="main-stat-value">{{value.currency || ''}}{{formatCurrency((value.entry_price || 0) * (value.size || 0))}}</div>
-               
+            <!-- 风险警告标签页 -->
+            <div v-show="activeTab === 2" class="strategy-panel">
+              <div class="panel-header">
+                <h3>Risk Warning</h3>
+            </div>
+              <div class="panel-body">
+                <div class="warning-box">
+                  <div class="warning-icon">⚠️</div>
+                  <p class="warning-text">{{strategy_info.risk_warning}}</p>
+                </div>
+                <div class="media-container" v-if="strategy_info.warn_path">
+                  <audio v-if="strategy_info.warntype==1" :src="strategy_info.warn_path" controls class="media-player"></audio>
+                  <video v-if="strategy_info.warntype==2" :src="strategy_info.warn_path" controls class="media-player"></video>
+                </div>
               </div>
-              <div class="main-stat-item">
-                <div class="main-stat-label">Market Value</div>
-                <div class="main-stat-value">{{value.currency || ''}}{{formatCurrency(value.Market_Value || 0)}}</div>
-               
+            </div>
+          </div>
+        </section>
+
+        <!-- 交易记录区域 - 全新的表格式布局 -->
+        <section class="trades-section">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="title-icon">📈</span>
+              Trading Records
+            </h2>
+            <div class="view-toggle">
+              <button class="view-btn" :class="{ active: viewMode === 'grid' }" @click="viewMode = 'grid'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+              </button>
+              <button class="view-btn" :class="{ active: viewMode === 'table' }" @click="viewMode = 'table'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="8" y1="6" x2="21" y2="6"></line>
+                  <line x1="8" y1="12" x2="21" y2="12"></line>
+                  <line x1="8" y1="18" x2="21" y2="18"></line>
+                  <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                  <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                  <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+              </button>
               </div>
-              <div class="main-stat-item">
-                <div class="main-stat-label" >P&L Ratio</div>
-                <div :class="['main-stat-value',(value.Ratio || 0) > 0? 'profit-positive': 'profit-negative']">{{value.Ratio || 0}}%</div>
-               
+          </div>
+
+          <!-- 网格视图 -->
+          <div v-if="viewMode === 'grid'" class="trades-grid">
+            <div v-for="value in trades" :key="value.id || value.symbol" class="trade-card-modern">
+              <div class="trade-card-header">
+                <div class="trade-symbol-section">
+                  <div class="symbol-badge">{{value.symbol || '-'}}</div>
+                  <div class="market-tag" :class="getCountryClass(value.trade_market)">
+                    {{(value.trade_market || '').toUpperCase()}}
               </div>
-              <div class="main-stat-item">
-                <div class="main-stat-label">P&L Amount</div>
-                <div :class="['main-stat-value',(value.Ratio || 0) > 0? 'profit-positive': 'profit-negative']">{{value.currency || ''}}{{formatCurrency(value.Amount || 0)}}</div>
-               
+                </div>
+                <div class="status-indicator" :class="getStatusClass(value.status, value.Ratio)">
+                  <span class="status-dot"></span>
+                  <span class="status-label">{{getStatusText(value.status, value.Ratio)}}</span>
+                </div>
               </div>
+
+              <div class="trade-image-wrapper" v-if="value.image_url" @click="openImageModal(value.symbol,value.image_url)">
+                <img :src="value.image_url" alt="Chart" class="trade-image">
+                <div class="image-overlay">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+              </div>
+              </div>
+               
+              <div class="trade-details-grid">
+                <div class="detail-cell">
+                  <span class="detail-label">Entry</span>
+                  <span class="detail-value">{{formatUSDate(value.entry_date)}}</span>
+              </div>
+                <div class="detail-cell">
+                  <span class="detail-label">Entry Price</span>
+                  <span class="detail-value">{{value.currency}}{{formatCurrency(value.entry_price)}}</span>
+            </div>
+                <div class="detail-cell" v-if="value.status == 'Active'">
+                  <span class="detail-label">Current</span>
+                  <span class="detail-value">{{value.currency}}{{formatCurrency(value.current_price)}}</span>
+                </div>
+                <div class="detail-cell" v-else>
+                  <span class="detail-label">Exit</span>
+                  <span class="detail-value">{{formatUSDate(value.exit_date)}}</span>
+                </div>
+                <div class="detail-cell" v-if="value.status == 'Active'">
+                  <span class="detail-label">Qty</span>
+                  <span class="detail-value">{{formatQuantity(value.size)}}</span>
+                </div>
+                <div class="detail-cell" v-else>
+                  <span class="detail-label">Exit Price</span>
+                  <span class="detail-value">{{value.currency}}{{formatCurrency(value.exit_price)}}</span>
+          </div>
+        </div>
+
+              <div class="trade-performance">
+                <div class="performance-row">
+                  <div class="perf-item">
+                    <span class="perf-label">Entry Amount</span>
+                    <span class="perf-value">{{value.currency || ''}}{{formatCurrency((value.entry_price || 0) * (value.size || 0))}}</span>
+              </div>
+                  <div class="perf-item">
+                    <span class="perf-label">Market Value</span>
+                    <span class="perf-value">{{value.currency || ''}}{{formatCurrency(value.Market_Value || 0)}}</span>
+                  </div>
+                </div>
+                <div class="performance-row highlight">
+                  <div class="perf-item">
+                    <span class="perf-label">P&L Ratio</span>
+                    <span class="perf-value" :class="(value.Ratio || 0) > 0 ? 'profit' : 'loss'">
+                      {{value.Ratio || 0}}%
+                    </span>
+                  </div>
+                  <div class="perf-item">
+                    <span class="perf-label">P&L Amount</span>
+                    <span class="perf-value" :class="(value.Ratio || 0) > 0 ? 'profit' : 'loss'">
+                      {{value.currency || ''}}{{formatCurrency(value.Amount || 0)}}
+                    </span>
+                  </div>
+                </div>
             </div>
           </div>
         </div>
 
-       
+          <!-- 表格视图 -->
+          <div v-if="viewMode === 'table'" class="trades-table-wrapper">
+            <table class="trades-table">
+              <thead>
+                <tr>
+                  <th>Symbol</th>
+                  <th>Market</th>
+                  <th>Status</th>
+                  <th>Entry Date</th>
+                  <th>Entry Price</th>
+                  <th v-if="trades.some(t => t.status === 'Active')">Current Price</th>
+                  <th>Exit Date</th>
+                  <th>P&L Ratio</th>
+                  <th>P&L Amount</th>
+                  <th>Chart</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="value in trades" :key="value.id || value.symbol" class="trade-row">
+                  <td class="symbol-cell">
+                    <strong>{{value.symbol || '-'}}</strong>
+                  </td>
+                  <td>
+                    <span class="market-badge" :class="getCountryClass(value.trade_market)">
+                      {{(value.trade_market || '').toUpperCase()}}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="status-badge" :class="getStatusClass(value.status, value.Ratio)">
+                      {{getStatusText(value.status, value.Ratio)}}
+                    </span>
+                  </td>
+                  <td>{{formatUSDate(value.entry_date)}}</td>
+                  <td>{{value.currency}}{{formatCurrency(value.entry_price)}}</td>
+                  <td v-if="trades.some(t => t.status === 'Active')">
+                    <span v-if="value.status == 'Active'">{{value.currency}}{{formatCurrency(value.current_price)}}</span>
+                    <span v-else>-</span>
+                  </td>
+                  <td>{{value.exit_date ? formatUSDate(value.exit_date) : '-'}}</td>
+                  <td>
+                    <span class="pnl-ratio" :class="(value.Ratio || 0) > 0 ? 'profit' : 'loss'">
+                      {{value.Ratio || 0}}%
+                    </span>
+                  </td>
+                  <td>
+                    <span class="pnl-amount" :class="(value.Ratio || 0) > 0 ? 'profit' : 'loss'">
+                      {{value.currency || ''}}{{formatCurrency(value.Amount || 0)}}
+                    </span>
+                  </td>
+                  <td>
+                    <button v-if="value.image_url" @click="openImageModal(value.symbol,value.image_url)" class="chart-btn">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
       </div>
+        </section>
+      </main>
     </div>
 
     <!-- Floating Contact Button -->
@@ -222,6 +511,39 @@
      <!-- Redirect Message -->
     <div class="redirect-message" v-show="showContactPopup">
         <span class="text">Redirecting to WhatsApp Community</span><span class="dots"></span>
+    </div>
+    
+    <!-- 移动端底部快速操作栏 -->
+    <div class="mobile-bottom-actions" v-if="isMobile">
+      <a href="/leaderboard" class="mobile-bottom-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V11a2 2 0 0 0-2-2h-2"></path>
+          <rect x="6" y="1" width="12" height="8" rx="2"></rect>
+        </svg>
+        <span>Ranking</span>
+      </a>
+      
+      <a href="/vip" class="mobile-bottom-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+        </svg>
+        <span>VIP</span>
+      </a>
+      
+      <button class="mobile-bottom-btn" id="mobile-like-btn" @click="handleLikeClick">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ 'liked': isLiked }">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+        <span>Likes</span>
+        <span class="mobile-like-count">{{ formatLikesCount(likesCount || trader_profiles.likes_count) }}</span>
+      </button>
+      
+      <button class="mobile-bottom-btn" @click="toggleContactPopup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+        </svg>
+        <span>Community</span>
+      </button>
     </div>
     <!-- Contact Popup
     <div class="contact-popup" v-show="showContactPopup">
@@ -270,58 +592,6 @@
       </div>
     </div>
      <!-- Avatar Preview Modal -->
-    <div class="profile-badges-floating">
-        <a href="/leaderboard" style="text-decoration: none; color: inherit;">
-            <div class="badge-item" style="cursor:pointer;">
-                <div class="badge-row">
-                    <span class="badge-icon-container">
-                        <span class="badge-icon">
-                            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="trophyGold" x1="6" y1="7" x2="16" y2="14" gradientUnits="userSpaceOnUse">
-                                        <stop stop-color="#FFD700"/>
-                                        <stop offset="1" stop-color="#FFA500"/>
-                                    </linearGradient>
-                                </defs>
-                                <ellipse cx="11" cy="20" rx="7" ry="2" fill="#FFD700" opacity="0.18"/>
-                                <path d="M6 7C6 4 16 4 16 7C16 10 14 14 11 14C8 14 6 10 6 7Z" fill="url(#trophyGold)" stroke="#FFD700" stroke-width="1.2"/>
-                                <rect x="9" y="14" width="4" height="3" rx="1" fill="#FFD700" stroke="#FFD700" stroke-width="1"/>
-                            </svg>
-                        </span>
-                        <span class="badge-label">LB</span>
-                    </span>
-                </div>
-                
-            </div>
-        </a>
-        <a href="/vip" style="text-decoration: none; color: inherit;">
-            <div class="badge-item" style="cursor:pointer;">
-                <div class="badge-row">
-                    <image src="@assets" alt="VIP" class="badge-icon" />
-                    <span class="badge-label">VIP</span>
-                </div>
-                <span class="badge-value-vip" id="vip-count">{{trader_profiles.members_count}}</span>
-            </div>
-        </a>
-        <div class="badge-item" id="like-badge" style="cursor:pointer;" @click="handleLikeClick">
-            <div class="badge-row">
-                <span class="badge-icon-svg" id="like-icon">
-                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-                        <defs>
-                            <linearGradient id="likeGold" x1="0" y1="0" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                                <stop stop-color="#FFD700"/>
-                                <stop offset="1" stop-color="#FFB300"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M6 10V18C6 18.55 6.45 19 7 19H13C13.55 19 14 18.55 14 18V10" stroke="url(#likeGold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M10 19V7.5C10 6.12 11.12 5 12.5 5C13.88 5 15 6.12 15 7.5V10" stroke="url(#likeGold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </span>
-                <span class="badge-label">Likes</span>
-            </div>
-            <span class="badge-value-alt" id="likes-count">{{(trader_profiles.likes_count/ 1000).toFixed(1) + 'K'}}</span>
-        </div>
-    </div>
     
     <!-- Welcome Popup Modal -->
     <div class="modal fade" id="welcomePopupModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -420,7 +690,7 @@
 import navcomponent from '../component/nav/nav.vue'
 import PartnerOrganizations from '@/components/PartnerOrganizations.vue';
 import moment from 'moment';
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { Modal } from 'bootstrap';
 import{getIndexData,get_whatsapp_link,getannouncement,likeTrader} from '../../api/module/web/index'
 import { useUserStore } from '@/store';
@@ -457,8 +727,25 @@ let avatarPreviewModalInstance: Modal | null = null;
 const likesCount = ref(0);
 const isLiked = ref(false);
 const likeIcon = ref<HTMLElement | null>(null);
+// 新的响应式变量
+const activeTab = ref(0);
+const viewMode = ref('grid');
+const isMobile = ref(false);
+const strategyTabs = [
+  { label: 'Market Analysis', icon: '📊' },
+  { label: 'Focus Areas', icon: '🎯' },
+  { label: 'Risk Warning', icon: '⚠️' }
+];
+
+// 检测移动端
+const checkMobile = () => {
+  isMobile.value = window.innerWidth <= 968;
+};
+
 // 初始化加载数据
 onMounted(() => {
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
   try{
   // 检查 indexData 是否已经是对象，如果是则直接使用，否则解析 JSON
   let indexdata;
@@ -563,6 +850,32 @@ onMounted(() => {
   if (trader_profiles.value && trader_profiles.value.likes_count) {
     likesCount.value = trader_profiles.value.likes_count;
   }
+  
+  // 确保点赞数显示正确
+  setTimeout(() => {
+    updateLikeIcon();
+  }, 100);
+});
+
+// 复制ID
+const copyId = () => {
+  const id = trader_profiles.value?.id || 'trader';
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(id.toString()).then(() => {
+      if (window.layer) {
+        window.layer.msg('ID已复制', { icon: 1, time: 1000 });
+      }
+    }).catch(() => {
+      if (window.layer) {
+        window.layer.msg('复制失败', { icon: 2, time: 1000 });
+      }
+    });
+  }
+};
+
+// 清理事件监听
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile);
 });
 
 // 处理点赞点击事件
@@ -624,19 +937,21 @@ const handleLikeClick = async () => {
 
 // 更新点赞图标样式
 const updateLikeIcon = () => {
-  if (likeIcon.value) {
-    // 根据点赞状态更新图标样式
+  const likeButton = document.getElementById('like-badge');
+  if (likeButton) {
     if (isLiked.value) {
-      likeIcon.value.querySelector('path')?.setAttribute('fill', '#FFB300');
+      likeButton.classList.add('active');
     } else {
-      likeIcon.value.querySelector('path')?.removeAttribute('fill');
+      likeButton.classList.remove('active');
     }
   }
   
-  // 更新点赞数显示
+  // 更新点赞数显示 - 优先使用响应式变量
   const likesCountElement = document.getElementById('likes-count');
   if (likesCountElement) {
-    likesCountElement.textContent = (likesCount.value / 1000).toFixed(1) + 'K';
+    // 使用响应式的 likesCount 作为主要数据源
+    const count = likesCount.value || trader_profiles.value?.likes_count || 0;
+    likesCountElement.textContent = formatLikesCount(count);
   }
 };
 // Refs
@@ -816,6 +1131,18 @@ const getindexdata= async()=>{
     
     Monthly.value=res.data.Monthly;
     Total.value=res.data.Total;
+    
+    // 更新点赞数
+    if (res.data.trader_profiles && res.data.trader_profiles.likes_count !== undefined) {
+      likesCount.value = res.data.trader_profiles.likes_count;
+      if (trader_profiles.value) {
+        trader_profiles.value.likes_count = res.data.trader_profiles.likes_count;
+      }
+      // 延迟更新UI，确保DOM已渲染
+      setTimeout(() => {
+        updateLikeIcon();
+      }, 100);
+    }
    
     } else {
       console.warn(`⚠️ [API] API返回失败或数据为空:`, {
@@ -1063,27 +1390,1448 @@ const formatQuantity = (quantity: number | string) => {
   });
 };
 
+// 格式化点赞数
+const formatLikesCount = (count: number | string | undefined) => {
+  if (!count && count !== 0) return '0K';
+  
+  // 转换为数字
+  const num = typeof count === 'string' ? parseFloat(count) : count;
+  
+  if (isNaN(num)) return '0K';
+  
+  // 如果大于1000，显示为K格式
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  
+  // 否则直接显示数字
+  return num.toString();
+};
+
 
 </script>
 
 <style scoped>
 
 :root {
-  --primary-color: #1a1a2e;
-  --secondary-color: #16213e;
-  --accent-color: #4361ee;
-  --success-color: #020202;
-  --danger-color: #e74c3c;
-  --warning-color: #f1c40f;
+  --primary-color: #667eea;
+  --primary-dark: #764ba2;
+  --secondary-color: #fa709a;
+  --accent-color: #00f2fe;
+  --success-color: #10b981;
+  --danger-color: #ef4444;
+  --warning-color: #f59e0b;
   --text-color: #ffffff;
-  --border-color: #2a2a3a;
-  --gold-color: #ffd700;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --gold-color: #f093fb;
 }
 
 .app-container {
-  background-color: #1a1a2e;
+  background: var(--bg-primary);
   min-height: 100vh;
   width: 100%;
+  position: relative;
+}
+
+/* 全新的网格布局系统 */
+.modern-home-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: var(--spacing-xl);
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-md);
+  min-height: calc(100vh - 80px);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 左侧边栏 - 交易员资料 */
+.trader-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+
+.trader-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.trader-avatar-wrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto var(--spacing-lg);
+  cursor: pointer;
+}
+
+.trader-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid transparent;
+  background: var(--primary-gradient);
+  padding: 3px;
+  box-sizing: border-box;
+}
+
+.avatar-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.trader-avatar-wrapper:hover .avatar-overlay {
+  opacity: 1;
+}
+
+.avatar-edit-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.avatar-edit-btn svg {
+  width: 100%;
+  height: 100%;
+}
+
+.trader-info {
+  text-align: center;
+}
+
+.trader-name {
+  font-size: 24px;
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--spacing-sm);
+}
+
+.trader-title {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: var(--spacing-lg);
+}
+
+.trader-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.metric-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--border-radius-sm);
+}
+
+.metric-icon {
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-gradient);
+  border-radius: 10px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.metric-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.5;
+}
+
+.metric-content {
+  flex: 1;
+}
+
+.metric-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.metric-value.positive {
+  color: var(--color-success);
+}
+
+.metric-value.negative {
+  color: var(--color-danger);
+}
+
+.metric-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* 快速统计卡片 */
+.quick-stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.stat-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  transition: all var(--transition-base);
+}
+
+.stat-card:hover {
+  transform: translateX(4px);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.stat-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.stat-icon-wrapper svg {
+  width: 24px;
+  height: 24px;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.stat-number {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-number.positive {
+  color: var(--color-success);
+}
+
+.stat-number.negative {
+  color: var(--color-danger);
+}
+
+/* 主内容区域 */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  width: 100%;
+  min-width: 0;
+  overflow: visible;
+}
+
+/* 策略区域 */
+.strategy-section {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 24px;
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.title-icon {
+  font-size: 28px;
+}
+
+.update-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 6px 12px;
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.strategy-tabs {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tab-button {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+  bottom: -1px;
+}
+
+.tab-button:hover {
+  color: var(--text-primary);
+}
+
+.tab-button.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.strategy-panel {
+  animation: fadeIn 0.3s ease;
+}
+
+.panel-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+  color: var(--text-primary);
+}
+
+.panel-body {
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.analysis-text {
+  margin-bottom: var(--spacing-lg);
+}
+
+.media-container {
+  margin-top: var(--spacing-lg);
+}
+
+.media-player {
+  width: 100%;
+  border-radius: var(--border-radius-sm);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.focus-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.focus-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: var(--border-radius-sm);
+}
+
+.focus-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.focus-text {
+  flex: 1;
+}
+
+.warning-box {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.warning-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.warning-text {
+  flex: 1;
+  color: var(--text-primary);
+}
+
+/* 交易记录区域 */
+.trades-section {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.view-toggle {
+  display: flex;
+  gap: var(--spacing-xs);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.view-btn {
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.view-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.view-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.view-btn.active {
+  background: var(--primary-gradient);
+  color: white;
+}
+
+/* 网格视图 */
+.trades-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-lg);
+}
+
+.trade-card-modern {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  transition: all var(--transition-base);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.trade-card-modern:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.trade-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.trade-symbol-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.symbol-badge {
+  font-size: 20px;
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.market-tag {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--color-primary);
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-indicator.status-active {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+}
+
+.status-indicator.status-active .status-dot {
+  background: var(--color-success);
+}
+
+.status-indicator.status-take-profit {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+}
+
+.status-indicator.status-take-profit .status-dot {
+  background: var(--color-success);
+}
+
+.status-indicator.status-stop-loss {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-danger);
+}
+
+.status-indicator.status-stop-loss .status-dot {
+  background: var(--color-danger);
+}
+
+.trade-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.trade-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  color: white;
+}
+
+.trade-image-wrapper:hover .image-overlay {
+  opacity: 1;
+}
+
+.image-overlay svg {
+  width: 40px;
+  height: 40px;
+}
+
+.trade-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.detail-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.trade-performance {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+}
+
+.performance-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.performance-row.highlight {
+  padding: var(--spacing-sm);
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: var(--border-radius-sm);
+}
+
+.perf-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.perf-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.perf-value {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.perf-value.profit {
+  color: var(--color-success);
+}
+
+.perf-value.loss {
+  color: var(--color-danger);
+}
+
+/* 表格视图 */
+.trades-table-wrapper {
+  margin-top: var(--spacing-lg);
+  overflow-x: auto;
+}
+
+.trades-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent;
+}
+
+.trades-table thead {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.trades-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.trades-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.trade-row:hover {
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.symbol-cell {
+  font-weight: 700;
+}
+
+.market-badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--color-primary);
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.status-badge.status-active {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+}
+
+.status-badge.status-take-profit {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+}
+
+.status-badge.status-stop-loss {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-danger);
+}
+
+.pnl-ratio,
+.pnl-amount {
+  font-weight: 700;
+}
+
+.pnl-ratio.profit,
+.pnl-amount.profit {
+  color: var(--color-success);
+}
+
+.pnl-ratio.loss,
+.pnl-amount.loss {
+  color: var(--color-danger);
+}
+
+.chart-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  color: var(--color-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+}
+
+.chart-btn:hover {
+  background: rgba(102, 126, 234, 0.2);
+  transform: scale(1.1);
+}
+
+.chart-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .modern-home-layout {
+    grid-template-columns: 280px 1fr;
+    gap: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 968px) {
+  /* 显示移动端抖音风格布局 */
+  .mobile-profile-hero {
+    display: block !important;
+    width: 100%;
+  }
+  
+  /* 确保移动端布局正确 */
+  .app-container {
+    padding: 0;
+  }
+  
+  .modern-home-layout {
+    padding: 0;
+    grid-template-columns: 1fr;
+  }
+  
+  /* 桌面端确保主内容显示 */
+  .trader-sidebar.mobile-hidden {
+    display: none;
+  }
+  
+  .main-content {
+    width: 100%;
+    padding: var(--spacing-md);
+  }
+  
+  .mobile-profile-header {
+    position: relative;
+    background: var(--bg-primary);
+    overflow: hidden;
+  }
+  
+  .mobile-profile-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    opacity: 0.3;
+    z-index: 0;
+  }
+  
+  .mobile-profile-content {
+    position: relative;
+    z-index: 1;
+    padding: var(--spacing-lg);
+    padding-top: var(--spacing-xl);
+    background: linear-gradient(to bottom, transparent 0%, var(--bg-primary) 40%);
+  }
+  
+  .mobile-profile-top {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .mobile-avatar-wrapper {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  
+  .mobile-avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid white;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .avatar-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    border: 2px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  
+  .mobile-profile-basic {
+    flex: 1;
+    min-width: 0;
+    padding-top: var(--spacing-xs);
+  }
+  
+  .mobile-name-large {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 var(--spacing-xs) 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .mobile-id-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+  
+  .mobile-id-text {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  
+  .copy-id-btn {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .copy-id-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  /* 统计数据行 */
+  .mobile-stats-row {
+    display: flex;
+    justify-content: space-around;
+    padding: var(--spacing-lg) 0;
+    margin-bottom: var(--spacing-lg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .mobile-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+  }
+  
+  .stat-number-large {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  
+  .stat-number-large.positive {
+    color: var(--color-success);
+  }
+  
+  .stat-number-large.negative {
+    color: var(--color-danger);
+  }
+  
+  .stat-label-small {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  
+  /* 简介区域 */
+  .mobile-bio-section {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .mobile-bio-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .mobile-bio-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  
+  /* 操作按钮 */
+  .mobile-action-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .mobile-follow-btn {
+    flex: 1;
+    padding: var(--spacing-md);
+    background: var(--color-primary);
+    border: none;
+    border-radius: var(--border-radius);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+  
+  .mobile-follow-btn:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+  
+  .mobile-message-btn {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-base);
+  }
+  
+  .mobile-message-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .mobile-message-btn:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.15);
+  }
+  
+  .modern-home-layout {
+    grid-template-columns: 1fr;
+    padding: 0;
+    gap: 0;
+  }
+  
+  /* 隐藏侧边栏 */
+  .trader-sidebar {
+    display: none;
+  }
+  
+  .main-content {
+    padding: var(--spacing-md);
+    padding-bottom: 100px;
+  }
+  
+  /* 交易策略更突出 */
+  .strategy-section.mobile-strategy-prominent {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .strategy-section.mobile-strategy-prominent .section-title {
+    font-size: 22px;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .strategy-section.mobile-strategy-prominent .section-header {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .trades-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  
+  .trades-section {
+    padding: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+  }
+  
+  .section-title {
+    font-size: 20px;
+  }
+}
+
+/* 移动端底部快速操作栏 */
+.mobile-bottom-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: none;
+  background: var(--bg-primary);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-color);
+  padding: var(--spacing-sm) var(--spacing-xs);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 998;
+  gap: var(--spacing-xs);
+}
+
+.mobile-bottom-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--spacing-xs);
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all var(--transition-base);
+  cursor: pointer;
+  position: relative;
+}
+
+.mobile-bottom-btn svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2;
+  transition: all var(--transition-base);
+}
+
+.mobile-bottom-btn:hover,
+.mobile-bottom-btn:active {
+  color: var(--color-primary);
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.mobile-bottom-btn svg.liked {
+  fill: var(--color-danger);
+  stroke: var(--color-danger);
+}
+
+.mobile-like-count {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: -2px;
+}
+
+@media (max-width: 968px) {
+  .mobile-bottom-actions {
+    display: flex;
+  }
+  
+  /* 移动端策略部分更突出 */
+  .strategy-section.mobile-strategy-prominent {
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 2px solid var(--border-color);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    margin-top: var(--spacing-lg);
+  }
+  
+  .strategy-section.mobile-strategy-prominent .section-title {
+    font-size: 24px;
+    font-weight: 800;
+  }
+  
+  .strategy-section.mobile-strategy-prominent .tab-button {
+    font-size: 15px;
+    padding: 14px 20px;
+  }
+  
+  .strategy-section.mobile-strategy-prominent .panel-body {
+    font-size: 15px;
+    line-height: 1.8;
+  }
+}
+
+@media (max-width: 640px) {
+  .modern-home-layout {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-md);
+  }
+  
+  .trader-sidebar {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+  
+  .trader-card {
+    padding: var(--spacing-lg);
+  }
+  
+  .trader-avatar-wrapper {
+    width: 100px;
+    height: 100px;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .trader-name {
+    font-size: 20px;
+  }
+  
+  .trader-title {
+    font-size: 13px;
+  }
+  
+  .trader-metrics {
+    gap: var(--spacing-sm);
+  }
+  
+  .metric-item {
+    padding: var(--spacing-sm);
+  }
+  
+  .metric-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+  
+  .metric-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .metric-value {
+    font-size: 16px;
+  }
+  
+  .quick-stats {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+  
+  .stat-card {
+    padding: var(--spacing-md);
+  }
+  
+  .stat-icon-wrapper {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .stat-icon-wrapper svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .stat-number {
+    font-size: 18px;
+  }
+  
+  .quick-actions {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+  
+  .action-button {
+    padding: var(--spacing-md);
+  }
+  
+  .action-icon-wrapper {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .action-icon-wrapper svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .strategy-section,
+  .trades-section {
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius);
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .section-title {
+    font-size: 18px;
+  }
+  
+  .title-icon {
+    font-size: 22px;
+  }
+  
+  .update-badge {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+  
+  .strategy-tabs {
+    gap: var(--spacing-xs);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .strategy-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .tab-button {
+    padding: 10px 16px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  
+  .panel-header h3 {
+    font-size: 16px;
+  }
+  
+  .focus-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+  
+  .focus-item {
+    padding: var(--spacing-sm);
+  }
+  
+  .focus-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+  
+  .warning-box {
+    padding: var(--spacing-md);
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .trades-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+  
+  .trade-card-modern {
+    padding: var(--spacing-md);
+  }
+  
+  .trade-card-header {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+  
+  .symbol-badge {
+    font-size: 18px;
+  }
+  
+  .trade-image-wrapper {
+    height: 160px;
+  }
+  
+  .trade-details-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xs);
+  }
+  
+  .detail-cell {
+    padding: var(--spacing-xs) 0;
+  }
+  
+  .detail-label {
+    font-size: 10px;
+  }
+  
+  .detail-value {
+    font-size: 13px;
+  }
+  
+  .performance-row {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+  
+  .perf-value {
+    font-size: 14px;
+  }
+  
+  .trades-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .trades-table {
+    min-width: 800px;
+  }
+  
+  .trades-table th,
+  .trades-table td {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+  
+  .trades-table th {
+    font-size: 10px;
+  }
 }
 
 body {
@@ -1094,19 +2842,22 @@ body {
 
 
 .card {
-  background-color: #16213e;
-  border: 1px solid #2a2a3a;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
-  margin-bottom: 15px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
+  margin-bottom: var(--spacing-md);
   overflow: hidden;
 }
 
 .card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  border-color: #ffd700;
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(102, 126, 234, 0.3);
+  background: var(--bg-glass-hover);
 }
 
 .trade-screenshot {
@@ -1139,12 +2890,11 @@ body {
 .stock-symbol {
   font-size: 1.4rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #ffd700 0%, #ffb347 50%, #ffd700 100%);
+  background: var(--primary-gradient);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: 0 1px 3px rgba(255, 215, 0, 0.2);
   letter-spacing: 0.5px;
   animation: subtleGlow 4s ease-in-out infinite;
 }
@@ -2047,97 +3797,127 @@ body {
   z-index: 1000;
   animation: slideUp 0.3s ease;
 }
-.profile-badges-floating {
-            position: fixed;
-            top: 100px;
-            right: 30px;
+/* 全新的快速操作栏 */
+.quick-actions {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            z-index: 1100;
-            transition: opacity 0.3s ease;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
         }
-        .badge-item {
+
+.action-button {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            background: rgba(34,34,34,0.92);
-            border-radius: 18px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.18);
-            padding: 0.7rem 1.1rem 0.4rem 1.1rem;
-            min-width: 80px;
-            transition: box-shadow 0.2s, transform 0.2s;
-        }
-        .badge-item:hover {
-            box-shadow: 0 8px 28px rgba(0,0,0,0.22);
-            transform: translateY(-2px) scale(1.04);
-        }
-        .badge-row {
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: all var(--transition-base);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--primary-gradient);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  z-index: 0;
+}
+
+.action-button:hover {
+  transform: translateX(4px);
+  border-color: rgba(102, 126, 234, 0.5);
+  box-shadow: var(--shadow-md);
+}
+
+.action-button:hover::before {
+  opacity: 0.1;
+}
+
+.action-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.3em;
-            margin-bottom: 0.2em;
-        }
-        .badge-icon {
-            width: 22px;
-            height: 22px;
-            object-fit: contain;
-            border-radius: 5px;
-            box-shadow: 0 1px 4px #ffd70033;
-            background: #111;
-        }
-        .badge-label {
-            color: #FFD700;
-            font-weight: 600;
-            font-size: 1.05rem;
-            letter-spacing: 1px;
-        }
-        .badge-value {
-            color: #FFD700;
-            font-weight: 700;
-            font-size: 1.08rem;
-            letter-spacing: 1px;
-            text-shadow: 0 1px 2px #fff5;
-            margin-top: 0.2rem;
-        }
-        .badge-value-alt {
-            color: #fff;
-            font-weight: 700;
-            font-size: 1.08rem;
-            letter-spacing: 1px;
-            text-shadow: 0 1px 2px #FFD70055;
-            margin-top: 0.2rem;
-        }
-        .badge-value-vip {
-            color: #B0C4DE;
-            font-weight: 700;
-            font-size: 1.08rem;
-            letter-spacing: 1px;
-            text-shadow: 0 1px 2px #FFD70055;
-            margin-top: 0.2rem;
-        }
-        .badge-art-text {
-            background: linear-gradient(90deg, #222 60%, #444 100%);
-            box-shadow: 0 4px 18px rgba(0,0,0,0.18);
-            border-radius: 18px;
-            padding: 0.7rem 1.1rem 0.4rem 1.1rem;
-            min-width: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .art-text {
-            font-family: 'STXingkai', 'FZShuTi', 'Arial Black', cursive, sans-serif;
-            font-size: 1.18rem;
-            font-weight: bold;
-            background: linear-gradient(90deg, #FFD700 60%, #fffbe6 100%);
-            background-clip: text;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  transition: all var(--transition-base);
+}
+
+.action-button:hover .action-icon-wrapper {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.action-icon-wrapper svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.5;
+}
+
+.leaderboard-btn .action-icon-wrapper {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+}
+
+.vip-btn .action-icon-wrapper {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  color: white;
+}
+
+.likes-btn .action-icon-wrapper {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.likes-btn.active .action-icon-wrapper {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  animation: heartBeat 0.6s ease;
+}
+
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.2); }
+  50% { transform: scale(1); }
+  75% { transform: scale(1.1); }
+}
+
+.action-content {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.action-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.action-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.action-value {
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 8px #ffd70055, 0 1px 2px #fff5;
-            letter-spacing: 2px;
-            padding: 0.1em 0.2em;
+  background-clip: text;
         }
 @keyframes slideUp {
   from {
