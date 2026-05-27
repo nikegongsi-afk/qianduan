@@ -47,8 +47,15 @@ const removeCloudflareFiles = () => {
   };
 };
 
+const defaultApiUrl = "https://houduan-api.onrender.com";
+const defaultTraderUuid = "c5e01236-d681-4343-8386-f9e17748f81f";
+
 export default defineConfig({
   publicDir: 'public',
+  define: {
+    "import.meta.env.VITE_API_URL": JSON.stringify(process.env.VITE_API_URL || defaultApiUrl),
+    "import.meta.env.VITE_Web_Trader_UUID": JSON.stringify(process.env.VITE_Web_Trader_UUID || defaultTraderUuid),
+  },
   resolve: {
     alias: [
       {

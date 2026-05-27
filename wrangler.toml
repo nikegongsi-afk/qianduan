@@ -14,8 +14,8 @@ VITE_Web_Trader_UUID = "c5e01236-d681-4343-8386-f9e17748f81f"
 directory = "./dist/"
 not_found_handling = "single-page-application"
 binding = "ASSETS"
-# 只有 API 请求先运行 Worker，其他请求直接由 Cloudflare 处理静态资源
-run_worker_first = [ "/api/*" ]
+# 所有请求先经过 Worker，以便向 index.html 注入运行时环境变量
+run_worker_first = true
 
 # 路由配置
 [[routes]]

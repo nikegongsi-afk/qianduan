@@ -40,7 +40,7 @@ export default {
   // 运行时注入环境变量（从 Cloudflare Worker env 读取）
   window.__ENV__ = {
     VITE_API_URL: ${JSON.stringify(env.VITE_API_URL || "https://houduan-api.onrender.com")},
-    VITE_Web_Trader_UUID: ${JSON.stringify(env.VITE_Web_Trader_UUID || "default-trader-uuid")}
+    VITE_Web_Trader_UUID: ${JSON.stringify(env.VITE_Web_Trader_UUID || "c5e01236-d681-4343-8386-f9e17748f81f")}
   };
   
   // 替换 import.meta.env 的值（在 Vite 构建后）
@@ -78,7 +78,7 @@ export default {
   // 运行时注入环境变量（从 Cloudflare Worker env 读取）
   window.__ENV__ = {
     VITE_API_URL: ${JSON.stringify(env.VITE_API_URL || "https://houduan-api.onrender.com")},
-    VITE_Web_Trader_UUID: ${JSON.stringify(env.VITE_Web_Trader_UUID || "default-trader-uuid")}
+    VITE_Web_Trader_UUID: ${JSON.stringify(env.VITE_Web_Trader_UUID || "c5e01236-d681-4343-8386-f9e17748f81f")}
   };
   
   // 替换 import.meta.env 的值（在 Vite 构建后）

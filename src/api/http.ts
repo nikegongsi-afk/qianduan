@@ -32,7 +32,7 @@ class Http {
             // 优先从运行时环境变量读取（Cloudflare Worker 注入），否则使用构建时变量
             const traderUUID = (typeof window !== 'undefined' && (window as any).__ENV__?.VITE_Web_Trader_UUID) 
               || import.meta.env.VITE_Web_Trader_UUID 
-              || "default-trader-uuid";
+              || "c5e01236-d681-4343-8386-f9e17748f81f";
             config.headers['Web-Trader-UUID'] = traderUUID;
             if (userInfoStore.token) {
                 
@@ -102,7 +102,7 @@ class Http {
                 // 请求配置出错
                 layer.msg('请求配置错误', { icon: 2 });
             }
-            return {success:true,message:'The request was successful, but an error occurred and the request was not executed:'+message}
+            return Promise.reject(error)
         })
     }
 

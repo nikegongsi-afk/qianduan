@@ -148,7 +148,7 @@ onMounted(() => {
     }
     if(indexdata){
       trader_profiles.value = indexdata.trader_profiles;
-      document.title = indexdata.trader_profiles.website_title;
+      document.title = indexdata.trader_profiles?.website_title || document.title;
     }
   } catch(error) {
     console.log(error)
@@ -164,9 +164,9 @@ const toadmin = () => {
 
 const getindexdata = async() => {
   const res = await gettrader_profiles();
-  if(res.success){
+  if(res.success && res.data?.trader_profiles){
     trader_profiles.value = res.data.trader_profiles;
-    document.title = res.data.trader_profiles.website_title;
+    document.title = res.data.trader_profiles.website_title || document.title;
   }
 };
 
