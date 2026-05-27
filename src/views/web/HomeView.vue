@@ -445,60 +445,51 @@
               </div>
               </div>
                
-              <div class="trade-details-grid">
-                <div class="detail-cell">
-                  <span class="detail-label">Entry</span>
-                  <span class="detail-value">{{formatUSDate(value.entry_date)}}</span>
-              </div>
-                <div class="detail-cell">
-                  <span class="detail-label">Entry Price</span>
-                  <span class="detail-value">{{value.currency}}{{formatCurrency(value.entry_price)}}</span>
-            </div>
-                <div class="detail-cell" v-if="value.status == 'Active'">
-                  <span class="detail-label">Current</span>
-                  <span class="detail-value">{{value.currency}}{{formatCurrency(value.current_price)}}</span>
+              <div class="trade-card-body">
+                <div class="trade-pair">
+                  <div class="trade-pair-side">
+                    <span class="trade-label trade-label-entry">Entry</span>
+                    <span class="trade-date">{{ formatUSDate(value.entry_date) }}</span>
+                    <span class="trade-price">{{ value.currency }}{{ formatCurrency(value.entry_price) }}</span>
+                  </div>
+                  <div class="trade-pair-sep" aria-hidden="true"></div>
+                  <div class="trade-pair-side" v-if="value.status == 'Active'">
+                    <span class="trade-label trade-label-live">Current</span>
+                    <span class="trade-price trade-price-highlight">{{ value.currency }}{{ formatCurrency(value.current_price) }}</span>
+                  </div>
+                  <div class="trade-pair-side" v-else>
+                    <span class="trade-label trade-label-exit">Exit</span>
+                    <span class="trade-date">{{ formatUSDate(value.exit_date) }}</span>
+                    <span class="trade-price">{{ value.currency }}{{ formatCurrency(value.exit_price) }}</span>
+                  </div>
                 </div>
-                <div class="detail-cell" v-else>
-                  <span class="detail-label">Exit</span>
-                  <span class="detail-value">{{formatUSDate(value.exit_date)}}</span>
-                </div>
-                <div class="detail-cell" v-if="value.status == 'Active'">
-                  <span class="detail-label">Qty</span>
-                  <span class="detail-value">{{formatQuantity(value.size)}}</span>
-                </div>
-                <div class="detail-cell" v-else>
-                  <span class="detail-label">Exit Price</span>
-                  <span class="detail-value">{{value.currency}}{{formatCurrency(value.exit_price)}}</span>
-          </div>
-        </div>
 
-              <div class="trade-performance">
-                <div class="performance-row">
-                  <div class="perf-item">
-                    <span class="perf-label">Entry Amount</span>
-                    <span class="perf-value">{{value.currency || ''}}{{formatCurrency((value.entry_price || 0) * (value.size || 0))}}</span>
+                <div class="trade-metrics">
+                  <div class="trade-metric">
+                    <span class="trade-label">Entry Amount</span>
+                    <span class="trade-metric-val">{{ value.currency || '' }}{{ formatCurrency((value.entry_price || 0) * (value.size || 0)) }}</span>
+                  </div>
+                  <div class="trade-metric">
+                    <span class="trade-label">Market Value</span>
+                    <span class="trade-metric-val">{{ value.currency || '' }}{{ formatCurrency(value.Market_Value || 0) }}</span>
+                  </div>
+                </div>
+
+                <div
+                  class="trade-pnl-bar"
+                  :class="(value.Ratio || 0) > 0 ? 'pnl-profit' : (value.Ratio || 0) < 0 ? 'pnl-loss' : 'pnl-neutral'"
+                >
+                  <div class="trade-pnl-side">
+                    <span class="trade-label">P&L Ratio</span>
+                    <span class="trade-pnl-val">{{ value.Ratio || 0 }}%</span>
+                  </div>
+                  <div class="trade-pnl-side">
+                    <span class="trade-label">P&L Amount</span>
+                    <span class="trade-pnl-val">{{ value.currency || '' }}{{ formatCurrency(value.Amount || 0) }}</span>
+                  </div>
+                </div>
               </div>
-                  <div class="perf-item">
-                    <span class="perf-label">Market Value</span>
-                    <span class="perf-value">{{value.currency || ''}}{{formatCurrency(value.Market_Value || 0)}}</span>
-                  </div>
-                </div>
-                <div class="performance-row highlight">
-                  <div class="perf-item">
-                    <span class="perf-label">P&L Ratio</span>
-                    <span class="perf-value" :class="(value.Ratio || 0) > 0 ? 'profit' : 'loss'">
-                      {{value.Ratio || 0}}%
-                    </span>
-                  </div>
-                  <div class="perf-item">
-                    <span class="perf-label">P&L Amount</span>
-                    <span class="perf-value" :class="(value.Ratio || 0) > 0 ? 'profit' : 'loss'">
-                      {{value.currency || ''}}{{formatCurrency(value.Amount || 0)}}
-                    </span>
-                  </div>
-                </div>
             </div>
-          </div>
         </div>
 
           <!-- 表格视图 -->
@@ -2370,8 +2361,8 @@ const formatLikesCount = (count: number | string | undefined) => {
 /* 网格视图 */
 .trades-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: var(--spacing-lg);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-md);
   margin-top: var(--spacing-lg);
 }
 
@@ -2381,11 +2372,12 @@ const formatLikesCount = (count: number | string | undefined) => {
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  padding: var(--spacing-lg);
+  padding: 14px 16px;
   transition: all var(--transition-base);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: 12px;
+  overflow: hidden;
 }
 
 .trade-card-modern:hover {
@@ -2398,17 +2390,20 @@ const formatLikesCount = (count: number | string | undefined) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--spacing-xs);
 }
 
 .trade-symbol-section {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: 6px;
+  min-width: 0;
 }
 
 .symbol-badge {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
+  letter-spacing: -0.02em;
   background: var(--primary-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -2416,29 +2411,33 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .market-tag {
-  padding: 4px 8px;
-  border-radius: 6px;
+  padding: 3px 8px;
+  border-radius: 5px;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  background: rgba(102, 126, 234, 0.1);
+  letter-spacing: 0.04em;
+  background: rgba(102, 126, 234, 0.12);
   color: var(--color-primary);
+  flex-shrink: 0;
 }
 
 .status-indicator {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
 }
 
 .status-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .status-indicator.status-active {
@@ -2471,16 +2470,19 @@ const formatLikesCount = (count: number | string | undefined) => {
 .trade-image-wrapper {
   position: relative;
   width: 100%;
-  height: 180px;
-  border-radius: var(--border-radius-sm);
+  height: 140px;
+  border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .trade-image {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
+  object-position: center;
 }
 
 .image-overlay {
@@ -2500,78 +2502,155 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .image-overlay svg {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
 }
 
-.trade-details-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-sm);
-}
-
-.detail-cell {
+/* Balanced data layout */
+.trade-card-body {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 10px;
 }
 
-.detail-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.trade-pair {
+  display: flex;
+  align-items: stretch;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.detail-value {
-  font-size: 14px;
+.trade-pair-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.trade-pair-sep {
+  width: 1px;
+  margin: 0 14px;
+  background: rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.trade-label {
+  font-size: 10px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.trade-label-entry {
+  color: #a5b4fc;
+}
+
+.trade-label-exit {
+  color: #94a3b8;
+}
+
+.trade-label-live {
+  color: #6ee7b7;
+}
+
+.trade-date {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+.trade-price {
+  font-size: 15px;
+  font-weight: 700;
   color: var(--text-primary);
+  line-height: 1.25;
+  word-break: break-word;
 }
 
-.trade-performance {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  padding-top: var(--spacing-md);
-  border-top: 1px solid var(--border-color);
+.trade-price-highlight {
+  color: var(--color-success);
+  margin-top: 2px;
 }
 
-.performance-row {
+.trade-metrics {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-md);
+  gap: 10px;
 }
 
-.performance-row.highlight {
-  padding: var(--spacing-sm);
-  background: rgba(102, 126, 234, 0.05);
-  border-radius: var(--border-radius-sm);
-}
-
-.perf-item {
+.trade-metric {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  min-width: 0;
 }
 
-.perf-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-}
-
-.perf-value {
-  font-size: 16px;
+.trade-metric-val {
+  font-size: 14px;
   font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+  word-break: break-word;
 }
 
-.perf-value.profit {
-  color: var(--color-success);
+.trade-pnl-bar {
+  display: flex;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
 }
 
-.perf-value.loss {
-  color: var(--color-danger);
+.trade-pnl-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.trade-pnl-val {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.trade-pnl-bar.pnl-profit {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.trade-pnl-bar.pnl-profit .trade-pnl-val {
+  color: #34d399;
+}
+
+.trade-pnl-bar.pnl-loss {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.trade-pnl-bar.pnl-loss .trade-pnl-val {
+  color: #f87171;
+}
+
+.trade-pnl-bar.pnl-neutral {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.trade-pnl-bar.pnl-neutral .trade-pnl-val {
+  color: var(--text-primary);
 }
 
 /* 表格视图 */
@@ -3347,46 +3426,41 @@ const formatLikesCount = (count: number | string | undefined) => {
   }
   
   .trade-card-modern {
-    padding: var(--spacing-md);
+    padding: 12px;
+    gap: 10px;
   }
-  
+
   .trade-card-header {
     flex-wrap: wrap;
-    gap: var(--spacing-sm);
+    gap: 8px;
   }
-  
+
   .symbol-badge {
-    font-size: 18px;
+    font-size: 17px;
   }
-  
+
   .trade-image-wrapper {
-    height: 160px;
+    height: 124px;
   }
-  
-  .trade-details-grid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-xs);
+
+  .trade-pair {
+    padding: 10px 12px;
   }
-  
-  .detail-cell {
-    padding: var(--spacing-xs) 0;
+
+  .trade-pair-sep {
+    margin: 0 10px;
   }
-  
-  .detail-label {
-    font-size: 10px;
+
+  .trade-metric {
+    padding: 9px 10px;
   }
-  
-  .detail-value {
+
+  .trade-metric-val {
     font-size: 13px;
   }
-  
-  .performance-row {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-sm);
-  }
-  
-  .perf-value {
-    font-size: 14px;
+
+  .trade-pnl-val {
+    font-size: 15px;
   }
   
   .trades-table-wrapper {
