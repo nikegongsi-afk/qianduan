@@ -12,6 +12,7 @@ interface Env {
   };
   VITE_API_URL?: string;
   VITE_Web_Trader_UUID?: string;
+  VITE_GOOGLE_CLIENT_ID?: string;
 }
 
 const DEFAULT_API_URL = "https://houduan-api.onrender.com";
@@ -67,7 +68,8 @@ const buildEnvScript = (env: Env) => `
 <script>
   window.__ENV__ = {
     VITE_API_URL: ${JSON.stringify(env.VITE_API_URL || DEFAULT_API_URL)},
-    VITE_Web_Trader_UUID: ${JSON.stringify(env.VITE_Web_Trader_UUID || DEFAULT_TRADER_UUID)}
+    VITE_Web_Trader_UUID: ${JSON.stringify(env.VITE_Web_Trader_UUID || DEFAULT_TRADER_UUID)},
+    VITE_GOOGLE_CLIENT_ID: ${JSON.stringify(env.VITE_GOOGLE_CLIENT_ID || "")}
   };
   if (typeof window !== 'undefined' && window.__ENV__) {
     Object.defineProperty(window, '__VITE_ENV__', {

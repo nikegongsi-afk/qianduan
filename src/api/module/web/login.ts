@@ -9,3 +9,8 @@ export const register = function(data: any) {
     return Http.post('/web/login/register',data)
 }
 
+// Google 邮箱登录
+export const googleLogin = function(data: { credential: string }) {
+    return Http.post('/web/login/google', data)
+}
+

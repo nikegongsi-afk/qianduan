@@ -14,6 +14,7 @@ main = "./src/index.ts"
 NODE_ENV = "production"
 VITE_API_URL = "https://houduan-api.onrender.com"
 VITE_Web_Trader_UUID = "c5e01236-d681-4343-8386-f9e17748f81f"
+VITE_GOOGLE_CLIENT_ID = "your-google-client-id.apps.googleusercontent.com"
 
 # 静态资源配置
 [assets]

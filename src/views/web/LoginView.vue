@@ -88,6 +88,11 @@
               <span class="divider-text">or</span>
               <span class="divider-line"></span>
             </div>
+
+            <div v-if="googleLoginEnabled" class="google-login-wrap">
+              <div ref="googleButtonRef" class="google-login-btn"></div>
+              <p v-if="googleLoginError" class="google-login-error">{{ googleLoginError }}</p>
+            </div>
             
             <div class="signup-prompt">
               <span class="prompt-text">Don't have an account?</span>
@@ -101,11 +106,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import navcomponent from '../component/nav/nav.vue'
-import { login } from '../../api/module/web/login'
+import { login, googleLogin } from '../../api/module/web/login'
 import { useUserStore } from '../../store/user'
+import { getGoogleClientId, renderGoogleSignInButton } from '../../utils/googleAuth'
 
 const router = useRouter();
 const userStore = useUserStore()
@@ -115,10 +121,62 @@ const loginPassword = ref('');
 const usernameError = ref('');
 const passwordError = ref('');
 const isLoggingIn = ref(false);
+const googleButtonRef = ref<HTMLElement | null>(null);
+const googleLoginEnabled = ref(false);
+const googleLoginError = ref('');
 
-onMounted(() => {
-  console.log(userStore.token)
+const completeLogin = async (response: any) => {
+  if (response.success) {
+    userStore.token = response.session_token;
+    userStore.userInfo = response.data;
+    try {
+      await userStore.initUserInfo();
+    } catch (userInfoError) {
+      console.error('Failed to initialize user info:', userInfoError);
+    }
+    router.push('/vip');
+    return true;
+  }
+
+  alert(response.message || 'Login failed. Please try again.');
+  return false;
+};
+
+onMounted(async () => {
+  const clientId = getGoogleClientId();
+  googleLoginEnabled.value = !!clientId;
+
+  if (!clientId) {
+    return;
+  }
+
+  await nextTick();
+
+  if (!googleButtonRef.value) {
+    return;
+  }
+
+  try {
+    await renderGoogleSignInButton(googleButtonRef.value, handleGoogleCredential);
+  } catch (error) {
+    console.error('Google login init failed:', error);
+    googleLoginError.value = 'Google sign-in is temporarily unavailable.';
+  }
 });
+
+const handleGoogleCredential = async (credential: string) => {
+  try {
+    isLoggingIn.value = true;
+    googleLoginError.value = '';
+    const response = await googleLogin({ credential });
+    await completeLogin(response);
+  } catch (error) {
+    console.error('Google login error:', error);
+    alert('Google sign-in failed. Please try again later.');
+  } finally {
+    isLoggingIn.value = false;
+  }
+};
 
 const handleLogin = async () => {
   usernameError.value = '';
@@ -143,24 +201,14 @@ const handleLogin = async () => {
     }
     
     const response = await login(logindata);
-    
-    if (response.success) {
-      userStore.token = response.session_token;
-      userStore.userInfo = response.data;
-      try {
-        await userStore.initUserInfo();
-      } catch (userInfoError) {
-        console.error('初始化用户信息失败:', userInfoError);
-      }
-      await userStore.initUserInfo();
-      router.push('/vip');
-    } else {
-      alert('Login failed. Please check your username and password.');
+    const success = await completeLogin(response);
+    if (!success) {
       isLoggingIn.value = false;
     }
   } catch (error) {
     console.error('Login error:', error);
     alert('An error occurred during login. Please try again later.');
+    isLoggingIn.value = false;
   } finally {
     isLoggingIn.value = false;
   }
@@ -480,6 +528,26 @@ const handleLogin = async () => {
 .signup-link:hover {
   color: var(--color-primary-dark);
   text-decoration: underline;
+}
+
+.google-login-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.google-login-btn {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.google-login-error {
+  color: var(--color-danger);
+  font-size: 13px;
+  text-align: center;
 }
 
 /* 响应式设计 */
