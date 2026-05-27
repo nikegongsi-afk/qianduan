@@ -362,8 +362,13 @@
             </div>
               <div class="panel-body">
                 <div class="warning-box">
-                  <div class="warning-icon">⚠️</div>
-                  <p class="warning-text">{{strategy_info.risk_warning}}</p>
+                  <div class="warning-icon-wrap" aria-hidden="true">
+                    <span class="warning-icon">!</span>
+                  </div>
+                  <div class="warning-content">
+                    <div class="warning-label">Important Notice</div>
+                    <p class="warning-text">{{ strategy_info.risk_warning }}</p>
+                  </div>
                 </div>
                 <div class="media-container" v-if="strategy_info.warn_path">
                   <audio v-if="strategy_info.warntype==1" :src="strategy_info.warn_path" controls class="media-player"></audio>
@@ -2155,22 +2160,64 @@ const formatLikesCount = (count: number | string | undefined) => {
 
 .warning-box {
   display: flex;
-  gap: var(--spacing-md);
-  padding: var(--spacing-lg);
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: var(--border-radius-sm);
+  align-items: flex-start;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl) var(--spacing-lg);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(127, 29, 29, 0.12) 100%);
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  border-left: 5px solid #f87171;
+  border-radius: var(--border-radius);
   margin-bottom: var(--spacing-lg);
+  box-shadow: 0 8px 32px rgba(239, 68, 68, 0.18);
+}
+
+.warning-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.2), 0 4px 16px rgba(239, 68, 68, 0.35);
 }
 
 .warning-icon {
-  font-size: 24px;
-  flex-shrink: 0;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff;
+}
+
+.warning-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.warning-label {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.25);
+  border: 1px solid rgba(252, 165, 165, 0.35);
+  color: #fecaca;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .warning-text {
-  flex: 1;
-  color: var(--text-primary);
+  margin: 0;
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+  font-weight: 800;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  word-break: break-word;
 }
 
 /* 交易记录区域 */
@@ -3162,9 +3209,23 @@ const formatLikesCount = (count: number | string | undefined) => {
   }
   
   .warning-box {
-    padding: var(--spacing-md);
-    flex-direction: column;
-    text-align: center;
+    padding: var(--spacing-lg) var(--spacing-md);
+    flex-direction: row;
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .warning-icon-wrap {
+    width: 48px;
+    height: 48px;
+  }
+
+  .warning-icon {
+    font-size: 24px;
+  }
+
+  .warning-text {
+    font-size: 1.15rem;
   }
   
   .trades-grid {
