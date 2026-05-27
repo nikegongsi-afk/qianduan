@@ -100,7 +100,10 @@ const columns = ref([
 
 const ensureWorldMap = async () => {
   if (worldMapRegistered) return;
-  const response = await fetch('https://echarts.apache.org/examples/data/asset/geo/world.json');
+  const response = await fetch('/geo/world.json');
+  if (!response.ok) {
+    throw new Error('无法加载世界地图数据');
+  }
   const worldJson = await response.json();
   echarts.registerMap('world', worldJson);
   worldMapRegistered = true;
@@ -188,7 +191,12 @@ const loadData = async () => {
     const res = await getVisitMapSummary(selectedDays.value);
     if (res.success) {
       summary.value = res.data;
-      await renderMap();
+      try {
+        await renderMap();
+      } catch (mapError) {
+        console.error(mapError);
+        layer.msg('地图加载失败，访问列表仍可查看', { icon: 2 });
+      }
       await loadTable();
     } else {
       layer.msg(res.message || '加载访问地图失败', { icon: 2 });
