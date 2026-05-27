@@ -210,19 +210,6 @@
 
         <!-- 全新的快速操作栏 -->
         <div class="quick-actions">
-          <a href="/leaderboard" class="action-button leaderboard-btn">
-            <div class="action-icon-wrapper">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M6 9H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V11a2 2 0 0 0-2-2h-2"></path>
-                <rect x="6" y="1" width="12" height="8" rx="2"></rect>
-              </svg>
-      </div>
-            <div class="action-content">
-              <div class="action-label">Leaderboard</div>
-              <div class="action-subtitle">View Rankings</div>
-            </div>
-          </a>
-
           <a href="/vip" class="action-button vip-btn">
             <div class="action-icon-wrapper">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -298,12 +285,63 @@
                 <h3>Focus Areas</h3>
               </div>
               <div class="panel-body">
-                <div class="focus-grid">
-                  <div v-for="(value, index) in strategy_info.trading_focus" :key="index" class="focus-item">
+                <div v-if="hasStructuredFocus" class="focus-content">
+                  <div v-if="parsedTradingFocus.notices.length" class="focus-notice">
+                    <div class="focus-notice-icon">📋</div>
+                    <div class="focus-notice-body">
+                      <div class="focus-notice-title">Purchase Notice</div>
+                      <p v-for="(notice, index) in parsedTradingFocus.notices" :key="index">{{ notice }}</p>
+                    </div>
+                  </div>
+
+                  <div v-if="parsedTradingFocus.purchaseDate" class="focus-meta-row">
+                    <span class="focus-date-badge">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                      </svg>
+                      Purchase Date: {{ parsedTradingFocus.purchaseDate }}
+                    </span>
+                  </div>
+
+                  <div v-if="parsedTradingFocus.stocks.length" class="stock-picks-section">
+                    <div class="stock-picks-header">
+                      <h4>Recommended Stocks</h4>
+                      <span class="stock-picks-count">{{ parsedTradingFocus.stocks.length }} picks</span>
+                    </div>
+                    <div class="stock-picks-grid">
+                      <div
+                        v-for="(stock, index) in parsedTradingFocus.stocks"
+                        :key="`${stock.symbol}-${index}`"
+                        class="stock-pick-card"
+                      >
+                        <div class="stock-pick-top">
+                          <span class="stock-pick-rank">#{{ index + 1 }}</span>
+                          <span class="stock-pick-symbol">{{ stock.symbol }}</span>
+                        </div>
+                        <div class="stock-pick-price-row">
+                          <span class="stock-pick-label">Entry Price</span>
+                          <span class="stock-pick-price">{{ stock.price }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-if="parsedTradingFocus.others.length" class="focus-other-list">
+                    <div v-for="(item, index) in parsedTradingFocus.others" :key="index" class="focus-other-item">
+                      {{ item }}
+                    </div>
+                  </div>
+                </div>
+
+                <div v-else class="focus-grid">
+                  <div v-for="(value, index) in normalizedTradingFocus" :key="index" class="focus-item">
                     <div class="focus-icon">{{ index + 1 }}</div>
-                    <div class="focus-text">{{value}}</div>
-              </div>
-              </div>
+                    <div class="focus-text">{{ value }}</div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -515,14 +553,6 @@
     
     <!-- 移动端底部快速操作栏 -->
     <div class="mobile-bottom-actions" v-if="isMobile">
-      <a href="/leaderboard" class="mobile-bottom-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M6 9H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V11a2 2 0 0 0-2-2h-2"></path>
-          <rect x="6" y="1" width="12" height="8" rx="2"></rect>
-        </svg>
-        <span>Ranking</span>
-      </a>
-      
       <a href="/vip" class="mobile-bottom-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
@@ -595,88 +625,136 @@
     
     <!-- Welcome Popup Modal -->
     <div class="modal fade" id="welcomePopupModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-dialog modal-dialog-centered welcome-modal-dialog">
             <div class="modal-content welcome-popup-modal">
-                <div class="modal-body">
-                  
-                    <button type="button" class="btn-close btn-close-white" id="allow_close" data-bs-dismiss="modal" style="position: absolute;right: 20px; top: 20px;" v-if="announcementData && announcementData.allow_close_dialog===1"></button>
-                    
-                    <div class="welcome-content">
-                        <h3 class="teacher-intro">{{trader_profiles.trader_name}} - {{trader_profiles.professional_title}}</h3>
-                        <p class="welcome-description">
-                            Dedicated to providing professional trading strategy analysis and real-time market guidance for investors
-                        </p>
-                        
-                        <div class="performance-overview">
-                            <div class="performance-stats">
-                                <div class="stat-box">
-                                    <div class="stat-icon"><i class="bi bi-trophy"></i></div>
-                                    <div class="stat-info">
-                                        <div class="stat-value" id="total-profit-display" style="font-size: 16px;" :class="{ 'profit-positive': Total >= 0, 'profit-negative': Total < 0 }">
-                                            {{ Total>=0 ? '+':'' }}${{formatCurrency(Total)}}
-                                        </div>
-                                        <div class="stat-label">Total Profit</div>
-                                    </div>
-                                </div>
-                                <div class="stat-box">
-                                    <div class="stat-icon"><i class="bi bi-calendar-check"></i></div>
-                                    <div class="stat-info">
-                                        <div class="stat-value" id="monthly-profit-display" style="font-size: 16px;" :class="{ 'profit-positive': Monthly >= 0, 'profit-negative': Monthly < 0 }">
-                                            {{ Monthly>=0 ? '+':'' }}${{formatCurrency(Monthly)}}
-                                        </div>
-                                        <div class="stat-label">Monthly Profit</div>
-                                    </div>
-                                </div>
-                                <div class="stat-box">
-                                    <div class="stat-icon"><i class="bi bi-graph-up"></i></div>
-                                    <div class="stat-info">
-                                        <div class="stat-value" id="active-trades-display" style="font-size: 16px;">
-                                            {{ Activecount }}
-                                        </div>
-                                        <div class="stat-label">Active Trades</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="announcement-info" id="announcement-section">
-                                <div class="announcement-header">
-                                    <i class="bi bi-megaphone-fill"></i>
-                                    <span>Important Announcement</span>
-                                </div>
-                                <div class="announcement-content" id="announcement-content">
-                                    <div style="margin-bottom: 0.5rem;">
-                                        <div style="font-weight: 600; color: #ffd700; margin-bottom: 0.5rem; font-size: 1rem;">
-                                            {{ announcementData?.title || '' }}
-                                        </div>
-                                        <div style="color: #e0e0e0; line-height: 1.6; font-size: 0.9rem;">
-                                            {{ announcementData?.content || '' }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="welcome-modal-glow welcome-modal-glow--primary"></div>
+                <div class="welcome-modal-glow welcome-modal-glow--secondary"></div>
 
+                <button
+                    v-if="announcementData && announcementData.allow_close_dialog===1"
+                    type="button"
+                    class="welcome-close-btn"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
 
-                        
-                        <div class="community-highlight">
-                            <div class="community-benefits">
-                                <h4><i class="bi bi-people-fill"></i> Join Exclusive Trading Community</h4>
-                                <ul class="benefits-list">
-                                    <li><i class="bi bi-check-circle-fill"></i> Real-time Trading Signals</li>
-                                    <li><i class="bi bi-check-circle-fill"></i> Professional Strategy Analysis</li>
-                                    <li><i class="bi bi-check-circle-fill"></i> One-on-One Trading Guidance</li>
-                                    <li><i class="bi bi-check-circle-fill"></i> Exclusive Market Analysis Reports</li>
-                                </ul>
-                            </div>
+                <div class="welcome-modal-body">
+                    <div class="welcome-profile-header">
+                        <div class="welcome-avatar-ring">
+                            <img :src="trader_profiles.profile_image_url" alt="Trader" class="welcome-avatar">
                         </div>
-                        
-                        <div class="welcome-cta">
-                            <button class="btn-community-primary" @click="joinCommunity">
-                                <i class="bi bi-people-fill"></i>
-                                Join Exclusive Community Now
-                            </button>
+                        <div class="welcome-profile-info">
+                            <span class="welcome-badge">Welcome</span>
+                            <h3 class="welcome-trader-name">{{ trader_profiles.trader_name }}</h3>
+                            <p class="welcome-trader-title">{{ trader_profiles.professional_title }}</p>
                         </div>
                     </div>
+
+                    <p class="welcome-tagline">
+                        Dedicated to providing professional trading strategy analysis and real-time market guidance for investors
+                    </p>
+
+                    <div class="welcome-stats-grid">
+                        <div class="welcome-stat-card">
+                            <div class="welcome-stat-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                                </svg>
+                            </div>
+                            <div class="welcome-stat-value" :class="{ positive: Total >= 0, negative: Total < 0 }">
+                                {{ Total>=0 ? '+':'' }}${{ formatCurrency(Total) }}
+                            </div>
+                            <div class="welcome-stat-label">Total P&L</div>
+                        </div>
+                        <div class="welcome-stat-card">
+                            <div class="welcome-stat-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                            </div>
+                            <div class="welcome-stat-value" :class="{ positive: Monthly >= 0, negative: Monthly < 0 }">
+                                {{ Monthly>=0 ? '+':'' }}${{ formatCurrency(Monthly) }}
+                            </div>
+                            <div class="welcome-stat-label">Monthly P&L</div>
+                        </div>
+                        <div class="welcome-stat-card">
+                            <div class="welcome-stat-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 3v18h18"></path>
+                                    <path d="M18 17V9"></path>
+                                    <path d="M13 17V5"></path>
+                                    <path d="M8 17v-3"></path>
+                                </svg>
+                            </div>
+                            <div class="welcome-stat-value">{{ Activecount }}</div>
+                            <div class="welcome-stat-label">Active Trades</div>
+                        </div>
+                    </div>
+
+                    <div class="welcome-announcement" v-if="announcementData?.title || announcementData?.content">
+                        <div class="welcome-announcement-header">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 11l18-5v12L3 14v-3z"></path>
+                                <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path>
+                            </svg>
+                            <span>Important Announcement</span>
+                        </div>
+                        <h4 class="welcome-announcement-title">{{ announcementData?.title || '' }}</h4>
+                        <p class="welcome-announcement-text">{{ announcementData?.content || '' }}</p>
+                    </div>
+
+                    <div class="welcome-benefits">
+                        <h4 class="welcome-benefits-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            Join Exclusive Trading Community
+                        </h4>
+                        <div class="welcome-benefits-grid">
+                            <div class="welcome-benefit-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span>Real-time Trading Signals</span>
+                            </div>
+                            <div class="welcome-benefit-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span>Professional Strategy Analysis</span>
+                            </div>
+                            <div class="welcome-benefit-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span>One-on-One Trading Guidance</span>
+                            </div>
+                            <div class="welcome-benefit-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span>Exclusive Market Analysis Reports</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="welcome-cta-btn" @click="joinCommunity">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        Join Exclusive Community Now
+                    </button>
                 </div>
             </div>
         </div>
@@ -690,11 +768,12 @@
 import navcomponent from '../component/nav/nav.vue'
 import PartnerOrganizations from '@/components/PartnerOrganizations.vue';
 import moment from 'moment';
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { Modal } from 'bootstrap';
 import{getIndexData,get_whatsapp_link,getannouncement,likeTrader} from '../../api/module/web/index'
 import { useUserStore } from '@/store';
 import { layer } from '@layui/layui-vue';
+import { normalizeTradingFocus, parseTradingFocus } from '@/utils/parseTradingFocus';
 const trader_profiles=ref({});
 const strategy_info=ref({
     "updated_at": "",
@@ -736,6 +815,23 @@ const strategyTabs = [
   { label: 'Focus Areas', icon: '🎯' },
   { label: 'Risk Warning', icon: '⚠️' }
 ];
+
+const normalizedTradingFocus = computed(() =>
+  normalizeTradingFocus(strategy_info.value.trading_focus)
+);
+
+const parsedTradingFocus = computed(() =>
+  parseTradingFocus(normalizedTradingFocus.value)
+);
+
+const hasStructuredFocus = computed(() => {
+  const parsed = parsedTradingFocus.value;
+  return (
+    parsed.stocks.length > 0 ||
+    !!parsed.purchaseDate ||
+    parsed.notices.length > 0
+  );
+});
 
 // 检测移动端
 const checkMobile = () => {
@@ -1162,11 +1258,9 @@ const getannouncementdataData= async()=>{
       announcementData.value=res.announcement;
       // Show welcome modal when component mounts
       const delaySeconds = announcementData.value?.delay_seconds || 0;
-      if (delaySeconds > 0) {
-        setTimeout(() => {
-            openWelcomeModal();
-        }, delaySeconds * 1000);
-      }
+      setTimeout(() => {
+        openWelcomeModal();
+      }, delaySeconds * 1000);
     }
   } catch (error) {
     console.error('获取公告数据失败:', error);
@@ -1786,6 +1880,184 @@ const formatLikesCount = (count: number | string | undefined) => {
   background: rgba(0, 0, 0, 0.2);
 }
 
+.focus-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.focus-notice {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  border-radius: var(--border-radius);
+}
+
+.focus-notice-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(245, 158, 11, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.focus-notice-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fbbf24;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+
+.focus-notice-body p {
+  margin: 0;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.focus-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.focus-date-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(102, 126, 234, 0.12);
+  border: 1px solid rgba(102, 126, 234, 0.24);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.focus-date-badge svg {
+  width: 16px;
+  height: 16px;
+  color: #a5b4fc;
+}
+
+.stock-picks-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.stock-picks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.stock-picks-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stock-picks-count {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.stock-picks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.stock-pick-card {
+  padding: 18px;
+  border-radius: var(--border-radius);
+  background: linear-gradient(145deg, rgba(102, 126, 234, 0.14) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.22);
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+}
+
+.stock-pick-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(167, 139, 250, 0.45);
+  box-shadow: 0 10px 28px rgba(102, 126, 234, 0.18);
+}
+
+.stock-pick-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.stock-pick-rank {
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.stock-pick-symbol {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #fff;
+  text-shadow: 0 0 18px rgba(167, 139, 250, 0.35);
+}
+
+.stock-pick-price-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stock-pick-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stock-pick-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #c4b5fd;
+}
+
+.focus-other-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.focus-other-item {
+  padding: 12px 14px;
+  border-radius: var(--border-radius-sm);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
 .focus-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -2239,6 +2511,7 @@ const formatLikesCount = (count: number | string | undefined) => {
   .main-content {
     width: 100%;
     padding: var(--spacing-md);
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
   }
   
   .mobile-profile-header {
@@ -2475,7 +2748,7 @@ const formatLikesCount = (count: number | string | undefined) => {
   
   .main-content {
     padding: var(--spacing-md);
-    padding-bottom: 100px;
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
   }
   
   /* 交易策略更突出 */
@@ -2500,7 +2773,8 @@ const formatLikesCount = (count: number | string | undefined) => {
   }
   
   .trades-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
   }
   
   .trades-section {
@@ -2520,11 +2794,12 @@ const formatLikesCount = (count: number | string | undefined) => {
   left: 0;
   right: 0;
   display: none;
-  background: var(--bg-primary);
+  background: rgba(10, 14, 39, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--border-color);
   padding: var(--spacing-sm) var(--spacing-xs);
+  padding-bottom: calc(var(--spacing-sm) + env(safe-area-inset-bottom, 0px));
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
   z-index: 998;
   gap: var(--spacing-xs);
@@ -2535,8 +2810,10 @@ const formatLikesCount = (count: number | string | undefined) => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  padding: var(--spacing-xs);
+  padding: var(--spacing-xs) 4px;
+  min-height: 52px;
   background: transparent;
   border: none;
   border-radius: var(--border-radius-sm);
@@ -2547,6 +2824,7 @@ const formatLikesCount = (count: number | string | undefined) => {
   transition: all var(--transition-base);
   cursor: pointer;
   position: relative;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .mobile-bottom-btn svg {
@@ -2601,6 +2879,26 @@ const formatLikesCount = (count: number | string | undefined) => {
   .strategy-section.mobile-strategy-prominent .panel-body {
     font-size: 15px;
     line-height: 1.8;
+  }
+
+  .strategy-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+    margin-left: -4px;
+    margin-right: -4px;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .strategy-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .strategy-tabs .tab-button {
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 }
 
@@ -2745,6 +3043,18 @@ const formatLikesCount = (count: number | string | undefined) => {
     font-size: 16px;
   }
   
+  .stock-picks-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stock-pick-symbol {
+    font-size: 20px;
+  }
+
+  .focus-notice {
+    padding: var(--spacing-md);
+  }
+
   .focus-grid {
     grid-template-columns: 1fr;
     gap: var(--spacing-sm);
@@ -3164,268 +3474,450 @@ body {
 }
 
 /* Welcome Popup Modal Styles */
-#welcomePopupModal.show .modal-dialog {
-  animation: welcomeScaleIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+.welcome-modal-dialog {
+  max-width: 680px;
 }
 
-@keyframes welcomeScaleIn {
+#welcomePopupModal.show .modal-dialog {
+  animation: welcomeModalIn 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes welcomeModalIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.3);
+    transform: scale(0.92) translateY(16px);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: scale(1) translateY(0);
   }
 }
 
-/* New popup content styles */
 .welcome-popup-modal {
-  background: linear-gradient(135deg, rgba(26,31,46,0.98) 0%, rgba(22,33,62,0.98) 100%);
-  border: 1px solid rgba(255,215,0,0.3);
-  border-radius: 24px;
-  box-shadow: 0 10px 50px rgba(255,215,0,0.15);
-  overflow: hidden;
-}
-
-.welcome-content {
-  padding: 2rem;
-  text-align: center;
-}
-
-.teacher-intro {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #ffd700;
-  margin-bottom: 1rem;
-  line-height: 1.3;
-}
-
-.welcome-description {
-  font-size: 1.1rem;
-  color: #e0e0e0;
-  margin-bottom: 2rem;
-  line-height: 1.6;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.performance-overview {
-  margin: 2rem 0;
-  padding: 2rem;
-  background: linear-gradient(135deg, rgba(255,215,0,0.08) 0%, rgba(255,215,0,0.03) 100%);
-  border-radius: 20px;
-  border: 1px solid rgba(255,215,0,0.2);
   position: relative;
+  background: rgba(26, 31, 58, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg), 0 0 60px rgba(102, 126, 234, 0.15);
   overflow: hidden;
 }
 
-.performance-overview::before {
-  content: '';
+.welcome-modal-glow {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, transparent 0%, #ffd700 50%, transparent 100%);
-}
-
-.performance-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.stat-box {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.5rem 1.2rem;
-  background: linear-gradient(145deg, rgba(26,31,46,0.8) 0%, rgba(38,42,63,0.6) 100%);
-  border: 1px solid rgba(255,215,0,0.1);
-  border-radius: 12px;
-  transition: all 0.3s ease;
-  min-width: 0;
-  flex: 1;
-}
-
-.stat-box:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255,215,0,0.1);
-  border-color: rgba(255,215,0,0.3);
-}
-
-.stat-icon {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255,215,0,0.1);
   border-radius: 50%;
-  color: #ffd700;
-  font-size: 1.2rem;
-  flex-shrink: 0;
+  pointer-events: none;
+  z-index: 0;
 }
 
-.stat-info {
-  text-align: left;
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
+.welcome-modal-glow--primary {
+  top: -80px;
+  right: -60px;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.25) 0%, transparent 70%);
 }
 
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #ffd700;
-  line-height: 1.2;
-  word-break: break-all;
-  overflow-wrap: break-word;
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.welcome-modal-glow--secondary {
+  bottom: -60px;
+  left: -40px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(240, 147, 251, 0.15) 0%, transparent 70%);
 }
 
-.stat-value.profit-positive {
-  color: #01b622 !important;
-}
-
-.stat-value.profit-negative {
-  color: #e74c3c !important;
-}
-
-.stat-label {
-  font-size: 0.9rem;
-  color: #a0a0a0;
-  margin-top: 0.25rem;
-}
-
-.announcement-info {
-  background: rgba(255,215,0,0.05);
-  border-radius: 12px;
-  padding: 1.5rem;
-  border: 1px solid rgba(255,215,0,0.1);
-}
-
-.announcement-header {
+.welcome-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  color: #ffd700;
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
-.announcement-content {
-  color: #e0e0e0;
-  line-height: 1.6;
-  font-size: 1rem;
-}
-
-.community-highlight {
-  margin: 2rem 0;
-}
-
-.community-benefits {
-  background: linear-gradient(135deg, rgba(255,215,0,0.05) 0%, rgba(255,215,0,0.02) 100%);
-  border-radius: 16px;
-  padding: 1.75rem;
-  border: 1px solid rgba(255,215,0,0.1);
-}
-
-.community-benefits h4 {
-  color: #ffd700;
-  margin-bottom: 1.25rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-base);
 }
 
-.benefits-list {
-  list-style: none;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1rem;
-  max-width: 800px;
-  margin: 0 auto;
+.welcome-close-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
-.benefits-list li {
+.welcome-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-color: rgba(102, 126, 234, 0.4);
+}
+
+.welcome-modal-body {
+  position: relative;
+  z-index: 1;
+  padding: 2rem;
+}
+
+.welcome-profile-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  color: #e0e0e0;
-  font-size: 1rem;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.welcome-avatar-ring {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  padding: 3px;
+  background: var(--primary-gradient);
+}
+
+.welcome-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--bg-primary);
+}
+
+.welcome-profile-info {
+  min-width: 0;
+}
+
+.welcome-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  margin-bottom: 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  background: rgba(102, 126, 234, 0.12);
+  border: 1px solid rgba(102, 126, 234, 0.24);
+}
+
+.welcome-trader-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 4px;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.welcome-trader-title {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
   line-height: 1.4;
 }
 
-.benefits-list li i {
-  color: #01b622;
-  flex-shrink: 0;
+.welcome-tagline {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
 
-.welcome-cta {
-  margin-top: 2.5rem;
+.welcome-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 1.5rem;
 }
 
-.btn-community-primary {
-  background: linear-gradient(135deg, #ffd700 0%, #ffb300 100%);
-  color: #1a1a2e;
-  border: none;
-  border-radius: 30px;
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: inline-flex;
+.welcome-stat-card {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
-  box-shadow: 0 4px 20px rgba(255,215,0,0.3);
+  gap: 6px;
+  padding: 1rem 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-base);
 }
 
-.btn-community-primary:hover {
+.welcome-stat-card:hover {
+  border-color: rgba(102, 126, 234, 0.3);
+  background: rgba(102, 126, 234, 0.06);
   transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(255,215,0,0.4);
-  background: linear-gradient(135deg, #ffed4e 0%, #ffc107 100%);
 }
 
-.btn-community-primary:active {
+.welcome-stat-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--primary-gradient);
+  color: white;
+}
+
+.welcome-stat-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.welcome-stat-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  word-break: break-all;
+}
+
+.welcome-stat-value.positive {
+  color: var(--color-success);
+}
+
+.welcome-stat-value.negative {
+  color: var(--color-danger);
+}
+
+.welcome-stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.welcome-announcement {
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  border-radius: var(--border-radius);
+}
+
+.welcome-announcement-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: #fbbf24;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.welcome-announcement-header svg {
+  width: 16px;
+  height: 16px;
+}
+
+.welcome-announcement-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.welcome-announcement-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.welcome-benefits {
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.welcome-benefits-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.welcome-benefits-title svg {
+  width: 20px;
+  height: 20px;
+  color: var(--color-primary);
+}
+
+.welcome-benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.welcome-benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--border-radius-sm);
+  background: rgba(102, 126, 234, 0.06);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+.welcome-benefit-item svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--color-success);
+}
+
+.welcome-cta-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border: none;
+  border-radius: var(--border-radius);
+  background: var(--primary-gradient);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-glow);
+}
+
+.welcome-cta-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.welcome-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.45);
+}
+
+.welcome-cta-btn:active {
   transform: translateY(0);
 }
 
-/* Responsive adjustments for welcome modal */
 @media (max-width: 768px) {
-  .welcome-content {
-    padding: 1.5rem;
+  .welcome-modal-body {
+    padding: 1.5rem 1.25rem;
   }
-  
-  .teacher-intro {
-    font-size: 1.5rem;
+
+  .welcome-profile-header {
+    flex-direction: column;
+    text-align: center;
   }
-  
-  .performance-stats {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
-  .benefits-list {
+
+  .welcome-stats-grid {
     grid-template-columns: 1fr;
   }
-  
-  .btn-community-primary {
-    font-size: 1rem;
-    padding: 0.875rem 1.75rem;
+
+  .welcome-benefits-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .welcome-trader-name {
+    font-size: 1.25rem;
+  }
+
+  .welcome-modal-dialog {
+    margin: 12px;
+    max-width: calc(100% - 24px);
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-profile-content {
+    padding: var(--spacing-md);
+    padding-top: var(--spacing-lg);
+  }
+
+  .mobile-avatar-wrapper {
+    width: 72px;
+    height: 72px;
+  }
+
+  .mobile-name-large {
+    font-size: 20px;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .mobile-stats-row {
+    padding: var(--spacing-md) 0;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .stat-number-large {
+    font-size: 16px;
+  }
+
+  .stat-label-small {
+    font-size: 11px;
+  }
+
+  .mobile-action-buttons {
+    gap: var(--spacing-sm);
+  }
+
+  .mobile-follow-btn {
+    font-size: 15px;
+    padding: 12px;
+  }
+
+  .main-content {
+    padding: var(--spacing-sm);
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .strategy-section.mobile-strategy-prominent {
+    padding: var(--spacing-md);
+    margin-top: var(--spacing-md);
+  }
+
+  .strategy-section.mobile-strategy-prominent .section-title {
+    font-size: 20px;
+  }
+
+  .strategy-section.mobile-strategy-prominent .tab-button {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+
+  .welcome-modal-body {
+    padding: 1.25rem 1rem;
+  }
+
+  .welcome-cta-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .contact-popup {
+    width: calc(100% - 32px);
+    left: 16px;
+    right: 16px;
+    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
 }
 

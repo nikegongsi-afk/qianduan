@@ -78,10 +78,11 @@ onMounted(() => {
 
 <style scoped>
 .partner-organizations-footer {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border-top: 2px solid rgba(255, 215, 0, 0.2);
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
   padding: 40px 20px;
-  margin-top: 60px;
+  margin-top: 40px;
+  padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
 }
 
 .partner-section {
@@ -90,20 +91,21 @@ onMounted(() => {
 }
 
 .partner-title {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 700;
-  color: #FFD700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   text-align: center;
-  margin-bottom: 30px;
-  letter-spacing: 1px;
+  margin-bottom: 24px;
 }
 
 .partner-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 24px;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+  align-items: stretch;
 }
 
 .partner-card {
@@ -111,31 +113,31 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px 24px;
-  background: linear-gradient(135deg, rgba(35, 43, 62, 0.8) 0%, rgba(26, 35, 62, 0.9) 100%);
-  border: 1.5px solid rgba(255, 215, 0, 0.2);
-  border-radius: 12px;
+  padding: 16px 12px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 160px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all var(--transition-base);
+  min-width: 0;
 }
 
 .partner-card:hover {
-  transform: translateY(-5px);
-  border-color: #FFD700;
-  box-shadow: 0 8px 24px rgba(255, 215, 0, 0.3);
-  background: linear-gradient(135deg, rgba(35, 43, 62, 0.95) 0%, rgba(26, 35, 62, 0.95) 100%);
+  transform: translateY(-3px);
+  border-color: rgba(102, 126, 234, 0.4);
+  box-shadow: var(--shadow-glow);
 }
 
 .partner-logo {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 12px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: var(--border-radius-sm);
   background: rgba(255, 255, 255, 0.05);
   overflow: hidden;
 }
@@ -153,14 +155,14 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #FFD700;
-  font-size: 2rem;
+  color: var(--color-primary);
+  font-size: 1.75rem;
 }
 
 .partner-name {
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-secondary);
   text-align: center;
   word-break: break-word;
   line-height: 1.4;
@@ -169,51 +171,53 @@ onMounted(() => {
 /* 响应式设计 */
 @media (max-width: 768px) {
   .partner-organizations-footer {
-    padding: 30px 16px;
+    padding: 28px 16px;
+    margin-top: 24px;
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
   }
 
   .partner-title {
-    font-size: 1.3rem;
-    margin-bottom: 24px;
+    font-size: 1.15rem;
+    margin-bottom: 20px;
   }
 
   .partner-list {
-    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
   }
 
   .partner-card {
-    min-width: 140px;
-    padding: 16px 20px;
+    padding: 14px 10px;
   }
 
   .partner-logo {
-    width: 60px;
-    height: 60px;
-    margin-bottom: 10px;
+    width: 52px;
+    height: 52px;
+    margin-bottom: 8px;
   }
 
   .partner-name {
-    font-size: 0.9rem;
+    font-size: 0.8125rem;
   }
 }
 
 @media (max-width: 480px) {
   .partner-list {
-    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
 
   .partner-card {
-    min-width: 120px;
-    padding: 14px 16px;
+    padding: 12px 8px;
   }
 
   .partner-logo {
-    width: 50px;
-    height: 50px;
+    width: 44px;
+    height: 44px;
   }
 
   .partner-name {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
   }
 }
 </style>

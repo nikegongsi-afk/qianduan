@@ -20,7 +20,7 @@
               <span class="stat-text">Total Videos</span>
             </div>
             <div class="hero-stat-badge vip">
-              <span class="stat-number">{{ Object.values(vedioslist).filter(v => !v.ispublic).length || 0 }}</span>
+              <span class="stat-number">{{ Object.values(vedioslist).filter(v => isVipContent(v)).length || 0 }}</span>
               <span class="stat-text">VIP Content</span>
             </div>
           </div>
@@ -69,7 +69,7 @@
               <div class="video-preview-container" @click="playVideo($event, value)">
                 <div class="video-preview-wrapper">
                   <video 
-                    :src="(value.ispublic || userStore.token) ? value.video_url : ''" 
+                    :src="canAccessContent(value, userStore) ? value.video_url : ''" 
                     :poster="value.thumbnail || ''"
                     preload="metadata"
                     class="video-preview"
@@ -87,7 +87,7 @@
                       </svg>
                     </div>
                   </div>
-                  <div v-if="!value.ispublic" class="video-vip-tag">
+                  <div v-if="isVipContent(value)" class="video-vip-tag">
                     <svg viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
                     </svg>
@@ -147,6 +147,12 @@ import navcomponent from '../component/nav/nav.vue';
 import PartnerOrganizations from '@/components/PartnerOrganizations.vue';
 import { getvideos } from '../../api/module/web/index';
 import { useUserStore } from '@/store';
+import {
+  canAccessContent,
+  ensureContentAccess,
+  isPublicContent,
+  isVipContent,
+} from '@/utils/contentAccess';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -227,14 +233,14 @@ const setFilter = (filter: string) => {
     filteredVideos.value = vedioslist.value;
   } else if (filter === 'free') {
     filteredVideos.value = Object.keys(vedioslist.value).reduce((acc, key) => {
-      if (vedioslist.value[key].ispublic) {
+      if (isPublicContent(vedioslist.value[key])) {
         acc[key] = vedioslist.value[key];
       }
       return acc;
     }, {} as any);
   } else if (filter === 'vip') {
     filteredVideos.value = Object.keys(vedioslist.value).reduce((acc, key) => {
-      if (!vedioslist.value[key].ispublic) {
+      if (isVipContent(vedioslist.value[key])) {
         acc[key] = vedioslist.value[key];
       }
       return acc;
@@ -246,9 +252,7 @@ const playVideo = (event: Event, videoData: any) => {
   event.preventDefault();
   event.stopPropagation();
   
-  if (!videoData.ispublic && !userStore.token) {
-    alert('Please login to watch VIP videos');
-    router.push('/userlogin');
+  if (!ensureContentAccess(videoData, userStore, router, 'video')) {
     return;
   }
   
@@ -304,9 +308,7 @@ const playVideo = (event: Event, videoData: any) => {
 const watchVideo = (videoData: any) => {
   console.log('观看视频:', videoData);
   
-  if (!videoData.ispublic && !userStore.token) {
-    alert('Please login to watch VIP videos');
-    router.push('/userlogin');
+  if (!ensureContentAccess(videoData, userStore, router, 'video')) {
     return;
   }
   
@@ -757,33 +759,38 @@ const watchVideo = (videoData: any) => {
 
 @media (max-width: 768px) {
   .video-hero-banner {
-    padding: 60px 24px;
+    padding: 48px 20px 36px;
   }
   
   .hero-title {
-    font-size: 40px;
+    font-size: clamp(1.5rem, 6vw, 2.25rem);
   }
   
   .hero-description {
-    font-size: 18px;
+    font-size: 15px;
   }
   
   .hero-stats {
-    gap: 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
   }
   
   .hero-stat-badge {
-    padding: 16px 24px;
-    min-width: 120px;
+    padding: 14px 18px;
+    min-width: 0;
+    flex: 1 1 calc(50% - 12px);
+    max-width: calc(50% - 6px);
   }
   
   .stat-number {
-    font-size: 28px;
+    font-size: 24px;
   }
   
   .video-content-area {
     grid-template-columns: 1fr;
-    padding: 30px 20px;
+    padding: 24px 16px 48px;
+    gap: 24px;
   }
   
   .video-sidebar {
@@ -823,37 +830,49 @@ const watchVideo = (videoData: any) => {
 }
 
 @media (max-width: 480px) {
+  .video-hero-banner {
+    padding: 40px 16px 28px;
+  }
+
   .hero-title {
-    font-size: 32px;
+    font-size: 1.5rem;
   }
   
   .hero-description {
-    font-size: 16px;
+    font-size: 14px;
   }
   
   .hero-stat-badge {
-    padding: 12px 20px;
-    min-width: 100px;
+    flex: 1 1 100%;
+    max-width: 100%;
+    padding: 12px 16px;
   }
   
   .stat-number {
-    font-size: 24px;
+    font-size: 22px;
   }
   
   .video-content-area {
-    padding: 20px 16px;
+    padding: 20px 12px 40px;
   }
   
   .video-item {
-    padding: 16px;
+    padding: 14px;
   }
   
   .video-name {
-    font-size: 18px;
+    font-size: 17px;
   }
   
   .video-summary {
-    font-size: 14px;
+    font-size: 13px;
+  }
+
+  .filter-option {
+    min-width: 0;
+    flex: 1 1 calc(50% - 8px);
+    font-size: 13px;
+    padding: 10px 8px;
   }
 }
 </style>

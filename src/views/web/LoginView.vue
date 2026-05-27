@@ -516,8 +516,8 @@ const handleLogin = async () => {
   }
   
   .form-input {
-    padding: 12px 14px;
-    font-size: 14px;
+    padding: 14px 16px;
+    font-size: 16px;
   }
   
   .submit-btn {

@@ -344,29 +344,6 @@
     </div>
      <!-- Avatar Preview Modal -->
     <div class="profile-badges-floating">
-        <a href="/leaderboard" style="text-decoration: none; color: inherit;">
-            <div class="badge-item" style="cursor:pointer;">
-                <div class="badge-row">
-                    <span class="badge-icon-container">
-                        <span class="badge-icon">
-                            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="trophyGold" x1="6" y1="7" x2="16" y2="14" gradientUnits="userSpaceOnUse">
-                                        <stop stop-color="#FFD700"/>
-                                        <stop offset="1" stop-color="#FFA500"/>
-                                    </linearGradient>
-                                </defs>
-                                <ellipse cx="11" cy="20" rx="7" ry="2" fill="#FFD700" opacity="0.18"/>
-                                <path d="M6 7C6 4 16 4 16 7C16 10 14 14 11 14C8 14 6 10 6 7Z" fill="url(#trophyGold)" stroke="#FFD700" stroke-width="1.2"/>
-                                <rect x="9" y="14" width="4" height="3" rx="1" fill="#FFD700" stroke="#FFD700" stroke-width="1"/>
-                            </svg>
-                        </span>
-                        <span class="badge-label">LB</span>
-                    </span>
-                </div>
-                
-            </div>
-        </a>
         <a href="/vip" style="text-decoration: none; color: inherit;">
             <div class="badge-item" style="cursor:pointer;">
                 <div class="badge-row">

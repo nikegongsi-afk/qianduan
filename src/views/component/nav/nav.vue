@@ -1,5 +1,5 @@
 <template>
-  <nav class="modern-nav">
+  <nav class="modern-nav" :class="{ 'nav-menu-open': mobileMenuOpen }">
     <div class="nav-container">
       <!-- Logo区域 -->
       <div class="nav-logo">
@@ -33,10 +33,6 @@
           <span class="nav-icon">🤖</span>
           <span class="nav-label">AI Tools</span>
         </a>
-        <a href="/leaderboard" class="nav-item">
-          <span class="nav-icon">🏆</span>
-          <span class="nav-label">Ranking</span>
-        </a>
         <a href="/vip" class="nav-item nav-item-vip">
           <span class="nav-icon">💎</span>
           <span class="nav-label">VIP</span>
@@ -54,7 +50,7 @@
         </button>
         
         <!-- 移动端菜单按钮 -->
-        <button class="mobile-menu-btn" @click="toggleMobileMenu">
+        <button type="button" class="mobile-menu-btn" @click="toggleMobileMenu" aria-label="Toggle menu" :aria-expanded="mobileMenuOpen">
           <span class="menu-icon" :class="{ active: mobileMenuOpen }">
             <span></span>
             <span></span>
@@ -64,59 +60,66 @@
       </div>
     </div>
 
-    <!-- 移动端菜单 - 全新侧边栏设计 -->
-    <div class="mobile-menu" :class="{ active: mobileMenuOpen }" @click.self="closeMobileMenu">
-      <div class="mobile-menu-content" @click.stop>
-        <div class="mobile-menu-header">
-          <div class="mobile-menu-title">Menu</div>
-          <button class="mobile-menu-close" @click="closeMobileMenu">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-        
-        <div class="mobile-menu-body">
-          <a href="/" class="mobile-nav-item" @click="closeMobileMenu">
-            <span class="nav-icon">🏠</span>
-            <span>Home</span>
-          </a>
-          <a href="/videos" class="mobile-nav-item" @click="closeMobileMenu">
-            <span class="nav-icon">🎬</span>
-            <span>Videos</span>
-          </a>
-          <a href="/documents" class="mobile-nav-item" @click="closeMobileMenu">
-            <span class="nav-icon">📄</span>
-            <span>Documents</span>
-          </a>
-          <a href="/AITools" class="mobile-nav-item" @click="closeMobileMenu">
-            <span class="nav-icon">🤖</span>
-            <span>AI Tools</span>
-          </a>
-          <a href="/leaderboard" class="mobile-nav-item" @click="closeMobileMenu">
-            <span class="nav-icon">🏆</span>
-            <span>Leaderboard</span>
-          </a>
-          <a href="/vip" class="mobile-nav-item mobile-nav-item-vip" @click="closeMobileMenu">
-            <span class="nav-icon">💎</span>
-            <span>VIP Center</span>
-          </a>
-          <button v-if="userrole=='admin' || userrole=='superadmin'" @click="toadmin" class="mobile-nav-item mobile-btn-admin">
-            <span class="nav-icon">⚙️</span>
-            <span>Admin Panel</span>
-          </button>
-          <button @click="loginto" class="mobile-nav-item mobile-btn-login">
-            <span>{{ logintext }}</span>
-          </button>
+    <!-- 移动端菜单挂载到 body，避免被导航栏 backdrop-filter 限制 -->
+    <Teleport to="body">
+      <div
+        v-if="mobileMenuOpen"
+        class="mobile-menu active"
+        @click.self="closeMobileMenu"
+      >
+        <div class="mobile-menu-content" @click.stop>
+          <div class="mobile-menu-header">
+            <div class="mobile-menu-title">Menu</div>
+            <button type="button" class="mobile-menu-close" @click="closeMobileMenu" aria-label="Close menu">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="mobile-menu-body">
+            <a href="/" class="mobile-nav-item" @click="closeMobileMenu">
+              <span class="nav-icon">🏠</span>
+              <span>Home</span>
+            </a>
+            <a href="/videos" class="mobile-nav-item" @click="closeMobileMenu">
+              <span class="nav-icon">🎬</span>
+              <span>Videos</span>
+            </a>
+            <a href="/documents" class="mobile-nav-item" @click="closeMobileMenu">
+              <span class="nav-icon">📄</span>
+              <span>Documents</span>
+            </a>
+            <a href="/AITools" class="mobile-nav-item" @click="closeMobileMenu">
+              <span class="nav-icon">🤖</span>
+              <span>AI Tools</span>
+            </a>
+            <a href="/vip" class="mobile-nav-item mobile-nav-item-vip" @click="closeMobileMenu">
+              <span class="nav-icon">💎</span>
+              <span>VIP Center</span>
+            </a>
+            <button
+              v-if="userrole=='admin' || userrole=='superadmin'"
+              type="button"
+              @click="toadmin"
+              class="mobile-nav-item mobile-btn-admin"
+            >
+              <span class="nav-icon">⚙️</span>
+              <span>Admin Panel</span>
+            </button>
+            <button type="button" @click="loginto" class="mobile-nav-item mobile-btn-login">
+              <span>{{ logintext }}</span>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router';
 import { gettrader_profiles } from '../../../api/module/web/index'
 import { useUserStore } from '@/store';
@@ -186,6 +189,16 @@ const toggleMobileMenu = () => {
 const closeMobileMenu = () => {
   mobileMenuOpen.value = false;
 }
+
+watch(mobileMenuOpen, (open) => {
+  document.body.classList.toggle('mobile-nav-open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+});
+
+onUnmounted(() => {
+  document.body.classList.remove('mobile-nav-open');
+  document.body.style.overflow = '';
+});
 </script>
 
 <style scoped>
@@ -193,11 +206,24 @@ const closeMobileMenu = () => {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: rgba(10, 14, 39, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(10, 14, 39, 0.92);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.modern-nav.nav-menu-open {
+  z-index: 2100;
+}
+
+.modern-nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: -1;
+  pointer-events: none;
 }
 
 .nav-container {
@@ -381,8 +407,6 @@ const closeMobileMenu = () => {
   height: 44px;
   padding: 0;
   background: var(--bg-glass);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   cursor: pointer;
@@ -390,7 +414,9 @@ const closeMobileMenu = () => {
   justify-content: center;
   transition: all var(--transition-base);
   position: relative;
-  z-index: 1001;
+  z-index: 1;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .mobile-menu-btn:hover {
@@ -422,7 +448,7 @@ const closeMobileMenu = () => {
 }
 
 .menu-icon.active span:nth-child(1) {
-  transform: rotate(45deg) translate(7px, 7px);
+  transform: rotate(45deg) translate(5px, 5px);
   background: var(--color-primary);
 }
 
@@ -432,70 +458,60 @@ const closeMobileMenu = () => {
 }
 
 .menu-icon.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(7px, -7px);
+  transform: rotate(-45deg) translate(5px, -5px);
   background: var(--color-primary);
 }
 
-/* 移动端菜单 - 全新设计 */
+/* 移动端侧栏菜单（Teleport 到 body） */
 .mobile-menu {
-  display: none;
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1000;
-  pointer-events: none;
-}
-
-.mobile-menu.active {
-  pointer-events: all;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .mobile-menu::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.65);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.mobile-menu.active::before {
-  opacity: 1;
 }
 
 .mobile-menu-content {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 85%;
-  max-width: 320px;
+  position: relative;
+  width: min(320px, 85vw);
   height: 100%;
   background: var(--bg-primary);
   border-left: 1px solid var(--border-color);
   box-shadow: -4px 0 24px rgba(0, 0, 0, 0.5);
-  padding: 0;
   display: flex;
   flex-direction: column;
-  transform: translateX(100%);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  animation: mobileMenuSlideIn 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.mobile-menu.active .mobile-menu-content {
-  transform: translateX(0);
+@keyframes mobileMenuSlideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 .mobile-menu-header {
-  padding: 20px;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 16px 16px;
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: var(--bg-glass);
+  flex-shrink: 0;
 }
 
 .mobile-menu-title {
@@ -508,8 +524,10 @@ const closeMobileMenu = () => {
 }
 
 .mobile-menu-close {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   border-radius: 8px;
   background: var(--bg-glass);
   border: 1px solid var(--border-color);
@@ -519,6 +537,7 @@ const closeMobileMenu = () => {
   justify-content: center;
   cursor: pointer;
   transition: all var(--transition-base);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .mobile-menu-close:hover {
@@ -543,7 +562,8 @@ const closeMobileMenu = () => {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 16px;
+  padding: 14px 16px;
+  min-height: 48px;
   border-radius: 14px;
   text-decoration: none;
   color: var(--text-primary);
@@ -551,10 +571,13 @@ const closeMobileMenu = () => {
   font-weight: 500;
   background: var(--bg-glass);
   border: 1px solid var(--border-color);
-  transition: all var(--transition-base);
+  transition: background var(--transition-base), border-color var(--transition-base);
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .mobile-nav-item::before {
@@ -572,7 +595,6 @@ const closeMobileMenu = () => {
 .mobile-nav-item:hover,
 .mobile-nav-item:active {
   background: var(--bg-glass-hover);
-  transform: translateX(4px);
   border-color: rgba(102, 126, 234, 0.3);
 }
 
@@ -646,10 +668,6 @@ const closeMobileMenu = () => {
     display: flex;
   }
   
-  .mobile-menu {
-    display: block;
-  }
-  
   .logo-text {
     max-width: 150px;
   }
@@ -664,6 +682,8 @@ const closeMobileMenu = () => {
   
   .btn-admin {
     padding: 10px 12px;
+    min-width: 44px;
+    min-height: 44px;
   }
   
   .btn-login {
@@ -676,6 +696,7 @@ const closeMobileMenu = () => {
   .nav-container {
     padding: 12px 16px;
     gap: 12px;
+    min-height: 52px;
   }
   
   .logo-icon {
@@ -688,27 +709,18 @@ const closeMobileMenu = () => {
     font-size: 16px;
     max-width: 140px;
   }
-  
+
+  .btn-login,
   .btn-admin {
-    padding: 8px;
-    min-width: 40px;
-  }
-  
-  .btn-admin span:first-child {
-    font-size: 18px;
-  }
-  
-  .btn-login {
     display: none;
   }
   
   .mobile-menu-content {
-    width: 80%;
-    max-width: 300px;
+    width: min(300px, 80vw);
   }
   
   .mobile-menu-header {
-    padding: 16px;
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 14px 14px;
   }
   
   .mobile-menu-title {
@@ -723,6 +735,7 @@ const closeMobileMenu = () => {
   .mobile-nav-item {
     padding: 14px;
     font-size: 15px;
+    min-height: 48px;
   }
   
   .mobile-nav-item .nav-icon {
@@ -748,8 +761,10 @@ const closeMobileMenu = () => {
   }
   
   .mobile-menu-btn {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
   }
   
   .menu-icon {
@@ -759,7 +774,7 @@ const closeMobileMenu = () => {
   }
   
   .mobile-menu-content {
-    width: 85%;
+    width: min(300px, 88vw);
   }
   
   .mobile-nav-item {

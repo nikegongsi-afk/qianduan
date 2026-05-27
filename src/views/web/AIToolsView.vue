@@ -1,31 +1,25 @@
 <template>
-  <div class="ai-tools-page">
-     <navcomponent></navcomponent>
-    <!-- Navigation Bar -->
-    <!-- <nav class="navbar navbar-expand-lg navbar-dark mb-3">
-      <div class="container">
-        <a class="navbar-brand" href="/">
-          <i class="bi bi-graph-up me-2"></i>
-          {{ traderInfo.homeTopTitle || 'AI Trading Platform' }}
-        </a>
-        <div class="navbar-nav ms-auto">
-          <a href="/" class="back-btn">
-            <i class="bi bi-arrow-left"></i>
-            Back to Home
-          </a>
+  <div class="ai-page-container">
+    <navcomponent></navcomponent>
+
+    <div class="ai-page-wrapper">
+      <div class="ai-hero-banner">
+        <div class="hero-content">
+          <div class="hero-icon-large">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+              <circle cx="12" cy="5" r="2"></circle>
+              <path d="M12 7v4"></path>
+              <line x1="8" y1="16" x2="8.01" y2="16"></line>
+              <line x1="16" y1="16" x2="16.01" y2="16"></line>
+            </svg>
+          </div>
+          <h1 class="hero-title">AI Trading Tools</h1>
+          <p class="hero-description">Advanced AI-powered stock analysis and selection tools</p>
         </div>
       </div>
-    </nav> -->
 
-    <!-- AI Header -->
-    <div class="ai-header">
-      <div class="container">
-        <h1><i class="bi bi-robot"></i> AI Trading Tools</h1>
-        <p>Advanced AI-powered stock analysis and selection tools</p>
-      </div>
-    </div>
-
-    <div class="container ai-tools-container">
+      <div class="ai-content-area">
       <!-- AI Stock Picker -->
       <div class="ai-tool-card">
         <div class="tool-header">
@@ -36,9 +30,10 @@
             <h3>AI Smart Stock Picker</h3>
             <p>Intelligent stock selection based on market data, technical analysis, and AI algorithms</p>
           </div>
-          <div>
-            <a href="/ai-history" style="color: #ffffff;">AI history data</a>
-          </div>
+          <a href="/ai-history" class="history-link">
+            <i class="bi bi-clock-history"></i>
+            AI History
+          </a>
         </div>
         
         <div class="tool-content">
@@ -132,9 +127,9 @@
           <div class="results-section">
             <h4><i class="bi bi-trophy"></i> AI Recommendations</h4>
             <div id="stockPickerResults" v-if="!isStockPickerLoading">
-              <div v-if="stockRecommendations.length === 0 && !stockPickerError" class="text-center text-muted" style="padding: 3rem 0;">
-                <i class="bi bi-robot" style="font-size: 3rem; opacity: 0.3;"></i>
-                <p style="margin-top: 1rem; color: aqua;">Configure your criteria and click "Generate AI Recommendations" to get started</p>
+              <div v-if="stockRecommendations.length === 0 && !stockPickerError" class="empty-state">
+                <div class="empty-icon"><i class="bi bi-robot"></i></div>
+                <p>Configure your criteria and click "Generate AI Recommendations" to get started</p>
               </div>
               <div v-if="stockPickerError" class="alert alert-danger">
                 <i class="bi bi-exclamation-triangle"></i>
@@ -290,7 +285,7 @@
               <div class="spinner-border" role="status">
                 <span class="visually-hidden">Analyzing...</span>
               </div>
-              <p style="margin-top: 1rem;">AI is analyzing market data...</p>
+              <p class="loading-text">AI is analyzing market data...</p>
             </div>
             
           </div>
@@ -314,8 +309,8 @@
             <h4><i class="bi bi-input-cursor"></i> Portfolio Stock Analysis</h4>
             
             <label class="form-label">Stock Symbol</label>
-            <input type="text" class="form-control" v-model="portfolioData.symbol" 
-                   placeholder="Enter stock symbol (e.g., AAPL, TSLA)" style="text-transform: uppercase;"
+            <input type="text" class="form-control uppercase-input" v-model="portfolioData.symbol"
+                   placeholder="Enter stock symbol (e.g., AAPL, TSLA)"
                    @input="formatStockSymbol" @keypress.enter="runPortfolioDiagnosis">
             
             <label class="form-label">Purchase Price</label>
@@ -354,9 +349,9 @@
           <div class="results-section">
             <h4><i class="bi bi-clipboard-data"></i> Diagnosis Report</h4>
             <div id="stockDiagnosisResults" v-if="!isDiagnosisLoading">
-              <div v-if="!stockDiagnosis && !diagnosisError" class="text-center text-muted" style="padding: 3rem 0;">
-                <i class="bi bi-search" style="font-size: 3rem; opacity: 0.3;"></i>
-                <p style="margin-top: 1rem;color: aqua;">Enter a stock symbol and click "Run AI Diagnosis" to analyze</p>
+              <div v-if="!stockDiagnosis && !diagnosisError" class="empty-state">
+                <div class="empty-icon"><i class="bi bi-search"></i></div>
+                <p>Enter a stock symbol and click "Run AI Diagnosis" to analyze</p>
               </div>
               <div v-if="diagnosisError" class="alert alert-danger">
                 <i class="bi bi-exclamation-triangle"></i>
@@ -453,13 +448,13 @@
               <div class="spinner-border" role="status">
                 <span class="visually-hidden">Diagnosing...</span>
               </div>
-              <p style="margin-top: 1rem;">AI is performing deep analysis...</p>
+              <p class="loading-text">AI is performing deep analysis...</p>
             </div>
           </div>
         </div>
       </div>
+      </div>
     </div>
-    <!-- 合作单位 -->
     <PartnerOrganizations />
   </div>
 </template>
@@ -909,250 +904,392 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.ai-tools-page {
-  background: linear-gradient(145deg, #13141f 0%, #181c2b 100%);
-  color: #ffffff;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  margin: 0;
-  padding: 0;
+.ai-page-container {
   min-height: 100vh;
+  background: var(--bg-primary);
+  width: 100%;
 }
 
-.navbar {
-  background: linear-gradient(90deg, #181c2b 0%, #13141f 100%);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #ffd700;
+.ai-page-wrapper {
+  width: 100%;
 }
 
-.navbar-brand {
-  font-weight: 600;
-  font-size: 1rem;
-  color: #ffd700;
-}
-
-.ai-header {
-  background: linear-gradient(135deg, #ffb300 0%, #ffd700 50%, #b8860b 100%);
-  padding: 3rem 0;
-  text-align: center;
+/* Hero */
+.ai-hero-banner {
   position: relative;
+  padding: 72px 40px;
+  background: var(--primary-gradient);
   overflow: hidden;
 }
 
-.ai-header::before {
+.ai-hero-banner::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="circuit" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M10,5 L15,10 L10,15 L5,10 Z" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23circuit)"/></svg>') repeat;
-  opacity: 0.1;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+  pointer-events: none;
 }
 
-.ai-header h1 {
-  font-size: 3rem;
-  font-weight: 700;
-  color: #13141f;
-  margin-bottom: 1rem;
-  text-shadow: 0 2px 10px rgba(255,255,255,0.2);
+.hero-content {
   position: relative;
   z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
 }
 
-.ai-header p {
-  font-size: 1.2rem;
-  color: #13141f;
-  opacity: 0.9;
-  margin-bottom: 0;
-  position: relative;
-  z-index: 1;
+.hero-icon-large {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 24px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
 }
 
-.ai-tools-container {
-  padding: 2rem 0;
+.hero-icon-large svg {
+  width: 44px;
+  height: 44px;
+}
+
+.hero-title {
+  font-size: 48px;
+  font-weight: 900;
+  color: white;
+  margin: 0 0 16px;
+  letter-spacing: -0.5px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.hero-description {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Content */
+.ai-content-area {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 48px 40px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 
 .ai-tool-card {
-  background: linear-gradient(145deg, #181c2b 0%, #13141f 100%);
-  border-radius: 15px;
-  margin-bottom: 2rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-  position: relative;
-  overflow: hidden;
-  border-top: 3px solid #ffd700;
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-md);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
 .ai-tool-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-  border-color: var(--gold-color);
-}
-
-.ai-tool-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--ai-gradient);
+  border-color: rgba(102, 126, 234, 0.35);
+  box-shadow: var(--shadow-lg);
 }
 
 .tool-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 16px;
+  padding-bottom: 24px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
 }
 
 .tool-icon {
-  background: linear-gradient(135deg, #ffd700 0%, #ffb300 100%);
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--primary-gradient);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 1rem;
+  color: white;
+  font-size: 1.35rem;
   flex-shrink: 0;
-  color: #1a1a2e;
-  font-size: 1.25rem;
+  box-shadow: var(--shadow-glow);
 }
 
 .tool-title {
   flex: 1;
+  min-width: 200px;
 }
 
 .tool-title h3 {
-  color: #ffffff;
-  margin: 0;
+  margin: 0 0 6px;
   font-size: 1.5rem;
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .tool-title p {
-  color: #a0a0a0;
-  margin: 0.25rem 0 0 0;
+  margin: 0;
   font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.history-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(102, 126, 234, 0.12);
+  border: 1px solid rgba(102, 126, 234, 0.28);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+}
+
+.history-link:hover {
+  background: rgba(102, 126, 234, 0.22);
+  border-color: rgba(102, 126, 234, 0.45);
+  color: white;
+  transform: translateY(-1px);
 }
 
 .tool-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-top: 1.5rem;
+  gap: 24px;
+  margin-top: 16px;
 }
 
-.input-section {
-  background: rgba(255,215,0,0.05);
-  border: 1px solid #2a2a3a;
-  border-radius: 12px;
-  padding: 1.5rem;
+.input-section,
+.results-section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 24px;
 }
 
-.input-section h4 {
-  color: #ffd700;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
+.input-section h4,
+.results-section h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
-.form-control, .form-select {
-  background-color: #1a1a2e;
-  border: 1px solid #2a2a3a;
-  color: #ffffff;
-  border-radius: 8px;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
+.input-section h4 i,
+.results-section h4 i {
+  color: var(--color-primary);
 }
 
-.form-control:focus, .form-select:focus {
-  background-color: #1a1a2e;
-  border-color: #ffd700;
-  color: #ffffff;
-  box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.form-control,
+.form-select {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: var(--border-radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+  transition: all var(--transition-base);
+}
+
+.form-control:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  background: rgba(102, 126, 234, 0.06);
+}
+
+.form-select option {
+  background: #1a1f3a;
+  color: white;
+}
+
+.form-range {
+  width: 100%;
+  accent-color: var(--color-primary);
+}
+
+.risk-tolerance-slider {
+  margin-bottom: 20px;
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.current-value {
+  text-align: center;
+  margin-top: 10px;
+  font-weight: 600;
+  color: var(--color-primary);
+  font-size: 0.9rem;
 }
 
 .btn-ai {
-  background: linear-gradient(90deg, #ffd700 0%, #b8860b 100%);
-  border: none;
-  color: #13141f;
-  padding: 0.75rem 2rem;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  width: 100%;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  border: none;
+  border-radius: var(--border-radius);
+  background: var(--primary-gradient);
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-glow);
 }
 
-.btn-ai:hover {
+.btn-ai:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
-  color: #13141f;
+  box-shadow: 0 8px 28px rgba(102, 126, 234, 0.45);
 }
 
 .btn-ai:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
+  cursor: not-allowed;
   transform: none;
-  box-shadow: none;
 }
 
 .results-section {
-  background: rgba(46, 204, 113, 0.05);
-  border: 1px solid #2ecc71;
-  border-radius: 12px;
-  padding: 1.5rem;
-  min-height: 200px;
+  min-height: 280px;
 }
 
-.results-section h4 {
-  color: #ffd700;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  font-size: 2rem;
+  color: var(--color-primary);
+}
+
+.empty-state p {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 320px;
 }
 
 .loading-spinner {
   text-align: center;
-  padding: 2rem;
+  padding: 48px 24px;
+  color: var(--text-secondary);
 }
 
 .spinner-border {
-  color: #ffd700;
+  color: var(--color-primary);
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
+.alert-danger {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  border-radius: var(--border-radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+/* Stock cards */
 .stock-recommendation {
-  background: rgba(255,215,0,0.1);
-  border: 1px solid #ffd700;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: all var(--transition-base);
 }
 
 .stock-recommendation:hover {
+  border-color: rgba(102, 126, 234, 0.35);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
-  border-color: #ffb300;
+  box-shadow: var(--shadow-md);
 }
 
 .stock-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 0.75rem;
+  gap: 12px;
+  margin-bottom: 8px;
 }
 
 .stock-symbol {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #ffd700;
+  font-size: 1.35rem;
+  font-weight: 800;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .stock-name {
-  font-size: 0.9rem;
-  color: #a0a0a0;
-  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  color: var(--text-primary);
   font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.stock-industry {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 12px;
 }
 
 .stock-price-info {
@@ -1160,994 +1297,426 @@ onMounted(() => {
 }
 
 .current-price {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #ffffff;
   display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .price-change {
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  margin-top: 0.25rem;
   display: inline-block;
-}
-
-.price-change.positive {
-  background: rgba(46, 204, 113, 0.2);
-  color: #2ecc71;
-}
-
-.price-change.negative {
-  background: rgba(231, 76, 60, 0.2);
-  color: #e74c3c;
-}
-
-.stock-score {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.score-badge {
-  background: linear-gradient(90deg, #ffd700 0%, #b8860b 100%);
-  color: #13141f;
-  padding: 0.3rem 0.75rem;
+  margin-top: 4px;
+  padding: 3px 8px;
   border-radius: 6px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
+}
+
+.price-change.positive,
+.metric-value.positive,
+.return-estimate.positive {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--color-success);
+}
+
+.price-change.negative,
+.metric-value.negative,
+.return-estimate.negative {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--color-danger);
 }
 
 .stock-metrics {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  background: rgba(0,0,0,0.2);
-  border-radius: 8px;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: 12px;
 }
 
-.metric-item {
+.stock-metrics .metric-item {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  min-width: 80px;
+  gap: 4px;
+  min-width: 90px;
 }
 
-.metric-label {
-  font-size: 0.75rem;
-  color: #888;
-  margin-bottom: 0.25rem;
+.stock-metrics .metric-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
 }
 
-.metric-value {
+.stock-metrics .metric-value {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #ffffff;
-}
-
-.metric-value.high-volume {
-  color: #f1c40f;
-}
-
-.stock-reason {
-  color: #a0a0a0;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  margin-bottom: 1rem;
-  padding: 1rem;
-  background: rgba(0,0,0,0.1);
-  border-radius: 8px;
-  border-left: 3px solid #ffd700;
+  color: var(--text-primary);
 }
 
 .stock-footer {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  font-size: 0.85rem;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
 }
 
-.sector-tag, .return-estimate, .risk-level {
-  display: flex;
+.sector-tag,
+.return-estimate,
+.risk-level {
+  display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  background: rgba(0,0,0,0.3);
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
 }
 
 .sector-tag {
-  color: #ffd700;
+  color: var(--color-primary);
 }
 
-.return-estimate.positive {
-  color: #2ecc71;
-}
-
-.return-estimate.negative {
-  color: #e74c3c;
-}
-
-.risk-level {
-  color: #f1c40f;
-}
-
-.diagnosis-section {
-  background: rgba(255, 215, 0, 0.05);
-  border: 1px solid #ffd700;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-.diagnosis-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.diagnosis-title {
-  color: #ffd700;
-  font-weight: 600;
-  margin: 0;
-}
-
-.diagnosis-content {
-  color: #a0a0a0;
-  line-height: 1.5;
-}
-
-.portfolio-metrics {
-  margin: 1rem 0;
-}
-
-.metric-card {
-  background: rgba(255, 215, 0, 0.05);
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  border-radius: 8px;
-  padding: 1rem;
-  text-align: center;
-  margin-bottom: 0.5rem;
-}
-
-.metric-label {
-  font-size: 0.9rem;
-  color: #a0a0a0;
-  margin-bottom: 0.5rem;
-}
-
-.metric-value {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #ffffff;
-}
-
-.text-success {
-  color: #2ecc71 !important;
-}
-
-.text-danger {
-  color: #dc3545 !important;
-}
-
-.back-btn {
-  background: #13141f;
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  color: #ffffff;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-}
-
-.back-btn:hover {
-  border-color: #ffd700;
-  color: #ffd700;
-  text-decoration: none;
-}
-
-/* AI Animation Effects */
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.ai-thinking {
-  animation: pulse 1.5s infinite;
-}
-
-/* Result Display Animation */
-.result-item {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: slideIn 0.5s ease forwards;
-}
-
-@keyframes slideIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 增强分析样式 */
+/* Analysis tabs */
 .enhanced-analysis {
-  margin-top: 1rem;
-  border-top: 1px solid #e9ecef;
-  padding-top: 1rem;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
 }
 
 .analysis-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .analysis-tab {
-  background: #f8f9fa;
-  border: 1px solid #dee2e6;
-  color: #495057;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.875rem;
-  display: flex;
+  font-size: 0.8rem;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 6px;
+  transition: all var(--transition-base);
 }
 
 .analysis-tab:hover {
-  background: #e9ecef;
-  border-color: #adb5bd;
+  border-color: rgba(102, 126, 234, 0.4);
+  color: var(--text-primary);
 }
 
 .analysis-tab.active {
-  background: #007bff;
-  border-color: #007bff;
+  background: rgba(102, 126, 234, 0.2);
+  border-color: var(--color-primary);
   color: white;
 }
 
 .analysis-panel {
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 1rem;
-  border: 1px solid #e9ecef;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--border-radius-sm);
+  padding: 16px;
+  border: 1px solid var(--border-color);
 }
 
 .analysis-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .analysis-header h6 {
   margin: 0;
-  color: #495057;
+  color: var(--text-primary);
   font-weight: 600;
 }
 
 .analysis-score {
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.score-excellent {
-  background: #d4edda;
-  color: #155724;
-}
-
-.score-good {
-  background: #d1ecf1;
-  color: #0c5460;
-}
-
-.score-fair {
-  background: #fff3cd;
-  color: #856404;
-}
-
-.score-poor {
-  background: #f8d7da;
-  color: #721c24;
-}
+.score-excellent { background: rgba(16, 185, 129, 0.2); color: var(--color-success); }
+.score-good { background: rgba(102, 126, 234, 0.2); color: #a5b4fc; }
+.score-fair { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+.score-poor { background: rgba(239, 68, 68, 0.2); color: #f87171; }
 
 .analysis-text {
-  line-height: 1.6;
-  color: #2c3e50;
-  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-size: 0.9rem;
 }
 
-/* 投资建议样式 */
-.investment-advice {
-  margin-top: 1rem;
-  padding: 1rem;
-  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-  border-radius: 8px;
-  border-left: 4px solid #2196f3;
+/* Sub-sections */
+.investment-advice,
+.risk-assessment,
+.fundamentals-section,
+.basic-analysis,
+.sections-analysis .analysis-section {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.03);
 }
 
-.investment-advice h6 {
-  color: #1976d2;
-  margin-bottom: 0.75rem;
+.investment-advice h6,
+.risk-assessment h6,
+.fundamentals-section h6,
+.basic-analysis h6 {
+  color: var(--text-primary);
+  margin-bottom: 12px;
   font-weight: 600;
 }
 
 .advice-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0.75rem;
-}
-
-.advice-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
 }
 
 .advice-label {
-  font-size: 0.875rem;
-  color: #666;
-  font-weight: 500;
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 
 .advice-value {
-  font-size: 0.95rem;
-  color: #333;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.action-buy {
+  color: var(--color-success) !important;
+}
+
+.risk-badge {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
   font-weight: 600;
 }
 
-/* 风险评估样式 */
-.risk-assessment {
-  margin-top: 1rem;
-  padding: 1rem;
-  background: linear-gradient(135deg, #fff3e0 0%, #fce4ec 100%);
-  border-radius: 8px;
-  border-left: 4px solid #ff9800;
-}
+.risk-badge.low { background: rgba(16, 185, 129, 0.2); color: var(--color-success); }
+.risk-badge.medium { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+.risk-badge.high { background: rgba(239, 68, 68, 0.2); color: #f87171; }
 
-.risk-assessment h6 {
-  color: #f57c00;
-  margin-bottom: 0.75rem;
-  font-weight: 600;
-}
-
-.risk-content {
+.risk-details p,
+.fundamentals-content p {
+  color: var(--text-secondary);
   line-height: 1.6;
-  color: #2c3e50;
-  font-weight: 500;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
 }
 
-.risk-details p {
-  color: #2c3e50;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
+.risk-details strong,
+.fundamentals-content strong {
+  color: var(--text-primary);
 }
 
-.risk-details strong {
-  color: #f57c00;
+/* Strategy block */
+.investment-summary-section {
+  margin-top: 24px;
+  padding: 20px;
+  background: rgba(102, 126, 234, 0.08);
+  border: 1px solid rgba(102, 126, 234, 0.22);
+  border-radius: var(--border-radius);
+}
+
+.investment-summary-section h4 {
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  font-size: 1rem;
+}
+
+.strategy-content {
+  display: grid;
+  gap: 12px;
+}
+
+.strategy-item {
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--border-radius-sm);
+  border-left: 3px solid var(--color-primary);
+}
+
+.strategy-item h5 {
+  color: var(--color-primary);
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.strategy-paragraph :deep(.strategy-title) {
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.strategy-paragraph :deep(.strategy-list-item) {
+  margin-bottom: 6px;
+  padding: 6px 6px 6px 20px;
+  color: var(--text-secondary);
+  position: relative;
+  font-size: 0.9rem;
+}
+
+.strategy-paragraph :deep(.strategy-list-item::before) {
+  content: "▸";
+  position: absolute;
+  left: 4px;
+  color: var(--color-primary);
+}
+
+.strategy-paragraph :deep(.strategy-paragraph-text) {
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+
+/* Diagnosis */
+.diagnosis-section,
+.gpt-diagnosis-section {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.diagnosis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.diagnosis-title {
+  color: var(--text-primary) !important;
   font-weight: 700;
+  margin: 0;
 }
 
-/* 基础分析样式 */
-.basic-analysis {
-  margin-top: 1rem;
-  padding: 1rem;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border-left: 4px solid #6c757d;
+.diagnosis-content {
+  color: var(--text-secondary);
+  line-height: 1.7;
 }
 
-.basic-analysis h6 {
-  color: #495057;
-  margin-bottom: 0.75rem;
-  font-weight: 600;
+.metric-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: 14px;
+  text-align: center;
+  margin-bottom: 8px;
 }
 
-.basic-analysis .analysis-text {
-  color: #2c3e50;
-  line-height: 1.6;
-  font-weight: 500;
+.metric-card .metric-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
 }
 
-/* sections分析样式 */
-.sections-analysis {
-  margin-top: 1rem;
-}
-
-.analysis-section {
-  margin-bottom: 1rem;
-  padding: 1rem;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #e9ecef;
-}
-
-.analysis-section:last-child {
-  margin-bottom: 0;
-}
-
-.analysis-section .analysis-text {
-  color: #2c3e50;
-  line-height: 1.6;
-  font-weight: 500;
-}
-
-/* GPT分析样式 */
-.gpt-analysis {
-  line-height: 1.6;
-  color: #2c3e50;
-  font-weight: 500;
-}
-
-.analysis-paragraph-title {
+.metric-card .metric-value {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #ffd700;
-  margin: 1rem 0 0.5rem 0;
-  padding: 0.5rem 0;
-  border-bottom: 2px solid rgba(255, 215, 0, 0.5);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  color: var(--text-primary);
 }
 
-.analysis-paragraph-subtitle {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #f1c40f;
-  margin: 0.75rem 0 0.25rem 0;
-  padding-left: 1rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
+.text-success { color: var(--color-success) !important; }
+.text-danger { color: var(--color-danger) !important; }
 
-.analysis-paragraph {
-  margin: 0.5rem 0;
-  padding: 0.5rem 0;
-  color: #2c3e50;
-  font-weight: 500;
-}
-
-/* GPT 数字列表样式 */
-.gpt-numbered-item {
-  margin: 0.75rem 0;
-  padding: 0.75rem 0;
-  border-left: 3px solid #3498db;
-  padding-left: 1rem;
-  background: rgba(52, 152, 219, 0.05);
-  border-radius: 0 8px 8px 0;
-}
-
-.gpt-numbered-item .number {
+.badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
   font-weight: 700;
-  color: #2980b9;
-  font-size: 1.05em;
-  margin-right: 0.5rem;
 }
 
-.gpt-numbered-item .content {
-  color: #2c3e50;
-  line-height: 1.6;
+.bg-success { background: rgba(16, 185, 129, 0.25) !important; color: var(--color-success) !important; }
+.bg-warning { background: rgba(245, 158, 11, 0.25) !important; color: #fbbf24 !important; }
+.bg-danger { background: rgba(239, 68, 68, 0.25) !important; color: #f87171 !important; }
+.bg-info { background: rgba(102, 126, 234, 0.25) !important; color: #a5b4fc !important; }
+
+.gpt-analysis {
+  background: rgba(102, 126, 234, 0.06);
+  border-radius: var(--border-radius-sm);
+  padding: 14px;
+  border-left: 3px solid var(--color-primary);
 }
 
-/* GPT 段落样式 */
-.gpt-paragraph {
-  margin: 0.5rem 0;
-  padding: 0.5rem 0;
-  color: #2c3e50;
-  line-height: 1.6;
-}
-
-/* GPT 标题样式 */
 .gpt-title {
-  margin: 1rem 0 0.5rem 0;
-  padding: 0.5rem 0;
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  background: rgba(102, 126, 234, 0.12);
+  border-radius: 8px;
+  color: var(--text-primary);
   font-weight: 600;
-  color: #e74c3c;
 }
 
-/* GPT 列表项样式 */
+.gpt-title strong { color: var(--color-primary); }
+
+.gpt-paragraph,
+.gpt-list-item,
+.gpt-numbered-item {
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-size: 0.9rem;
+}
+
 .gpt-list-item {
-  margin: 0.5rem 0;
-  padding: 0.5rem 0 0.5rem 1.5rem;
+  padding-left: 16px;
   position: relative;
 }
 
 .gpt-list-item::before {
   content: "•";
   position: absolute;
-  left: 0.5rem;
-  color: #3498db;
-  font-weight: bold;
+  left: 0;
+  color: var(--color-primary);
 }
 
-
-.gpt-diagnosis-section {
-  background: rgba(52, 152, 219, 0.1);
-  border: 1px solid #3498db;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.gpt-diagnosis-section .diagnosis-title {
-  color: #3498db;
-}
-
-.bg-info {
-  background-color: #3498db !important;
-}
-
-/* 风险容忍度滑块样式 */
-.risk-tolerance-slider {
-  margin: 1rem 0;
-}
-
-.slider-labels {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 0.5rem;
-  font-size: 0.875rem;
-  color: #666;
-}
-
-.current-value {
-  text-align: center;
-  margin-top: 0.5rem;
-  font-weight: 600;
-  color: #007bff;
-}
-
-/* 股票行业样式 */
-.stock-industry {
-  color: #6c757d;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-}
-
-/* 投资建议样式增强 */
-.action-buy {
-  background: #28a745;
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-weight: 600;
-}
-
-/* 风险等级徽章 */
-.risk-badge {
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.875rem;
-}
-
-.risk-badge.low {
-  background: #d4edda;
-  color: #155724;
-}
-
-.risk-badge.medium {
-  background: #fff3cd;
-  color: #856404;
-}
-
-.risk-badge.high {
-  background: #f8d7da;
-  color: #721c24;
-}
-
-/* 公司基本面样式 */
-.fundamentals-section {
-  margin-top: 1rem;
-  padding: 1rem;
-  background: linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 100%);
-  border-radius: 8px;
-  border-left: 4px solid #28a745;
-}
-
-.fundamentals-section h6 {
-  color: #28a745;
-  margin-bottom: 0.75rem;
-  font-weight: 600;
-}
-
-.fundamentals-content p {
-  margin-bottom: 0.5rem;
-  line-height: 1.5;
-  color: #2c3e50;
-  font-weight: 500;
-}
-
-.fundamentals-content strong {
-  color: #28a745;
+.gpt-numbered-item .number {
+  color: var(--color-primary);
   font-weight: 700;
+  margin-right: 6px;
 }
 
-/* 左侧投资策略样式 */
-.investment-summary-section {
-  background: rgba(46, 204, 113, 0.15);
-  border: 2px solid #2ecc71;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-top: 1.5rem;
-  box-shadow: 0 4px 8px rgba(46, 204, 113, 0.2);
+.result-item {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: slideIn 0.45s ease forwards;
 }
 
-.investment-summary-section h4 {
-  color: #2ecc71;
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
-  font-weight: 700;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+@keyframes slideIn {
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.strategy-content {
-  display: grid;
-  gap: 1rem;
-}
-
-.strategy-item {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 1rem;
-  border-radius: 8px;
-  border-left: 4px solid #2ecc71;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.strategy-item h5 {
-  color: #2ecc71;
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.strategy-item p {
-  margin: 0;
-  line-height: 1.6;
-  color: #2c3e50;
-  font-weight: 500;
-}
-
-/* 策略内容样式 */
-.allocation-content,
-.risk-management-content,
-.trading-strategy-content {
-  margin-top: 0.5rem;
-}
-
-.allocation-summary {
-  padding: 0.75rem;
-  background: rgba(46, 204, 113, 0.15);
-  border-radius: 6px;
-  border-left: 3px solid #2ecc71;
-  color: #2c3e50;
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-/* 策略段落样式优化 */
-.strategy-paragraph {
-  margin-top: 0.5rem;
-}
-
-.strategy-title {
-  margin-bottom: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(46, 204, 113, 0.08));
-  border-radius: 8px;
-  border-left: 4px solid #2ecc71;
-  color: #1a252f;
-  font-weight: 700;
-  font-size: 1rem;
-  box-shadow: 0 2px 4px rgba(46, 204, 113, 0.1);
-  transition: all 0.3s ease;
-}
-
-.strategy-title:hover {
-  background: linear-gradient(135deg, rgba(46, 204, 113, 0.2), rgba(46, 204, 113, 0.12));
-  transform: translateX(2px);
-}
-
-.strategy-title strong {
-  color: #27ae60;
-  font-weight: 800;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.strategy-list-item {
-  margin-bottom: 0.6rem;
-  padding: 0.5rem 0.5rem 0.5rem 1.5rem;
-  color: #2c3e50;
-  font-weight: 600;
-  font-size: 0.95rem;
-  position: relative;
-  background: rgba(255, 255, 255, 0.6);
-  border-radius: 4px;
-  border-left: 2px solid #2ecc71;
-  transition: all 0.2s ease;
-}
-
-.strategy-list-item:hover {
-  background: rgba(46, 204, 113, 0.08);
-  transform: translateX(3px);
-}
-
-.strategy-list-item::before {
-  content: "▶";
-  color: #2ecc71;
-  font-weight: bold;
-  font-size: 0.8rem;
-  position: absolute;
-  left: 0.5rem;
-  top: 0.5rem;
-}
-
-.strategy-paragraph-text {
-  margin-bottom: 0.8rem;
-  color: #34495e;
-  font-weight: 600;
-  font-size: 0.95rem;
-  line-height: 1.7;
-  padding: 0.6rem 0.8rem;
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 6px;
-  border-left: 3px solid #3498db;
-  text-align: justify;
-  transition: all 0.2s ease;
-}
-
-/* AI诊股结果文字优化 */
-.diagnosis-content {
-  color: #ffffff !important;
-  font-weight: 500;
-  line-height: 1.7;
-  font-size: 0.95rem;
-}
-
-.diagnosis-content p {
-  color: #ffffff !important;
-  margin-bottom: 0.8rem;
-  font-weight: 500;
-}
-
-.diagnosis-content strong {
-  color: #4fc3f7 !important;
-  font-weight: 700;
-}
-
-.diagnosis-content h1,
-.diagnosis-content h2,
-.diagnosis-content h3,
-.diagnosis-content h4,
-.diagnosis-content h5,
-.diagnosis-content h6 {
-  color: #4fc3f7 !important;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-
-/* GPT分析内容优化 */
-.gpt-analysis {
-  background: rgba(79, 195, 247, 0.1);
-  border-radius: 8px;
-  padding: 1rem;
-  border-left: 4px solid #4fc3f7;
-}
-
-.gpt-analysis p {
-  color: #ffffff !important;
-  margin-bottom: 0.8rem;
-  font-weight: 500;
-  line-height: 1.7;
-}
-
-.gpt-analysis strong {
-  color: #4fc3f7 !important;
-  font-weight: 700;
-}
-
-/* 诊断标题优化 */
-.diagnosis-title {
-  color: #4fc3f7 !important;
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-.diagnosis-header {
-  border-bottom: 2px solid rgba(79, 195, 247, 0.3);
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-/* 诊断卡片背景优化 */
-.diagnosis-section {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(79, 195, 247, 0.2);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  backdrop-filter: blur(10px);
-}
-
-/* GPT分析段落样式优化 */
-.gpt-title {
-  margin-bottom: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: rgba(79, 195, 247, 0.15);
-  border-radius: 8px;
-  border-left: 4px solid #4fc3f7;
-  color: #ffffff !important;
-  font-weight: 700;
-  font-size: 1rem;
-  box-shadow: 0 2px 4px rgba(79, 195, 247, 0.1);
-  transition: all 0.3s ease;
-}
-
-.gpt-title:hover {
-  background: rgba(79, 195, 247, 0.2);
-  transform: translateX(2px);
-}
-
-.gpt-title strong {
-  color: #4fc3f7 !important;
-  font-weight: 800;
-}
-
-.gpt-list-item {
-  margin-bottom: 0.6rem;
-  padding: 0.5rem 0.5rem 0.5rem 1.5rem;
-  color: #ffffff !important;
-  font-weight: 500;
-  font-size: 0.95rem;
-  position: relative;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  border-left: 2px solid #4fc3f7;
-  transition: all 0.2s ease;
-}
-
-.gpt-list-item:hover {
-  background: rgba(79, 195, 247, 0.15);
-  transform: translateX(3px);
-}
-
-.gpt-list-item::before {
-  content: "▶";
-  color: #4fc3f7;
-  font-weight: bold;
-  font-size: 0.8rem;
-  position: absolute;
-  left: 0.5rem;
-  top: 0.5rem;
-}
-
-.gpt-numbered-item {
-  margin-bottom: 0.6rem;
-  padding: 0.5rem 0.5rem 0.5rem 1.5rem;
-  color: #ffffff !important;
-  font-weight: 500;
-  font-size: 0.95rem;
-  position: relative;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  border-left: 2px solid #ff9800;
-  transition: all 0.2s ease;
-}
-
-.gpt-numbered-item:hover {
-  background: rgba(255, 152, 0, 0.15);
-  transform: translateX(3px);
-}
-
-.gpt-numbered-item::before {
-  content: "🔢";
-  font-size: 0.7rem;
-  position: absolute;
-  left: 0.5rem;
-  top: 0.5rem;
-}
-
-.gpt-paragraph {
-  margin-bottom: 0.8rem;
-  color: #ffffff !important;
-  font-weight: 500;
-  font-size: 0.95rem;
-  line-height: 1.7;
-  padding: 0.6rem 0.8rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 6px;
-  border-left: 3px solid #4fc3f7;
-  text-align: justify;
-  transition: all 0.2s ease;
-}
-
-.gpt-paragraph:hover {
-  background: rgba(79, 195, 247, 0.1);
-  transform: translateX(2px);
-}
-
-/* 强制应用策略段落样式 - 使用深度选择器 */
-.strategy-paragraph :deep(.strategy-title) {
-  margin-bottom: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(46, 204, 113, 0.08));
-  border-radius: 8px;
-  border-left: 4px solid #2ecc71;
-  color: #1a252f !important;
-  font-weight: 700;
-  font-size: 1rem;
-  box-shadow: 0 2px 4px rgba(46, 204, 113, 0.1);
-  transition: all 0.3s ease;
-}
-
-.strategy-paragraph :deep(.strategy-title strong) {
-  color: #27ae60 !important;
-  font-weight: 800;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.strategy-paragraph :deep(.strategy-list-item) {
-  margin-bottom: 0.6rem;
-  padding: 0.5rem 0.5rem 0.5rem 1.5rem;
-  color: #2c3e50 !important;
-  font-weight: 600;
-  font-size: 0.95rem;
-  position: relative;
-  background: rgba(255, 255, 255, 0.6);
-  border-radius: 4px;
-  border-left: 2px solid #2ecc71;
-  transition: all 0.2s ease;
-}
-
-.strategy-paragraph :deep(.strategy-list-item::before) {
-  content: "▶";
-  color: #2ecc71;
-  font-weight: bold;
-  font-size: 0.8rem;
-  position: absolute;
-  left: 0.5rem;
-  top: 0.5rem;
-}
-
-.strategy-paragraph :deep(.strategy-paragraph-text) {
-  margin-bottom: 0.8rem;
-  color: #34495e !important;
-  font-weight: 600;
-  font-size: 0.95rem;
-  line-height: 1.7;
-  padding: 0.6rem 0.8rem;
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 6px;
-  border-left: 3px solid #3498db;
-  text-align: justify;
-  transition: all 0.2s ease;
-}
-  
-/* 日期选择器优化 - 强制英文显示 */
 input[type="date"] {
   color-scheme: dark;
-  font-family: inherit;
-  direction: ltr;
-  /* 强制使用英文语言环境 */
-  -webkit-locale: "en-US";
-  locale: "en-US";
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
@@ -2155,395 +1724,105 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
 }
 
-/* 强制日期选择器使用英文星期显示 */
-input[type="date"]::-webkit-datetime-edit-text,
-input[type="date"]::-webkit-datetime-edit-month-field,
-input[type="date"]::-webkit-datetime-edit-day-field,
-input[type="date"]::-webkit-datetime-edit-year-field {
-  color: #ffffff;
-  font-family: inherit;
+.loading-text {
+  margin-top: 1rem;
+  color: var(--text-secondary);
 }
 
-/* 确保日期格式为美国格式 */
-input[type="date"] {
-  text-align: left;
-  unicode-bidi: bidi-override;
-  direction: ltr;
+.uppercase-input {
+  text-transform: uppercase;
 }
 
-/* Mobile Responsive Design */
-@media (max-width: 768px) {
-  .container {
-    padding: 0 1rem;
-  }
-  
-  .ai-header {
-    padding: 2rem 1rem;
-  }
-  
-  .ai-header h1 {
-    font-size: 2.2rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  .ai-header p {
-    font-size: 1rem;
-  }
-  
-  .ai-tools-container {
-    padding: 1rem 0;
-  }
-  
-  .ai-tool-card {
-    margin-bottom: 1.5rem;
-    padding: 1.5rem 1rem;
-  }
-  
-  .tool-header {
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
-  }
-  
-  .tool-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 1rem;
-    margin-right: 0;
-  }
-  
-  .tool-title h3 {
-    font-size: 1.3rem;
-  }
-  
-  .tool-title p {
-    font-size: 0.85rem;
-  }
-  
+@media (max-width: 992px) {
   .tool-content {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
-    margin-top: 1rem;
-  }
-  
-  .input-section {
-    padding: 1rem;
-  }
-  
-  .input-section h4 {
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
-  }
-  
-  .form-control, .form-select {
-    padding: 0.6rem;
-    font-size: 0.9rem;
-    margin-bottom: 0.75rem;
-  }
-  
-  .btn-ai {
-    padding: 0.6rem 1.5rem;
-    font-size: 0.9rem;
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .results-section {
-    padding: 1rem;
-    min-height: 150px;
-  }
-  
-  .results-section h4 {
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
-  }
-  
-  .stock-recommendation {
-    padding: 1rem;
-    margin-bottom: 1rem;
-  }
-  
-  .stock-header {
-    flex-direction: column;
-    gap: 0.75rem;
-    align-items: flex-start;
-  }
-  
-  .stock-symbol {
-    font-size: 1.1rem;
-  }
-  
-  .stock-name {
-    font-size: 0.8rem;
-  }
-  
-  .stock-price-info {
-    text-align: left;
-    width: 100%;
-  }
-  
-  .current-price {
-    font-size: 1rem;
-  }
-  
-  .price-change {
-    font-size: 0.8rem;
-    padding: 0.15rem 0.4rem;
-  }
-  
-  .stock-metrics {
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.5rem;
-  }
-  
-  .metric-item {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    min-width: auto;
-    padding: 0.25rem 0;
-  }
-  
-  .metric-label {
-    font-size: 0.8rem;
-    margin-bottom: 0;
-  }
-  
-  .metric-value {
-    font-size: 0.85rem;
-  }
-  
-  .stock-reason {
-    font-size: 0.85rem;
-    padding: 0.75rem;
-    margin-bottom: 0.75rem;
-  }
-  
-  .stock-footer {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: flex-start;
-  }
-  
-  .sector-tag, .return-estimate, .risk-level {
-    font-size: 0.8rem;
-    padding: 0.2rem 0.4rem;
-  }
-  
-  .diagnosis-section {
-    padding: 0.75rem;
-    margin-bottom: 0.75rem;
-  }
-  
-  .diagnosis-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  
-  .diagnosis-title {
-    font-size: 0.9rem;
-  }
-  
-  .diagnosis-content {
-    font-size: 0.85rem;
-  }
-  
-  .metric-card {
-    padding: 0.75rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  .metric-label {
-    font-size: 0.8rem;
-    margin-bottom: 0.25rem;
-  }
-  
-  .metric-value {
-    font-size: 1rem;
   }
 }
 
-@media (max-width: 576px) {
-  .ai-header {
-    padding: 1.5rem 0.75rem;
+@media (max-width: 768px) {
+  .ai-hero-banner {
+    padding: 48px 20px 36px;
   }
-  
-  .ai-header h1 {
-    font-size: 1.8rem;
+
+  .hero-title {
+    font-size: clamp(1.5rem, 6vw, 2rem);
   }
-  
-  .ai-header p {
-    font-size: 0.9rem;
+
+  .hero-description {
+    font-size: 15px;
   }
-  
+
+  .ai-content-area {
+    padding: 24px 16px 48px;
+  }
+
   .ai-tool-card {
-    padding: 1rem 0.75rem;
-    margin-bottom: 1rem;
+    padding: 20px 16px;
   }
-  
-  .tool-title h3 {
-    font-size: 1.2rem;
+
+  .tool-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
-  
-  .tool-title p {
-    font-size: 0.8rem;
+
+  .history-link {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
   }
-  
-  .input-section {
-    padding: 0.75rem;
+
+  .stock-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
-  
-  .form-control, .form-select {
-    padding: 0.5rem;
-    font-size: 0.85rem;
+
+  .stock-price-info {
+    text-align: left;
   }
-  
+
   .btn-ai {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
+    width: 100%;
+    min-height: 48px;
+    justify-content: center;
   }
-  
+
+  .stock-recommendation,
+  .result-item {
+    padding: 16px;
+  }
+
+  .input-section,
   .results-section {
-    padding: 0.75rem;
-  }
-  
-  .stock-recommendation {
-    padding: 0.75rem;
-  }
-  
-  .stock-symbol {
-    font-size: 1rem;
-  }
-  
-  .stock-metrics {
-    padding: 0.4rem;
-  }
-  
-  .metric-item {
-    padding: 0.2rem 0;
-  }
-  
-  .stock-reason {
-    font-size: 0.8rem;
-    padding: 0.6rem;
-  }
-  
-  .diagnosis-section {
-    padding: 0.6rem;
-  }
-  
-  .diagnosis-content {
-    font-size: 0.8rem;
+    padding: 16px;
   }
 }
 
 @media (max-width: 480px) {
-  .container {
-    padding: 0 0.5rem;
+  .ai-hero-banner {
+    padding: 40px 16px 28px;
   }
-  
-  .ai-header {
-    padding: 1rem 0.5rem;
+
+  .ai-content-area {
+    padding: 20px 12px 40px;
   }
-  
-  .ai-header h1 {
-    font-size: 1.6rem;
-  }
-  
-  .ai-header p {
-    font-size: 0.85rem;
-  }
-  
+
   .ai-tool-card {
-    padding: 0.75rem 0.5rem;
+    padding: 16px 12px;
+    border-radius: var(--border-radius);
   }
-  
-  .tool-icon {
-    width: 35px;
-    height: 35px;
-    font-size: 0.9rem;
-  }
-  
+
   .tool-title h3 {
     font-size: 1.1rem;
   }
-  
-  .tool-title p {
-    font-size: 0.75rem;
-  }
-  
-  .input-section {
-    padding: 0.6rem;
-  }
-  
-  .form-control, .form-select {
-    padding: 0.45rem;
-    font-size: 0.8rem;
-  }
-  
-  .btn-ai {
-    padding: 0.45rem 0.8rem;
-    font-size: 0.8rem;
-  }
-  
-  .results-section {
-    padding: 0.6rem;
-  }
-  
+
   .stock-recommendation {
-    padding: 0.6rem;
+    padding: 14px;
   }
-  
+
   .stock-symbol {
-    font-size: 0.95rem;
-  }
-  
-  .stock-name {
-    font-size: 0.75rem;
-  }
-  
-  .current-price {
-    font-size: 0.9rem;
-  }
-  
-  .price-change {
-    font-size: 0.75rem;
-  }
-  
-  .stock-metrics {
-    padding: 0.3rem;
-  }
-  
-  .metric-label {
-    font-size: 0.75rem;
-  }
-  
-  .metric-value {
-    font-size: 0.8rem;
-  }
-  
-  .stock-reason {
-    font-size: 0.75rem;
-    padding: 0.5rem;
-  }
-  
-  .sector-tag, .return-estimate, .risk-level {
-    font-size: 0.75rem;
-    padding: 0.15rem 0.3rem;
-  }
-  
-  .diagnosis-section {
-    padding: 0.5rem;
-  }
-  
-  .diagnosis-title {
-    font-size: 0.85rem;
-  }
-  
-  .diagnosis-content {
-    font-size: 0.75rem;
+    font-size: 1.25rem;
   }
 }
 </style>
