@@ -5,7 +5,9 @@ export interface PageVisit {
   trader_uuid?: string;
   ip_address?: string;
   country?: string;
+  country_zh?: string;
   city?: string;
+  city_zh?: string;
   region?: string;
   latitude?: number;
   longitude?: number;
