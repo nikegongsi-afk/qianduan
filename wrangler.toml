@@ -1,5 +1,5 @@
 # Cloudflare Workers 配置
-name = "jack-ablin"
+name = "stevencress"
 main = "./src/index.ts"
 compatibility_date = "2025-11-25"
 workers_dev = true
@@ -19,11 +19,9 @@ run_worker_first = [ "/api/*" ]
 
 # 路由配置
 [[routes]]
-# 匹配根域名 jack-ablin.com下所有路径
-pattern = "jack-ablin.com/*"
-zone_name = "jack-ablin.com"
+pattern = "stevencress.com/*"
+zone_name = "stevencress.com"
 
 [[routes]]
-# 匹配 www.jack-ablin.com下所有路径
-pattern = "www.jack-ablin.com/*"
-zone_name = "jack-ablin.com"
+pattern = "www.stevencress.com/*"
+zone_name = "stevencress.com"

@@ -3,7 +3,7 @@
 # 注意：wrangler.toml 已在 .gitignore 中，不会被推送到仓库
 
 # Worker 名称（根据实际部署环境修改）
-name = "jack-ablin"
+name = "stevencress"
 # 兼容性日期
 compatibility_date = "2025-11-25"
 # Worker 入口文件
@@ -13,7 +13,7 @@ main = "./src/index.ts"
 [vars]
 NODE_ENV = "production"
 VITE_API_URL = "https://houduan-api.onrender.com"
-VITE_Web_Trader_UUID = "39968c24-67bd-4f12-a5e4-ff959ce03c50"
+VITE_Web_Trader_UUID = "c5e01236-d681-4343-8386-f9e17748f81f"
 
 # 静态资源配置
 [assets]
@@ -25,10 +25,10 @@ run_worker_first = [ "/api/*" ]
 
 # 路由配置（根据实际域名修改）
 [[routes]]
-pattern = "jack-ablin.com/*"
-zone_name = "jack-ablin.com"
+pattern = "stevencress.com/*"
+zone_name = "stevencress.com"
 
 [[routes]]
-pattern = "www.jack-ablin.com/*"
-zone_name = "jack-ablin.com"
+pattern = "www.stevencress.com/*"
+zone_name = "stevencress.com"
 
