@@ -26,11 +26,25 @@ npm run deploy
 
 ## 域名 DNS
 
-域名 `stevencress.com` 已在 Cloudflare 注册后，`wrangler deploy` 会自动绑定路由。
+根域名 `stevencress.com` 已有解析即可访问。若 **`www.stevencress.com` 打不开**，通常是缺少 `www` 子域名 DNS 记录。
 
-如需 www 跳转，可在 Cloudflare **Rules** 中添加：`www.stevencress.com` → `stevencress.com`
+### 1. 添加 www DNS（必做）
+
+Cloudflare 控制台 → **stevencress.com** → **DNS** → **添加记录**：
+
+| 类型 | 名称 | 内容 | 代理 |
+|------|------|------|------|
+| CNAME | `www` | `stevencress.com` | 已代理（橙色云） |
+
+保存后等待 1–5 分钟生效。
+
+### 2. www 自动跳转到主域名
+
+Worker 已配置：访问 `www.stevencress.com` 会 **301 跳转到** `https://stevencress.com`（保留路径，如 `/userlogin`）。
+
+也可在 Cloudflare **Rules → Redirect Rules** 中额外配置（与 Worker 二选一即可）。
 
 ## 验证
 
 - https://stevencress.com
-- https://www.stevencress.com
+- https://www.stevencress.com（应自动跳转到上面主域名）

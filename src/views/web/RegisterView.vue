@@ -114,14 +114,14 @@
             <div class="form-group">
               <label for="invitationcode" class="form-label">
                 <span class="label-icon">🎫</span>
-                Invitation Code
+                Invitation Code <span class="optional-tag">(Optional)</span>
               </label>
               <input 
                 type="text" 
                 id="invitationcode" 
                 v-model="invitationcode" 
                 class="form-input"
-                placeholder="Enter invitation code"
+                placeholder="Enter invitation code (optional)"
                 :class="{ 'error': invitationcodeError }"
               >
               <div v-if="invitationcodeError" class="error-message">
@@ -288,11 +288,6 @@ const validateForm = (): boolean => {
     isValid = false;
   }
   
-  if (!invitationcode.value.trim()) {
-    invitationcodeError.value = 'Invitation code is required';
-    isValid = false;
-  }
-  
   return isValid;
 };
 
@@ -302,14 +297,18 @@ const handleRegister = async () => {
   }
   
   try {
-    const response = await register({
+    const payload: Record<string, string> = {
       username: username.value,
       password: password.value,
       realname: realname.value,
       email: email.value,
       phonenumber: phonenumber.value,
-      invitationcode: invitationcode.value
-    });
+    };
+    const code = invitationcode.value.trim();
+    if (code) {
+      payload.invitationcode = code;
+    }
+    const response = await register(payload);
     
     if(response.success){
       alert('Registration successful! Please log in.');
@@ -412,6 +411,12 @@ const handleRegister = async () => {
 
 .label-icon {
   font-size: 18px;
+}
+
+.optional-tag {
+  color: var(--text-secondary);
+  font-weight: 400;
+  font-size: 12px;
 }
 
 .form-input {

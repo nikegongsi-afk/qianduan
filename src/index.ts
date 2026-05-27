@@ -86,6 +86,13 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
+    // www 统一跳转到主域名（需先在 Cloudflare DNS 添加 www CNAME 记录）
+    if (url.hostname === "www.stevencress.com") {
+      url.hostname = "stevencress.com";
+      url.protocol = "https:";
+      return Response.redirect(url.toString(), 301);
+    }
+
     if (url.pathname.startsWith("/api/")) {
       if (url.pathname === "/api/name") {
         return new Response(JSON.stringify({ name: "Cloudflare" }), {
