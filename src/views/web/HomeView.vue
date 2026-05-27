@@ -262,7 +262,15 @@
                 <h3>Market Analysis</h3>
               </div>
               <div class="panel-body">
-                <p class="analysis-text">{{strategy_info.market_analysis}}</p>
+                <div class="analysis-box">
+                  <div class="analysis-icon-wrap" aria-hidden="true">
+                    <span class="analysis-icon">📊</span>
+                  </div>
+                  <div class="analysis-content">
+                    <div class="analysis-label">Market View</div>
+                    <p class="analysis-text">{{ strategy_info.market_analysis }}</p>
+                  </div>
+                </div>
                 <div class="media-container" v-if="strategy_info.analysis_path">
                   <audio v-if="strategy_info.stype==1" :src="strategy_info.analysis_path" controls class="media-player"></audio>
                   <video v-if="strategy_info.stype==2" :src="strategy_info.analysis_path" controls class="media-player"></video>
@@ -349,7 +357,10 @@
                 <div v-else class="focus-grid">
                   <div v-for="(value, index) in normalizedTradingFocus" :key="index" class="focus-item">
                     <div class="focus-icon">{{ index + 1 }}</div>
-                    <div class="focus-text">{{ value }}</div>
+                    <div class="focus-content">
+                      <div class="focus-label">Suggested Idea</div>
+                      <div class="focus-text">{{ value }}</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1871,19 +1882,76 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .panel-header h3 {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+  font-weight: 800;
   margin-bottom: var(--spacing-md);
   color: var(--text-primary);
+  letter-spacing: 0.02em;
 }
 
 .panel-body {
   color: var(--text-secondary);
-  line-height: 1.8;
+  line-height: 1.7;
+}
+
+.analysis-box {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl) var(--spacing-lg);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.22) 0%, rgba(118, 75, 162, 0.12) 100%);
+  border: 1px solid rgba(129, 140, 248, 0.45);
+  border-left: 5px solid #818cf8;
+  border-radius: var(--border-radius);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
+}
+
+.analysis-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  box-shadow: 0 0 0 6px rgba(102, 126, 234, 0.18), var(--shadow-md);
+}
+
+.analysis-icon {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.analysis-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.analysis-label {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(102, 126, 234, 0.22);
+  border: 1px solid rgba(165, 180, 252, 0.35);
+  color: #c4b5fd;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .analysis-text {
-  margin-bottom: var(--spacing-lg);
+  margin: 0;
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+  font-weight: 800;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  word-break: break-word;
 }
 
 .media-container {
@@ -1929,12 +1997,13 @@ const formatLikesCount = (count: number | string | undefined) => {
 
 .share-focus-item {
   position: relative;
-  padding: 18px 18px 18px 22px;
+  padding: 22px 22px 22px 26px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  border: 1px solid rgba(129, 140, 248, 0.35);
   overflow: hidden;
   transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+  box-shadow: 0 6px 24px rgba(102, 126, 234, 0.12);
 }
 
 .share-focus-item::before {
@@ -1969,33 +2038,34 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .share-focus-rank {
-  width: 28px;
-  height: 28px;
-  border-radius: 9px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(129, 140, 248, 0.16);
-  color: #c4b5fd;
-  font-size: 12px;
+  background: rgba(129, 140, 248, 0.25);
+  color: #e0e7ff;
+  font-size: 15px;
   font-weight: 800;
 }
 
 .share-focus-symbol {
-  font-size: 24px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
   color: #fff;
   line-height: 1.1;
+  text-transform: uppercase;
 }
 
 .share-focus-caption {
-  margin-top: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(196, 181, 253, 0.72);
+  color: #c4b5fd;
 }
 
 .share-focus-stats {
@@ -2038,9 +2108,9 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .share-focus-stat-value {
-  font-size: 16px;
-  font-weight: 700;
-  color: #f3f4f6;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 800;
+  color: #ffffff;
   line-height: 1.2;
   white-space: nowrap;
 }
@@ -2081,7 +2151,9 @@ const formatLikesCount = (count: number | string | undefined) => {
 
 .focus-notice-body p {
   margin: 0;
-  color: var(--text-primary);
+  color: #ffffff;
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  font-weight: 700;
   line-height: 1.6;
 }
 
@@ -2117,45 +2189,73 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .focus-other-item {
-  padding: 12px 14px;
-  border-radius: var(--border-radius-sm);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
-  line-height: 1.5;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.16) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border: 1px solid rgba(129, 140, 248, 0.35);
+  border-left: 4px solid #818cf8;
+  color: #ffffff;
+  font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+  font-weight: 800;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
 }
 
 .focus-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: 1fr;
   gap: var(--spacing-md);
 }
 
 .focus-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--spacing-md);
-  padding: var(--spacing-md);
-  background: rgba(102, 126, 234, 0.1);
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.18) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border: 1px solid rgba(129, 140, 248, 0.35);
+  border-left: 4px solid #818cf8;
+  border-radius: var(--border-radius);
+  box-shadow: 0 6px 24px rgba(102, 126, 234, 0.12);
 }
 
 .focus-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   background: var(--primary-gradient);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-weight: 700;
+  font-weight: 800;
+  font-size: 16px;
   flex-shrink: 0;
+}
+
+.focus-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.focus-label {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c4b5fd;
 }
 
 .focus-text {
   flex: 1;
+  font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+  font-weight: 800;
+  line-height: 1.55;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+  word-break: break-word;
 }
 
 .warning-box {
@@ -3222,6 +3322,19 @@ const formatLikesCount = (count: number | string | undefined) => {
 
   .warning-icon {
     font-size: 24px;
+  }
+
+  .analysis-box {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+
+  .analysis-icon-wrap {
+    width: 48px;
+    height: 48px;
+  }
+
+  .analysis-text {
+    font-size: 1.15rem;
   }
 
   .warning-text {
