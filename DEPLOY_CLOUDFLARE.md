@@ -1,6 +1,6 @@
 # 前端 Cloudflare 部署指南
 
-仓库：https://github.com/nikegongsi-afk/qianduan
+仓库：https://github.com/maximallenklle-bit/Allen-Klee
 
 - 正式域名：`https://allenklee.com`
 - 后端 API：`https://houduan-api.onrender.com`
@@ -18,7 +18,7 @@ npm run deploy
 
 1. 打开 https://dash.cloudflare.com → **Workers & Pages**
 2. **Create** → **Worker** → **Connect to Git**
-3. 选择 **nikegongsi-afk/qianduan**
+3. 选择 **maximallenklle-bit/Allen-Klee**
 4. 构建设置：
    - Build command: `npm install && npm run build`
    - Deploy command: `npx wrangler deploy`
