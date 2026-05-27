@@ -49,7 +49,9 @@ const removeCloudflareFiles = () => {
 
 const defaultApiUrl = "https://houduan-api.onrender.com";
 const defaultTraderUuid = "c5e01236-d681-4343-8386-f9e17748f81f";
-const defaultGoogleClientId = process.env.VITE_GOOGLE_CLIENT_ID || "";
+const defaultGoogleClientId =
+  process.env.VITE_GOOGLE_CLIENT_ID ||
+  '810723432233-mpgi15h8fvupa2ifqtlmpv5eiih7bvgq.apps.googleusercontent.com';
 
 export default defineConfig({
   publicDir: 'public',

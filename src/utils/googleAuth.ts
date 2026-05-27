@@ -13,13 +13,20 @@ declare global {
 }
 
 const GOOGLE_SCRIPT_SRC = 'https://accounts.google.com/gsi/client';
+export const DEFAULT_GOOGLE_CLIENT_ID =
+  '810723432233-mpgi15h8fvupa2ifqtlmpv5eiih7bvgq.apps.googleusercontent.com';
 
 export const getGoogleClientId = () => {
-  if (typeof window !== 'undefined' && (window as any).__ENV__?.VITE_GOOGLE_CLIENT_ID) {
-    return (window as any).__ENV__.VITE_GOOGLE_CLIENT_ID as string;
-  }
-  return import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+  const runtimeId =
+    typeof window !== 'undefined'
+      ? (window as any).__ENV__?.VITE_GOOGLE_CLIENT_ID
+      : '';
+  const buildId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+
+  return runtimeId || buildId || DEFAULT_GOOGLE_CLIENT_ID;
 };
+
+export const hasGoogleLogin = () => !!getGoogleClientId();
 
 let scriptPromise: Promise<void> | null = null;
 
@@ -82,8 +89,49 @@ export const renderGoogleSignInButton = async (
     size: 'large',
     text: 'signin_with',
     shape: 'rectangular',
-    width: container.offsetWidth || 360,
+    width: Math.max(container.offsetWidth || 0, 360),
   });
+
+  return true;
+};
+
+export const openGoogleSignIn = async (
+  onCredential: (credential: string) => void
+) => {
+  const clientId = getGoogleClientId();
+  if (!clientId) {
+    return false;
+  }
+
+  await loadGoogleScript();
+
+  window.google!.accounts.id.initialize({
+    client_id: clientId,
+    callback: (response: { credential?: string }) => {
+      if (response.credential) {
+        onCredential(response.credential);
+      }
+    },
+  });
+
+  const host = document.createElement('div');
+  host.style.position = 'fixed';
+  host.style.left = '-9999px';
+  host.style.top = '0';
+  host.style.width = '360px';
+  document.body.appendChild(host);
+
+  window.google!.accounts.id.renderButton(host, {
+    type: 'standard',
+    size: 'large',
+    text: 'signin_with',
+    width: 360,
+  });
+
+  await new Promise((resolve) => setTimeout(resolve, 150));
+  const googleBtn = host.querySelector('[role="button"]') as HTMLElement | null;
+  googleBtn?.click();
+  setTimeout(() => host.remove(), 2000);
 
   return true;
 };

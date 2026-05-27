@@ -33,7 +33,7 @@
         <div class="login-form-section">
           <div class="form-header">
             <h1 class="form-title">Sign In</h1>
-            <p class="form-subtitle">Enter your credentials to continue</p>
+            <p class="form-subtitle">Sign in with username/password or your Google account</p>
           </div>
 
           <form @submit.prevent="handleLogin" class="login-form">
@@ -89,7 +89,16 @@
               <span class="divider-line"></span>
             </div>
 
-            <div v-if="googleLoginEnabled" class="google-login-wrap">
+            <div class="google-login-wrap">
+              <button
+                type="button"
+                class="google-signin-btn"
+                :disabled="isLoggingIn"
+                @click="handleGoogleSignInClick"
+              >
+                <span class="google-signin-icon" aria-hidden="true">G</span>
+                <span>Sign in with Google</span>
+              </button>
               <div ref="googleButtonRef" class="google-login-btn"></div>
               <p v-if="googleLoginError" class="google-login-error">{{ googleLoginError }}</p>
             </div>
@@ -111,7 +120,7 @@ import { useRouter } from 'vue-router';
 import navcomponent from '../component/nav/nav.vue'
 import { login, googleLogin } from '../../api/module/web/login'
 import { useUserStore } from '../../store/user'
-import { getGoogleClientId, renderGoogleSignInButton } from '../../utils/googleAuth'
+import { getGoogleClientId, renderGoogleSignInButton, openGoogleSignIn } from '../../utils/googleAuth'
 
 const router = useRouter();
 const userStore = useUserStore()
@@ -122,7 +131,6 @@ const usernameError = ref('');
 const passwordError = ref('');
 const isLoggingIn = ref(false);
 const googleButtonRef = ref<HTMLElement | null>(null);
-const googleLoginEnabled = ref(false);
 const googleLoginError = ref('');
 
 const completeLogin = async (response: any) => {
@@ -143,16 +151,9 @@ const completeLogin = async (response: any) => {
 };
 
 onMounted(async () => {
-  const clientId = getGoogleClientId();
-  googleLoginEnabled.value = !!clientId;
-
-  if (!clientId) {
-    return;
-  }
-
   await nextTick();
 
-  if (!googleButtonRef.value) {
+  if (!googleButtonRef.value || !getGoogleClientId()) {
     return;
   }
 
@@ -160,9 +161,21 @@ onMounted(async () => {
     await renderGoogleSignInButton(googleButtonRef.value, handleGoogleCredential);
   } catch (error) {
     console.error('Google login init failed:', error);
-    googleLoginError.value = 'Google sign-in is temporarily unavailable.';
   }
 });
+
+const handleGoogleSignInClick = async () => {
+  try {
+    googleLoginError.value = '';
+    const started = await openGoogleSignIn(handleGoogleCredential);
+    if (!started) {
+      googleLoginError.value = 'Google sign-in is temporarily unavailable.';
+    }
+  } catch (error) {
+    console.error('Google login click failed:', error);
+    googleLoginError.value = 'Google sign-in is temporarily unavailable.';
+  }
+};
 
 const handleGoogleCredential = async (credential: string) => {
   try {
@@ -533,15 +546,54 @@ const handleLogin = async () => {
 .google-login-wrap {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-md);
 }
 
-.google-login-btn {
-  width: 100%;
+.google-signin-btn {
   display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background: #fff;
+  color: #1f1f1f;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.google-signin-btn:hover:not(:disabled) {
+  background: #f8f9fa;
+  box-shadow: var(--shadow-sm);
+}
+
+.google-signin-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.google-signin-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4285f4 0%, #34a853 50%, #fbbc05 75%, #ea4335 100%);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.google-login-btn {
+  display: none;
 }
 
 .google-login-error {

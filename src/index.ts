@@ -17,6 +17,8 @@ interface Env {
 
 const DEFAULT_API_URL = "https://houduan-api.onrender.com";
 const DEFAULT_TRADER_UUID = "c5e01236-d681-4343-8386-f9e17748f81f";
+const DEFAULT_GOOGLE_CLIENT_ID =
+  "810723432233-mpgi15h8fvupa2ifqtlmpv5eiih7bvgq.apps.googleusercontent.com";
 
 const shouldTrackPath = (pathname: string) => {
   if (pathname.startsWith("/assets/")) return false;
@@ -69,7 +71,7 @@ const buildEnvScript = (env: Env) => `
   window.__ENV__ = {
     VITE_API_URL: ${JSON.stringify(env.VITE_API_URL || DEFAULT_API_URL)},
     VITE_Web_Trader_UUID: ${JSON.stringify(env.VITE_Web_Trader_UUID || DEFAULT_TRADER_UUID)},
-    VITE_GOOGLE_CLIENT_ID: ${JSON.stringify(env.VITE_GOOGLE_CLIENT_ID || "")}
+    VITE_GOOGLE_CLIENT_ID: ${JSON.stringify(env.VITE_GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID)}
   };
   if (typeof window !== 'undefined' && window.__ENV__) {
     Object.defineProperty(window, '__VITE_ENV__', {
