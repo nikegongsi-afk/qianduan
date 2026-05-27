@@ -1,4 +1,4 @@
-import { identifyVisitUser } from './api/module/web/visitTrack';
+import { identifyVisitUser } from '../api/module/web/visitTrack';
 
 const shouldIdentifyVisit = (path: string) => {
   if (path.startsWith('/system')) return false;
