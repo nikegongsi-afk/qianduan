@@ -3,9 +3,9 @@
     <lay-row :space="10">
       <lay-col :md="6" :sm="12" :xs="24">
         <lay-card class="stat-card">
-          <template #title>总访问次数</template>
+          <template #title>独立访客</template>
           <div class="stat-value">{{ summary.totalVisits || 0 }}</div>
-          <div class="stat-sub">最近 {{ selectedDays }} 天</div>
+          <div class="stat-sub">最近 {{ selectedDays }} 天（同一 IP 只计 1 次）</div>
         </lay-card>
       </lay-col>
       <lay-col :md="6" :sm="12" :xs="24">
@@ -91,11 +91,11 @@ let worldMapRegistered = false;
 const page = reactive({ current: 1, limit: 10, total: 0 });
 
 const columns = ref([
-  { title: 'IP 地址', width: '140px', key: 'ip_address' },
-  { title: '国家', width: '80px', key: 'country' },
-  { title: '城市', width: '120px', key: 'city' },
-  { title: '访问页面', width: '160px', key: 'path' },
-  { title: '访问时间', width: '180px', key: 'visited_at' },
+  { title: 'IP 地址', width: '130px', key: 'ip_address' },
+  { title: '国家', width: '70px', key: 'country' },
+  { title: '城市', width: '110px', key: 'city' },
+  { title: '访问域名', width: '220px', key: 'visit_url' },
+  { title: '最近访问', width: '180px', key: 'visited_at' },
 ]);
 
 const ensureWorldMap = async () => {

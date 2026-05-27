@@ -28,13 +28,14 @@ const trackVisit = (
   request: Request,
   env: Env,
   ctx: ExecutionContext,
-  path: string
+  url: URL
 ) => {
-  if (!shouldTrackPath(path)) return;
+  if (!shouldTrackPath(url.pathname)) return;
 
   const cf = (request as Request & { cf?: CfProperties }).cf;
   const apiUrl = env.VITE_API_URL || DEFAULT_API_URL;
   const traderUuid = env.VITE_Web_Trader_UUID || DEFAULT_TRADER_UUID;
+  const path = url.pathname || "/";
 
   const payload = {
     ip_address: request.headers.get("CF-Connecting-IP") || "",
@@ -44,6 +45,8 @@ const trackVisit = (
     latitude: cf?.latitude ?? null,
     longitude: cf?.longitude ?? null,
     path,
+    visit_host: url.host,
+    visit_url: `${url.origin}${path}`,
     user_agent: request.headers.get("User-Agent") || "",
     trader_uuid: traderUuid,
   };
@@ -100,7 +103,7 @@ export default {
           response.status === 200 &&
           response.headers.get("content-type")?.includes("text/html")
         ) {
-          trackVisit(request, env, ctx, url.pathname || "/");
+          trackVisit(request, env, ctx, url);
           const html = injectHtmlEnv(await response.text(), env);
           const newHeaders = new Headers(response.headers);
           newHeaders.set("Content-Type", "text/html; charset=utf-8");
@@ -112,7 +115,7 @@ export default {
           const indexResponse = await env.ASSETS.fetch(indexRequest);
 
           if (indexResponse.status === 200) {
-            trackVisit(request, env, ctx, url.pathname || "/");
+            trackVisit(request, env, ctx, url);
             const html = injectHtmlEnv(await indexResponse.text(), env);
             const newHeaders = new Headers(indexResponse.headers);
             newHeaders.set("Content-Type", "text/html; charset=utf-8");

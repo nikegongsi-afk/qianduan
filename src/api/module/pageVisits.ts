@@ -10,6 +10,8 @@ export interface PageVisit {
   latitude?: number;
   longitude?: number;
   path?: string;
+  visit_host?: string;
+  visit_url?: string;
   user_agent?: string;
   visited_at?: string;
 }
