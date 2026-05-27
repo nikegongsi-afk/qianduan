@@ -3,7 +3,7 @@
 # 注意：wrangler.toml 已在 .gitignore 中，不会被推送到仓库
 
 # Worker 名称（根据实际部署环境修改）
-name = "stevencress"
+name = "qianduan"
 # 兼容性日期
 compatibility_date = "2025-11-25"
 # Worker 入口文件
@@ -13,7 +13,7 @@ main = "./src/index.ts"
 [vars]
 NODE_ENV = "production"
 VITE_API_URL = "https://houduan-api.onrender.com"
-VITE_Web_Trader_UUID = "c5e01236-d681-4343-8386-f9e17748f81f"
+VITE_Web_Trader_UUID = "ef59ab89-c338-4b64-a988-9a19446df14b"
 VITE_GOOGLE_CLIENT_ID = "your-google-client-id.apps.googleusercontent.com"
 
 # 静态资源配置
@@ -26,10 +26,10 @@ run_worker_first = [ "/api/*" ]
 
 # 路由配置（根据实际域名修改）
 [[routes]]
-pattern = "stevencress.com/*"
-zone_name = "stevencress.com"
+pattern = "allenklee.com/*"
+zone_name = "allenklee.com"
 
 [[routes]]
-pattern = "www.stevencress.com"
+pattern = "www.allenklee.com"
 custom_domain = true
 

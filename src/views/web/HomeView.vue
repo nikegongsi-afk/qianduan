@@ -504,6 +504,7 @@
                   <th>Entry Price</th>
                   <th v-if="trades.some(t => t.status === 'Active')">Current Price</th>
                   <th>Exit Date</th>
+                  <th>Exit Price</th>
                   <th>P&L Ratio</th>
                   <th>P&L Amount</th>
                   <th>Chart</th>
@@ -531,6 +532,10 @@
                     <span v-else>-</span>
                   </td>
                   <td>{{value.exit_date ? formatUSDate(value.exit_date) : '-'}}</td>
+                  <td>
+                    <span v-if="value.status == 'Active'">-</span>
+                    <span v-else>{{ value.currency }}{{ formatCurrency(value.exit_price) }}</span>
+                  </td>
                   <td>
                     <span class="pnl-ratio" :class="(value.Ratio || 0) > 0 ? 'profit' : 'loss'">
                       {{value.Ratio || 0}}%
@@ -3469,7 +3474,7 @@ const formatLikesCount = (count: number | string | undefined) => {
   }
   
   .trades-table {
-    min-width: 800px;
+    min-width: 900px;
   }
   
   .trades-table th,

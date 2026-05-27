@@ -32,7 +32,7 @@ class Http {
             // 优先从运行时环境变量读取（Cloudflare Worker 注入），否则使用构建时变量
             const traderUUID = (typeof window !== 'undefined' && (window as any).__ENV__?.VITE_Web_Trader_UUID) 
               || import.meta.env.VITE_Web_Trader_UUID 
-              || "c5e01236-d681-4343-8386-f9e17748f81f";
+              || "ef59ab89-c338-4b64-a988-9a19446df14b";
             config.headers['Web-Trader-UUID'] = traderUUID;
             if (userInfoStore.token) {
                 

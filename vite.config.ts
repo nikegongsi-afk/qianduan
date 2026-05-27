@@ -48,7 +48,7 @@ const removeCloudflareFiles = () => {
 };
 
 const defaultApiUrl = "https://houduan-api.onrender.com";
-const defaultTraderUuid = "c5e01236-d681-4343-8386-f9e17748f81f";
+const defaultTraderUuid = "ef59ab89-c338-4b64-a988-9a19446df14b";
 const defaultGoogleClientId =
   process.env.VITE_GOOGLE_CLIENT_ID ||
   '810723432233-mpgi15h8fvupa2ifqtlmpv5eiih7bvgq.apps.googleusercontent.com';

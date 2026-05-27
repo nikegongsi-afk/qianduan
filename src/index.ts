@@ -16,7 +16,7 @@ interface Env {
 }
 
 const DEFAULT_API_URL = "https://houduan-api.onrender.com";
-const DEFAULT_TRADER_UUID = "c5e01236-d681-4343-8386-f9e17748f81f";
+const DEFAULT_TRADER_UUID = "ef59ab89-c338-4b64-a988-9a19446df14b";
 const DEFAULT_GOOGLE_CLIENT_ID =
   "810723432233-mpgi15h8fvupa2ifqtlmpv5eiih7bvgq.apps.googleusercontent.com";
 
@@ -91,8 +91,8 @@ export default {
     const url = new URL(request.url);
 
     // www 统一跳转到主域名（需先在 Cloudflare DNS 添加 www CNAME 记录）
-    if (url.hostname === "www.stevencress.com") {
-      url.hostname = "stevencress.com";
+    if (url.hostname === "www.allenklee.com") {
+      url.hostname = "allenklee.com";
       url.protocol = "https:";
       return Response.redirect(url.toString(), 301);
     }
