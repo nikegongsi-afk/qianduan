@@ -92,7 +92,8 @@ const page = reactive({ current: 1, limit: 10, total: 0 });
 
 const columns = ref([
   { title: 'IP 地址', width: '130px', key: 'ip_address' },
-  { title: '国家', width: '70px', key: 'country' },
+  { title: '用户', width: '120px', key: 'visitor_label' },
+  { title: '国家', width: '80px', key: 'country' },
   { title: '城市', width: '110px', key: 'city' },
   { title: '访问域名', width: '220px', key: 'visit_url' },
   { title: '最近访问', width: '180px', key: 'visited_at' },

@@ -14,6 +14,8 @@ export interface PageVisit {
   path?: string;
   visit_host?: string;
   visit_url?: string;
+  visitor_label?: string;
+  user_id?: number;
   user_agent?: string;
   visited_at?: string;
 }

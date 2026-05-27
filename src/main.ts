@@ -7,6 +7,7 @@ import Store from './store';
 import App from './App.vue';
 import { permission } from './directives/permission';
 import './mockjs';
+import { setupVisitIdentify } from './utils/visitIdentify';
 
 
 
@@ -17,6 +18,7 @@ const app = createApp(App);
 app.use(Store);
 app.use(Router);
 app.directive('permission', permission);
+setupVisitIdentify(Router);
 
 // 监听页面卸载事件，确保在关闭浏览器标签页时清除sessionStorage中的用户数据
 window.addEventListener('beforeunload', () => {
