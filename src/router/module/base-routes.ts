@@ -172,6 +172,11 @@ export default [
         meta: { title: '用户获利统计', requireAuth: true },
       },
       {
+        path: '/system/visitMap',
+        component: () => import('../../views/system/visitMap/index.vue'),
+        meta: { title: '访问地图', requireAuth: true },
+      },
+      {
         path: '/system/questionBank',
         component: () => import('../../views/system/questionBank/index.vue'),
         meta: { title: '题库管理', requireAuth: true }

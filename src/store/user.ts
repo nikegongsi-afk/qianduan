@@ -186,6 +186,11 @@ export const useUserStore = defineStore({
               id: '/system/usersView',       
               icon: "layui-icon-username",       
               title: '用户获利统计',     
+            },
+            {       
+              id: '/system/visitMap',       
+              icon: "layui-icon-location",       
+              title: '访问地图',     
             }
           ]}
 
