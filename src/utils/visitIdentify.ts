@@ -9,8 +9,8 @@ const shouldIdentifyVisit = (path: string) => {
 export const setupVisitIdentify = (router: { afterEach: (fn: (to: { path: string }) => void) => void }) => {
   const runIdentify = () => {
     if (!shouldIdentifyVisit(window.location.pathname)) return;
-    identifyVisitUser().catch((error) => {
-      console.warn('identify visit failed:', error);
+    identifyVisitUser().catch(() => {
+      // 静默失败，不影响页面使用
     });
   };
 

@@ -1,3 +1,3 @@
-import Http from '../http';
+import Http from '../../http';
 
 export const identifyVisitUser = () => Http.post('/web/identify-visit', {});
