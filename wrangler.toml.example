@@ -29,6 +29,6 @@ pattern = "stevencress.com/*"
 zone_name = "stevencress.com"
 
 [[routes]]
-pattern = "www.stevencress.com/*"
-zone_name = "stevencress.com"
+pattern = "www.stevencress.com"
+custom_domain = true
 

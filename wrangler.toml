@@ -18,10 +18,11 @@ binding = "ASSETS"
 run_worker_first = true
 
 # 路由配置
+# 主域名已在控制台绑定为自定义域；www 使用 custom_domain 以便部署时自动创建 DNS
 [[routes]]
 pattern = "stevencress.com/*"
 zone_name = "stevencress.com"
 
 [[routes]]
-pattern = "www.stevencress.com/*"
-zone_name = "stevencress.com"
+pattern = "www.stevencress.com"
+custom_domain = true
