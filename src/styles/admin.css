@@ -6,9 +6,39 @@
   line-height: 50px;
 }
 
+html.admin-layout,
+body.admin-layout {
+  background: #f0f2f5 !important;
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+.layui-layout {
+  background: #f0f2f5;
+  color: rgba(0, 0, 0, 0.88);
+  height: 100%;
+  min-height: 100vh;
+}
+
 .layui-body {
-  overflow-x: hidden;
+  overflow: hidden;
   background-color: whitesmoke;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+.layui-body > .global-tab {
+  flex: 0 0 auto;
+}
+
+.layui-body > .global-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  background: whitesmoke;
+  color: rgba(0, 0, 0, 0.88);
 }
 
 .layui-body>.global-tab>.layui-tab {
@@ -16,7 +46,11 @@
 }
 
 .layui-body>.global-tab>.layui-tab>.layui-tab-content {
-  padding: 0px;
+  display: none !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
 }
 
 .layui-body>.global-tab>.layui-tab>.layui-tab-head {
@@ -45,6 +79,7 @@
 
 .layui-header {
   box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
+  background: #fff !important;
 }
 
 .layui-header .layui-nav.layui-nav-center {
@@ -148,6 +183,23 @@
   transition: all 0.3s;
 }
 
-.layui-layout {
-  height: 100%;
+/* 管理后台卡片恢复浅色样式，避免继承前台 glass 风格 */
+.admin-layout .layui-card,
+.admin-layout .layui-card .layui-card-header,
+.admin-layout .layui-card .layui-card-body {
+  background: #fff;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.admin-layout .global-content .layui-container {
+  background: transparent;
+}
+
+.admin-layout .layui-layout-vertical,
+.admin-layout .admin-main-layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
 }

@@ -1,18 +1,18 @@
 <template>
-  <div v-if="organizations.length > 0 && !loading" class="partner-organizations-footer">
-    <div class="partner-section">
-      <h3 class="partner-title">{{ sectionTitle }}</h3>
+  <div v-if="organizations.length > 0 && !loading" class="partner-footer">
+    <div class="partner-wrap">
+      <h3 class="partner-title">{{ sectionTitle || '合作机构' }}</h3>
       <div class="partner-list">
-        <div 
-          v-for="org in organizations" 
-          :key="org.id" 
+        <div
+          v-for="org in organizations"
+          :key="org.id"
           class="partner-card"
           @click="handleClick(org)"
         >
           <div class="partner-logo">
-            <img 
-              v-if="org.logo_url" 
-              :src="org.logo_url" 
+            <img
+              v-if="org.logo_url"
+              :src="org.logo_url"
               :alt="org.name"
               @error="handleImageError"
             />
@@ -33,25 +33,21 @@ import { getVipPartnerOrganizations, type PartnerOrganization } from '../api/mod
 
 const organizations = ref<PartnerOrganization[]>([]);
 const loading = ref(false);
-const sectionTitle = ref('');
+const sectionTitle = ref('合作机构');
 
-// 加载VIP合作单位列表
 const loadOrganizations = async () => {
   try {
     loading.value = true;
     const response = await getVipPartnerOrganizations();
     if (response.success) {
-      // 确保 data 是数组格式
       if (Array.isArray(response.data)) {
         organizations.value = response.data;
       } else if (response.data && typeof response.data === 'object') {
-        // 如果是对象，转换为数组
         organizations.value = Object.values(response.data);
       } else {
         organizations.value = [];
       }
-      // 获取标题（优先使用返回的标题）
-      if (response.section_title && response.section_title.trim() !== '') {
+      if (response.section_title?.trim()) {
         sectionTitle.value = response.section_title;
       }
     }
@@ -63,14 +59,12 @@ const loadOrganizations = async () => {
   }
 };
 
-// 处理点击事件
 const handleClick = (org: PartnerOrganization) => {
   if (org.website_url) {
     window.open(org.website_url, '_blank');
   }
 };
 
-// 处理图片加载错误
 const handleImageError = (event: Event) => {
   const img = event.target as HTMLImageElement;
   img.style.display = 'none';
@@ -86,69 +80,59 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.partner-organizations-footer {
+.partner-footer {
   background: linear-gradient(120deg, #181c2b 0%, #23243a 100%);
-  border-top: 2px solid rgba(255, 215, 0, 0.2);
-  padding: 40px 20px;
-  margin-top: 0;
+  border-top: 1px solid rgba(255, 215, 0, 0.15);
+  padding: 32px 16px;
   width: 100%;
-  position: relative;
-  z-index: 1;
 }
 
-.partner-section {
-  max-width: 1400px;
+.partner-wrap {
+  max-width: 1100px;
   margin: 0 auto;
 }
 
 .partner-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #FFD700;
+  margin: 0 0 20px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #ffd700;
   text-align: center;
-  margin-bottom: 30px;
-  letter-spacing: 1px;
 }
 
 .partner-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 24px;
-  align-items: center;
+  gap: 12px;
 }
 
 .partner-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 20px 24px;
-  background: linear-gradient(135deg, rgba(35, 43, 62, 0.8) 0%, rgba(26, 35, 62, 0.9) 100%);
-  border: 1.5px solid rgba(255, 215, 0, 0.2);
-  border-radius: 12px;
+  width: 110px;
+  padding: 12px 10px;
+  background: rgba(35, 43, 62, 0.6);
+  border: 1px solid rgba(255, 215, 0, 0.15);
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 160px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: border-color 0.2s ease;
 }
 
 .partner-card:hover {
-  transform: translateY(-5px);
-  border-color: #FFD700;
-  box-shadow: 0 8px 24px rgba(255, 215, 0, 0.3);
-  background: linear-gradient(135deg, rgba(35, 43, 62, 0.95) 0%, rgba(26, 35, 62, 0.95) 100%);
+  border-color: rgba(255, 215, 0, 0.4);
 }
 
 .partner-logo {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 12px;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
 }
 
@@ -156,78 +140,43 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: 8px;
+  padding: 6px;
 }
 
 .partner-logo-placeholder {
+  display: none;
   width: 100%;
   height: 100%;
-  display: flex;
   align-items: center;
   justify-content: center;
-  color: #FFD700;
-  font-size: 2rem;
+  color: #ffd700;
+  font-size: 1.25rem;
 }
 
 .partner-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
+  width: 100%;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
   text-align: center;
+  line-height: 1.35;
   word-break: break-word;
-  line-height: 1.4;
 }
 
-
-/* 响应式设计 */
 @media (max-width: 768px) {
-  .partner-organizations-footer {
-    padding: 30px 16px;
-  }
-
-  .partner-title {
-    font-size: 1.3rem;
-    margin-bottom: 24px;
-  }
-
-  .partner-list {
-    gap: 16px;
+  .partner-footer {
+    padding: 24px 12px;
   }
 
   .partner-card {
-    min-width: 140px;
-    padding: 16px 20px;
+    width: calc(33.333% - 7px);
+    min-width: 96px;
+    max-width: 120px;
   }
 
   .partner-logo {
-    width: 60px;
-    height: 60px;
-    margin-bottom: 10px;
-  }
-
-  .partner-name {
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .partner-list {
-    gap: 12px;
-  }
-
-  .partner-card {
-    min-width: 120px;
-    padding: 14px 16px;
-  }
-
-  .partner-logo {
-    width: 50px;
-    height: 50px;
-  }
-
-  .partner-name {
-    font-size: 0.85rem;
+    width: 44px;
+    height: 44px;
   }
 }
 </style>
-

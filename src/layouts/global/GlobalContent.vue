@@ -24,10 +24,14 @@ const appStore = useAppStore()
 .global-content {
   height: 100%;
   overflow: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .global-content.has-tab {
-  height: calc(100% - 46px);
+  height: auto;
+  flex: 1;
+  min-height: 0;
   overflow: auto;
 }
 

@@ -103,16 +103,7 @@
         <div class="trader-card">
           <div class="trader-avatar-wrapper" @click="openAvatarPreview">
             <img :src="trader_profiles.profile_image_url" alt="Avatar" class="trader-avatar">
-            <div class="avatar-overlay">
-              <button class="avatar-edit-btn" @click.stop="triggerAvatarUpload">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                </svg>
-              </button>
-            </div>
-              <input type="file" ref="avatarUpload" class="avatar-upload-input" accept="image/*" @change="handleAvatarUpload">
-            </div>
+          </div>
           
           <div class="trader-info">
             <h2 class="trader-name">{{trader_profiles.trader_name}}</h2>
@@ -258,7 +249,7 @@
               :key="index"
               class="tab-button"
               :class="{ active: activeTab === index }"
-              @click="activeTab = index"
+              @click="selectStrategyTab(index)"
             >
               {{ tab.label }}
             </button>
@@ -279,22 +270,30 @@
               </div>
               </div>
               
-            <!-- 交易重点标签页 -->
+            <!-- 分享重点标签页 -->
             <div v-show="activeTab === 1" class="strategy-panel">
               <div class="panel-header">
-                <h3>Focus Areas</h3>
+                <h3>Shared Focus</h3>
               </div>
               <div class="panel-body">
-                <div v-if="hasStructuredFocus" class="focus-content">
+                <div v-if="hasStructuredFocus" class="share-focus">
+                  <div class="share-focus-disclaimer">
+                    <span class="share-focus-disclaimer-dot"></span>
+                    Suggested reference only — prices, timing and position sizes are shared ideas, not trade confirmations.
+                  </div>
+
                   <div v-if="parsedTradingFocus.notices.length" class="focus-notice">
                     <div class="focus-notice-icon">📋</div>
                     <div class="focus-notice-body">
-                      <div class="focus-notice-title">Purchase Notice</div>
+                      <div class="focus-notice-title">Notice</div>
                       <p v-for="(notice, index) in parsedTradingFocus.notices" :key="index">{{ notice }}</p>
                     </div>
                   </div>
 
-                  <div v-if="parsedTradingFocus.purchaseDate" class="focus-meta-row">
+                  <div
+                    v-if="parsedTradingFocus.purchaseDate && !parsedTradingFocus.stocks.length"
+                    class="focus-meta-row"
+                  >
                     <span class="focus-date-badge">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="3" y="4" width="18" height="18" rx="2" />
@@ -302,31 +301,42 @@
                         <line x1="8" y1="2" x2="8" y2="6" />
                         <line x1="3" y1="10" x2="21" y2="10" />
                       </svg>
-                      Purchase Date: {{ parsedTradingFocus.purchaseDate }}
+                      Suggested Time: {{ formatFocusDateTime(parsedTradingFocus.purchaseDate) }}
                     </span>
                   </div>
 
-                  <div v-if="parsedTradingFocus.stocks.length" class="stock-picks-section">
-                    <div class="stock-picks-header">
-                      <h4>Recommended Stocks</h4>
-                      <span class="stock-picks-count">{{ parsedTradingFocus.stocks.length }} picks</span>
-                    </div>
-                    <div class="stock-picks-grid">
-                      <div
-                        v-for="(stock, index) in parsedTradingFocus.stocks"
-                        :key="`${stock.symbol}-${index}`"
-                        class="stock-pick-card"
-                      >
-                        <div class="stock-pick-top">
-                          <span class="stock-pick-rank">#{{ index + 1 }}</span>
-                          <span class="stock-pick-symbol">{{ stock.symbol }}</span>
+                  <div v-if="parsedTradingFocus.stocks.length" class="share-focus-list">
+                    <article
+                      v-for="(stock, index) in parsedTradingFocus.stocks"
+                      :key="`${stock.symbol}-${index}`"
+                      class="share-focus-item"
+                    >
+                      <div class="share-focus-main">
+                        <div class="share-focus-symbol-block">
+                          <span class="share-focus-rank">{{ index + 1 }}</span>
+                          <div>
+                            <div class="share-focus-symbol">{{ stock.symbol }}</div>
+                            <div class="share-focus-caption">Suggested Idea</div>
+                          </div>
                         </div>
-                        <div class="stock-pick-price-row">
-                          <span class="stock-pick-label">Entry Price</span>
-                          <span class="stock-pick-price">{{ stock.price }}</span>
+                        <div class="share-focus-stats">
+                          <div class="share-focus-stat">
+                            <span class="share-focus-stat-label">Suggested Price</span>
+                            <span class="share-focus-stat-value">${{ stock.price }}</span>
+                          </div>
+                          <div v-if="stock.buyTime" class="share-focus-stat">
+                            <span class="share-focus-stat-label">Suggested Time</span>
+                            <span class="share-focus-stat-value">{{ formatFocusDateTime(stock.buyTime) }}</span>
+                          </div>
+                          <div v-if="stock.position" class="share-focus-stat">
+                            <span class="share-focus-stat-label">Suggested Size</span>
+                            <span class="share-focus-stat-value share-focus-stat-accent">
+                              {{ formatPositionDisplay(stock.position) }}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </article>
                   </div>
 
                   <div v-if="parsedTradingFocus.others.length" class="focus-other-list">
@@ -773,7 +783,11 @@ import { Modal } from 'bootstrap';
 import{getIndexData,get_whatsapp_link,getannouncement,likeTrader} from '../../api/module/web/index'
 import { useUserStore } from '@/store';
 import { layer } from '@layui/layui-vue';
-import { normalizeTradingFocus, parseTradingFocus } from '@/utils/parseTradingFocus';
+import {
+  normalizeTradingFocus,
+  parseTradingFocus,
+  formatPositionDisplay,
+} from '@/utils/parseTradingFocus';
 const trader_profiles=ref({});
 const strategy_info=ref({
     "updated_at": "",
@@ -812,9 +826,50 @@ const viewMode = ref('grid');
 const isMobile = ref(false);
 const strategyTabs = [
   { label: 'Market Analysis', icon: '📊' },
-  { label: 'Focus Areas', icon: '🎯' },
+  { label: 'Shared Focus', icon: '🎯' },
   { label: 'Risk Warning', icon: '⚠️' }
 ];
+
+const STRATEGY_TAB_ROTATE_MS = 3000;
+const STRATEGY_TAB_PAUSE_MS = 60 * 1000;
+let strategyTabRotateTimer: ReturnType<typeof setInterval> | null = null;
+let strategyTabPauseTimer: ReturnType<typeof setTimeout> | null = null;
+
+const clearStrategyTabRotateTimer = () => {
+  if (strategyTabRotateTimer) {
+    clearInterval(strategyTabRotateTimer);
+    strategyTabRotateTimer = null;
+  }
+};
+
+const clearStrategyTabPauseTimer = () => {
+  if (strategyTabPauseTimer) {
+    clearTimeout(strategyTabPauseTimer);
+    strategyTabPauseTimer = null;
+  }
+};
+
+const startStrategyTabRotation = () => {
+  clearStrategyTabRotateTimer();
+  strategyTabRotateTimer = setInterval(() => {
+    activeTab.value = (activeTab.value + 1) % strategyTabs.length;
+  }, STRATEGY_TAB_ROTATE_MS);
+};
+
+const selectStrategyTab = (index: number) => {
+  activeTab.value = index;
+  clearStrategyTabRotateTimer();
+  clearStrategyTabPauseTimer();
+  strategyTabPauseTimer = setTimeout(() => {
+    strategyTabPauseTimer = null;
+    startStrategyTabRotation();
+  }, STRATEGY_TAB_PAUSE_MS);
+};
+
+const stopStrategyTabRotation = () => {
+  clearStrategyTabRotateTimer();
+  clearStrategyTabPauseTimer();
+};
 
 const normalizedTradingFocus = computed(() =>
   normalizeTradingFocus(strategy_info.value.trading_focus)
@@ -951,6 +1006,8 @@ onMounted(() => {
   setTimeout(() => {
     updateLikeIcon();
   }, 100);
+
+  startStrategyTabRotation();
 });
 
 // 复制ID
@@ -972,6 +1029,7 @@ const copyId = () => {
 // 清理事件监听
 onUnmounted(() => {
   window.removeEventListener('resize', checkMobile);
+  stopStrategyTabRotation();
 });
 
 // 处理点赞点击事件
@@ -1051,7 +1109,6 @@ const updateLikeIcon = () => {
   }
 };
 // Refs
-const avatarUpload = ref<HTMLInputElement>();
 
 // Toggle contact popup
 const toggleContactPopup = async () => {
@@ -1109,32 +1166,6 @@ const closeAvatarPreview = () => {
   avatarPreviewModalInstance?.hide();
 };
 
-// Trigger avatar upload
-const triggerAvatarUpload = () => {
-  avatarUpload.value?.click();
-};
-
-// Handle avatar upload
-const handleAvatarUpload = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-  
-  if (!file) return;
-  
-  // Check file type and size
-  if (!file.type.startsWith('image/')) {
-    alert('请上传图片文件');
-    return;
-  }
-  
-  if (file.size > 5 * 1024 * 1024) {
-    alert('图片大小不能超过5MB');
-    return;
-  }
-  
-  // In a real application, you would upload the file here
-  alert('Avatar upload functionality would be implemented here');
-};
 const getindexdata= async()=>{
   try {
     const res=await getIndexData();
@@ -1375,6 +1406,21 @@ const getStatusText = (status: string, ratio: number) => {
   }
 };
 
+const formatFocusDateTime = (value: string) => {
+  if (!value) return '';
+
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?/);
+  if (match) {
+    const [, , month, day, hour, minute] = match;
+    if (hour && minute) {
+      return `${month}/${day} ${hour}:${minute}`;
+    }
+    return `${month}/${day}`;
+  }
+
+  return value;
+};
+
 // 格式化日期为美国时间格式
 const formatUSDate = (dateString: string) => {
   if (!dateString) return '';
@@ -1565,7 +1611,7 @@ const formatLikesCount = (count: number | string | undefined) => {
   width: 120px;
   height: 120px;
   margin: 0 auto var(--spacing-lg);
-  cursor: pointer;
+  cursor: zoom-in;
 }
 
 .trader-avatar {
@@ -1577,41 +1623,6 @@ const formatLikesCount = (count: number | string | undefined) => {
   background: var(--primary-gradient);
   padding: 3px;
   box-sizing: border-box;
-}
-
-.avatar-overlay {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity var(--transition-base);
-}
-
-.trader-avatar-wrapper:hover .avatar-overlay {
-  opacity: 1;
-}
-
-.avatar-edit-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--primary-gradient);
-  border: none;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
-}
-
-.avatar-edit-btn svg {
-  width: 100%;
-  height: 100%;
 }
 
 .trader-info {
@@ -1880,10 +1891,157 @@ const formatLikesCount = (count: number | string | undefined) => {
   background: rgba(0, 0, 0, 0.2);
 }
 
-.focus-content {
+.share-focus {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: 16px;
+}
+
+.share-focus-disclaimer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 2px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.share-focus-disclaimer-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #a78bfa;
+  box-shadow: 0 0 10px rgba(167, 139, 250, 0.55);
+  flex-shrink: 0;
+}
+
+.share-focus-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.share-focus-item {
+  position: relative;
+  padding: 18px 18px 18px 22px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+  transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.share-focus-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #818cf8 0%, #c084fc 100%);
+}
+
+.share-focus-item:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(167, 139, 250, 0.28);
+}
+
+.share-focus-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.share-focus-symbol-block {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 120px;
+}
+
+.share-focus-rank {
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(129, 140, 248, 0.16);
+  color: #c4b5fd;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.share-focus-symbol {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.share-focus-caption {
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(196, 181, 253, 0.72);
+}
+
+.share-focus-stats {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  justify-content: flex-end;
+  gap: 0;
+  min-width: 0;
+}
+
+.share-focus-stat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  min-width: 110px;
+  padding: 0 18px;
+}
+
+.share-focus-stat:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 34px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.share-focus-stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+  white-space: nowrap;
+}
+
+.share-focus-stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f3f4f6;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.share-focus-stat-accent {
+  color: #86efac;
 }
 
 .focus-notice {
@@ -1945,102 +2103,6 @@ const formatLikesCount = (count: number | string | undefined) => {
   width: 16px;
   height: 16px;
   color: #a5b4fc;
-}
-
-.stock-picks-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.stock-picks-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-md);
-}
-
-.stock-picks-header h4 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.stock-picks-count {
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.stock-picks-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: var(--spacing-md);
-}
-
-.stock-pick-card {
-  padding: 18px;
-  border-radius: var(--border-radius);
-  background: linear-gradient(145deg, rgba(102, 126, 234, 0.14) 0%, rgba(118, 75, 162, 0.1) 100%);
-  border: 1px solid rgba(102, 126, 234, 0.22);
-  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
-}
-
-.stock-pick-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(167, 139, 250, 0.45);
-  box-shadow: 0 10px 28px rgba(102, 126, 234, 0.18);
-}
-
-.stock-pick-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-.stock-pick-rank {
-  padding: 4px 8px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-muted);
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.stock-pick-symbol {
-  font-size: 24px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  color: #fff;
-  text-shadow: 0 0 18px rgba(167, 139, 250, 0.35);
-}
-
-.stock-pick-price-row {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.stock-pick-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.stock-pick-price {
-  font-size: 18px;
-  font-weight: 700;
-  color: #c4b5fd;
 }
 
 .focus-other-list {
@@ -3043,11 +3105,40 @@ const formatLikesCount = (count: number | string | undefined) => {
     font-size: 16px;
   }
   
-  .stock-picks-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .share-focus-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
   }
 
-  .stock-pick-symbol {
+  .share-focus-stats {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .share-focus-stat {
+    min-width: 0;
+    padding: 10px 0;
+  }
+
+  .share-focus-stat:not(:last-child)::after {
+    display: none;
+  }
+
+  .share-focus-stat:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .share-focus-stat-label,
+  .share-focus-stat-value {
+    white-space: normal;
+  }
+
+  .share-focus-symbol {
     font-size: 20px;
   }
 
@@ -4504,31 +4595,6 @@ body {
             animation: dots 1s infinite;
             -webkit-animation: dots 1s infinite;
         }
-/* Avatar Upload and Preview Styles */
-.avatar-upload {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  background: #ffd700;
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.avatar-upload:hover {
-  transform: scale(1.1);
-}
-
-.avatar-upload-input {
-  display: none;
-}
-
 /* Avatar Preview Modal Styles */
 .avatar-preview-modal .modal-content {
   background: #1a1a2e;

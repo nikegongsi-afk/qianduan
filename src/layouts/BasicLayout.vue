@@ -48,7 +48,7 @@
           </div>
         </div>
       </lay-side>
-      <lay-layout style="width: 0px">
+      <lay-layout class="admin-main-layout" style="width: 0px">
         <!-- 布局头部 -->
         <lay-header style="display: flex">
           <lay-menu class="layui-layout-left">
@@ -190,7 +190,7 @@
 </template>
 
 <script lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useAppStore } from '../store/app'
 import { useUserStore } from '../store/user'
 import GlobalSetup from './global/GlobalSetup.vue'
@@ -241,6 +241,8 @@ export default {
     } = useMenu()
 
     onMounted(() => {
+      document.body.classList.add('admin-layout')
+      document.documentElement.classList.add('admin-layout')
       if (document.body.clientWidth < 768) {
         appStore.collapse = true
       }
@@ -251,6 +253,11 @@ export default {
       }
       userInfoStore.loadMenus()
       userInfoStore.loadPermissions()
+    })
+
+    onUnmounted(() => {
+      document.body.classList.remove('admin-layout')
+      document.documentElement.classList.remove('admin-layout')
     })
 
     const changeVisible = () => {

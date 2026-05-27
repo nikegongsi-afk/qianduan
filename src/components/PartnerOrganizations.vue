@@ -1,18 +1,18 @@
 <template>
-  <div v-if="organizations.length > 0" class="partner-organizations-footer">
-    <div class="partner-section">
-      <h3 class="partner-title">{{ sectionTitle }}</h3>
+  <div v-if="organizations.length > 0" class="partner-footer">
+    <div class="partner-wrap">
+      <h3 class="partner-title">{{ sectionTitle || '合作机构' }}</h3>
       <div class="partner-list">
-        <div 
-          v-for="org in organizations" 
-          :key="org.id" 
+        <div
+          v-for="org in organizations"
+          :key="org.id"
           class="partner-card"
           @click="handleClick(org)"
         >
           <div class="partner-logo">
-            <img 
-              v-if="org.logo_url" 
-              :src="org.logo_url" 
+            <img
+              v-if="org.logo_url"
+              :src="org.logo_url"
               :alt="org.name"
               @error="handleImageError"
             />
@@ -32,36 +32,28 @@ import { ref, onMounted } from 'vue';
 import { getPartnerOrganizations, type PartnerOrganization } from '../api/module/partnerOrganizations';
 
 const organizations = ref<PartnerOrganization[]>([]);
-const loading = ref(false);
-const sectionTitle = ref('');
+const sectionTitle = ref('合作机构');
 
-// 加载合作单位列表
 const loadOrganizations = async () => {
   try {
-    loading.value = true;
     const response = await getPartnerOrganizations();
     if (response.success && response.data) {
       organizations.value = response.data;
-      // 获取标题（优先使用返回的标题）
-      if (response.section_title && response.section_title.trim() !== '') {
+      if (response.section_title?.trim()) {
         sectionTitle.value = response.section_title;
       }
     }
   } catch (error) {
     console.error('加载合作单位失败:', error);
-  } finally {
-    loading.value = false;
   }
 };
 
-// 处理点击事件
 const handleClick = (org: PartnerOrganization) => {
   if (org.website_url) {
     window.open(org.website_url, '_blank');
   }
 };
 
-// 处理图片加载错误
 const handleImageError = (event: Event) => {
   const img = event.target as HTMLImageElement;
   img.style.display = 'none';
@@ -77,68 +69,62 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.partner-organizations-footer {
+.partner-footer {
   background: var(--bg-secondary);
   border-top: 1px solid var(--border-color);
-  padding: 40px 20px;
-  margin-top: 40px;
-  padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  padding: 32px 16px;
+  margin-top: 32px;
+  padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
 }
 
-.partner-section {
-  max-width: 1400px;
+.partner-wrap {
+  max-width: 1100px;
   margin: 0 auto;
 }
 
 .partner-title {
-  font-size: 1.35rem;
-  font-weight: 700;
-  background: var(--primary-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  margin: 0 0 20px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
   text-align: center;
-  margin-bottom: 24px;
 }
 
 .partner-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 16px;
-  align-items: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
 }
 
 .partner-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 16px 12px;
+  width: 110px;
+  padding: 12px 10px;
   background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
+  border-radius: 10px;
   cursor: pointer;
-  transition: all var(--transition-base);
-  min-width: 0;
+  transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .partner-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(102, 126, 234, 0.4);
-  box-shadow: var(--shadow-glow);
+  border-color: rgba(102, 126, 234, 0.35);
+  background: var(--bg-glass-hover);
 }
 
 .partner-logo {
-  width: 64px;
-  height: 64px;
-  margin-bottom: 10px;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--border-radius-sm);
-  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
 }
 
@@ -146,79 +132,66 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: 8px;
+  padding: 6px;
 }
 
 .partner-logo-placeholder {
+  display: none;
   width: 100%;
   height: 100%;
-  display: flex;
   align-items: center;
   justify-content: center;
   color: var(--color-primary);
-  font-size: 1.75rem;
+  font-size: 1.25rem;
 }
 
 .partner-name {
-  font-size: 0.875rem;
-  font-weight: 600;
+  width: 100%;
+  font-size: 0.8125rem;
+  font-weight: 500;
   color: var(--text-secondary);
   text-align: center;
+  line-height: 1.35;
   word-break: break-word;
-  line-height: 1.4;
 }
 
-/* 响应式设计 */
 @media (max-width: 768px) {
-  .partner-organizations-footer {
-    padding: 28px 16px;
+  .partner-footer {
+    padding: 24px 12px calc(80px + env(safe-area-inset-bottom, 0px));
     margin-top: 24px;
-    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
   }
 
   .partner-title {
-    font-size: 1.15rem;
-    margin-bottom: 20px;
+    font-size: 1rem;
+    margin-bottom: 16px;
   }
 
   .partner-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  .partner-card {
-    padding: 14px 10px;
-  }
-
-  .partner-logo {
-    width: 52px;
-    height: 52px;
-    margin-bottom: 8px;
-  }
-
-  .partner-name {
-    font-size: 0.8125rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .partner-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
 
   .partner-card {
-    padding: 12px 8px;
+    width: calc(33.333% - 7px);
+    min-width: 96px;
+    max-width: 120px;
+    padding: 10px 8px;
   }
 
   .partner-logo {
     width: 44px;
     height: 44px;
+    margin-bottom: 6px;
   }
 
   .partner-name {
     font-size: 0.75rem;
   }
 }
-</style>
 
+@media (max-width: 480px) {
+  .partner-card {
+    width: calc(50% - 5px);
+    max-width: none;
+  }
+}
+</style>

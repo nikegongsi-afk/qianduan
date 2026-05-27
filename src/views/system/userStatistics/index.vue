@@ -1,5 +1,5 @@
 <template>
-  <lay-container :fluid="true" style="padding: 10px">
+  <lay-container :fluid="true" class="user-statistics-page">
     <!-- 顶部概览卡片 -->
     <lay-row :space="10">
       <lay-col :md="6" :sm="6" :xs="6">
@@ -105,7 +105,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted, computed } from 'vue';
+import { ref, reactive, onMounted, onUnmounted, computed, nextTick } from 'vue';
 import { layer } from '@layui/layui-vue'
 import * as echarts from 'echarts';
 import { getUserOverview, getUserGrowth, getUserAssetDistribution } from '../../../api/module/userStatistics';
@@ -135,23 +135,30 @@ const getActiveRateColor = () => {
 // 表格列配置
 const columns = ref([
   { title: '日期', width: '200px', key: 'date' },
-  { title: '新增用户', key: 'cumulative' },
-  { title: '累计用户',  key: 'count' },
- 
+  { title: '新增用户', key: 'dailyNew' },
+  { title: '累计用户', key: 'count' },
 ])
 // 图表实例
 let growthChart: echarts.ECharts | null = null;
 let assetChart: echarts.ECharts | null = null;
 
+const handleResize = () => {
+  growthChart?.resize();
+  assetChart?.resize();
+};
+
 // 初始化数据
 onMounted(async () => {
   await loadData();
+  await nextTick();
   initCharts();
   updateCharts();
+  window.addEventListener('resize', handleResize);
 });
 
 // 销毁图表
 onUnmounted(() => {
+  window.removeEventListener('resize', handleResize);
   if (growthChart) {
     growthChart.dispose();
     growthChart = null;
@@ -165,6 +172,7 @@ onUnmounted(() => {
 // 刷新数据
 async function refreshData() {
   await loadData();
+  await nextTick();
   updateCharts();
   layer.msg('数据已刷新', { icon: 1 });
 };
@@ -191,19 +199,16 @@ const getUserGrowthapi=async ()=>{
   // 处理增长数据
     if (growthResponse.success) {
       // 计算累计用户数和增长率
-      let cumulative = 0;
       const processedData = growthResponse.data.map((item: any, index: number) => {
-        cumulative = index > 0 ?item.count-growthResponse.data[index - 1].count:0;
         const prevCount = index > 0 ? growthResponse.data[index - 1].count : 0;
-       
+        const dailyNew = index > 0 ? item.count - prevCount : 0;
         return {
           ...item,
-          cumulative,
+          dailyNew,
           prevCount
         };
       });
-      console.log(processedData)
-      growthData.value = processedData.slice(-1*(processedData.length-1));
+      growthData.value = processedData.slice(1);
     }
   }
     catch (error) {
@@ -277,7 +282,7 @@ function updateCharts() {
   // 更新增长趋势图
   if (growthChart && growthData.value.length > 0) {
     const dates = growthData.value.map((item: any) => item.date);
-    const counts = growthData.value.map((item: any) => item.cumulative);
+    const counts = growthData.value.map((item: any) => item.dailyNew);
     const cumulatives = growthData.value.map((item: any) => item.count);
     
     const growthOption = {
@@ -304,8 +309,8 @@ function updateCharts() {
         boundaryGap: false,
         data: dates,
         axisLabel: {
-          interval: 6, // 每隔6天显示一个标签
-          rotate: 45
+          interval: 0,
+          rotate: dates.length > 6 ? 45 : 0
         }
       },
       yAxis: [
@@ -356,6 +361,7 @@ function updateCharts() {
     };
     
     growthChart.setOption(growthOption);
+    growthChart.resize();
   }
   
   // 更新资产分布图
@@ -369,16 +375,16 @@ function updateCharts() {
         formatter: '{b}: {c} ({d}%)'
       },
       legend: {
-        bottom: '8%',
-        left: 'left',
+        bottom: 0,
+        left: 'center',
         data: labels
       },
       series: [
         {
           name: '资产分布',
           type: 'pie',
-          radius: ['38%', '65%'],
-          center: ['50%', '35%'],
+          radius: ['40%', '62%'],
+          center: ['50%', '42%'],
           avoidLabelOverlap: false,
           label: {
             show: false,
@@ -404,19 +410,27 @@ function updateCharts() {
     };
     
     assetChart.setOption(assetOption);
+    assetChart.resize();
   }
 }
 </script>
 
 <style scoped>
+.user-statistics-page {
+  padding: 10px;
+  padding-bottom: 24px;
+}
+
 #growthChart {
   width: 100%;
   height: 400px;
+  min-height: 400px;
 }
 
 #assetChart {
   width: 100%;
   height: 400px;
+  min-height: 400px;
 }
 
 .no-data {

@@ -87,7 +87,7 @@
           <div class="content-preview" @click="showFullContent('市场分析', row.market_analysis)">{{ row.market_analysis.substring(0, 50) }}{{ row.market_analysis.length > 50 ? '...' : '' }}</div>
         </template>
         <template v-slot:trading_focus="{ row }">
-          <div class="content-preview" @click="showFullContent('交易重点', JSON.stringify(row.trading_focus))">{{ JSON.stringify(row.trading_focus).substring(0, 50) }}{{ JSON.stringify(row.trading_focus).length > 50 ? '...' : '' }}</div>
+          <div class="content-preview" @click="showFullContent('分享重点', formatTradingFocusPreview(row.trading_focus))">{{ formatTradingFocusPreview(row.trading_focus).substring(0, 50) }}{{ formatTradingFocusPreview(row.trading_focus).length > 50 ? '...' : '' }}</div>
         </template>
         <template v-slot:risk_warning="{ row }">
           <div class="content-preview" @click="showFullContent('风险提示', row.risk_warning)">{{ row.risk_warning.substring(0, 50) }}{{ row.risk_warning.length > 50 ? '...' : '' }}</div>
@@ -101,7 +101,7 @@
       </lay-table>
     </div>
 
-    <lay-layer v-model="visible11" :title="title" :area="['750px', '900px']">
+    <lay-layer v-model="visible11" :title="title" :area="['920px', '900px']">
       <div style="padding: 20px">
         <lay-form :model="model11" :pane="true" ref="layFormRef11" required>
           <lay-form-item label="市场分析" prop="market_analysis">
@@ -125,11 +125,42 @@
             @done="handleAnalysisFileUploadSuccess"
             mode="inline"
           />
-          <lay-form-item label="交易重点" prop="trading_focus_items" :label-width="140">
-            <div v-for="(item, index) in model11.trading_focus_items" :key="index" style="margin-bottom: 10px;">
-              <lay-input v-model="model11.trading_focus_items[index]" placeholder="请输入交易重点内容" style="width: calc(100% - 80px); display: inline-block;">
-              </lay-input>
-              <lay-button size="sm" @click="removeTradingFocusItem(index)" border="red" border-style="dashed" style="margin-left: 10px;">
+          <lay-form-item label="分享重点" prop="trading_focus_items" :label-width="140">
+            <div class="trading-focus-tip">
+              以下内容均为分享建议，供用户参考理解，不代表实际成交或下单指令。
+            </div>
+            <div v-for="(item, index) in model11.trading_focus_items" :key="index" class="trading-focus-item">
+              <div class="trading-focus-fields">
+                <div class="trading-focus-field">
+                  <label>分享股票代码</label>
+                  <lay-input v-model="item.symbol" placeholder="如 TNXP"></lay-input>
+                </div>
+                <div class="trading-focus-field">
+                  <label>建议关注时间</label>
+                  <lay-date-picker
+                    v-model="item.buy_time"
+                    type="datetime"
+                    placeholder="请选择建议关注时间"
+                    :allow-clear="true"
+                  ></lay-date-picker>
+                </div>
+                <div class="trading-focus-field">
+                  <label>建议买入价</label>
+                  <lay-input v-model="item.buy_price" placeholder="如 21.00（仅供参考）"></lay-input>
+                </div>
+                <div class="trading-focus-field">
+                  <label>建议仓位比例</label>
+                  <lay-select v-model="item.position" placeholder="请选择建议仓位比例">
+                    <lay-select-option
+                      v-for="option in positionOptions"
+                      :key="option"
+                      :value="option"
+                      :label="option"
+                    ></lay-select-option>
+                  </lay-select>
+                </div>
+              </div>
+              <lay-button size="sm" @click="removeTradingFocusItem(index)" border="red" border-style="dashed">
                 删除
               </lay-button>
             </div>
@@ -175,7 +206,17 @@
 import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getTradingStrategies, createTradingStrategy, updateTradingStrategy, deleteTradingStrategy } from '../../../api/module/tradingStrategies'
+import {
+  createEmptyTradingFocusItem,
+  formatTradingFocusPreview,
+  formatBuyTime,
+  normalizePosition,
+  parseTradingFocusItems,
+  POSITION_OPTIONS,
+  type TradingFocusItem
+} from '@/utils/parseTradingFocus'
 const uploadvideosUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/videos":"https://houduan-api.onrender.com/api/upload/videos"
+const positionOptions = POSITION_OPTIONS
 // 定义交易策略接口
 interface TradingStrategy {
   id: number;
@@ -207,7 +248,7 @@ const columns = ref([
  
   { title: 'ID', width: '80px', key: 'id' },
   { title: '市场分析', width: '200px', key: 'market_analysis', customSlot: 'market_analysis' },
-  { title: '交易重点', width: '200px', key: 'trading_focus', customSlot: 'trading_focus' },
+  { title: '分享重点', width: '200px', key: 'trading_focus', customSlot: 'trading_focus' },
   { title: '风险提示', width: '200px', key: 'risk_warning', customSlot: 'risk_warning' },
   { title: '分析附件类型', width: '100px', key: 'stype', customSlot: 'stype' },
   { title: '分析路径', width: '150px', key: 'analysis_path' },
@@ -222,7 +263,7 @@ const model11 = ref<any>({
   id: 0,
   market_analysis: '',
   trading_focus: '{}',
-  trading_focus_items: [{ content: '' }], // 交易重点列表
+  trading_focus_items: [createEmptyTradingFocusItem()], // 交易重点列表
   risk_warning: '',
   stype: 0,
   analysis_path: '',
@@ -393,7 +434,7 @@ const changeVisible11 = (text: string, row?: TradingStrategy) => {
     model11.value = {
       ...row,
       trading_focus: typeof row.trading_focus === 'string' ? row.trading_focus : JSON.stringify(row.trading_focus),
-      trading_focus_items: typeof row.trading_focus === 'string' ? JSON.parse(row.trading_focus) : row.trading_focus,
+      trading_focus_items: parseTradingFocusItems(row.trading_focus),
       file_type: row.file_type || 'audio',
       file_url: row.file_url || ''
     }
@@ -404,7 +445,7 @@ const changeVisible11 = (text: string, row?: TradingStrategy) => {
       id: 0,
       market_analysis: '',
       trading_focus: '{}',
-      trading_focus_items: [''], // 初始化一个空行
+      trading_focus_items: [createEmptyTradingFocusItem()], // 初始化一个空行
       risk_warning: '',
       stype: 0,
       analysis_path: '',
@@ -421,7 +462,7 @@ const changeVisible11 = (text: string, row?: TradingStrategy) => {
 
 // 添加交易重点行
 function addTradingFocusItem() {
-  model11.value.trading_focus_items.push('');
+  model11.value.trading_focus_items.push(createEmptyTradingFocusItem());
 }
 
 // 删除交易重点行
@@ -429,7 +470,7 @@ function removeTradingFocusItem(index: number) {
   if (model11.value.trading_focus_items.length > 1) {
     model11.value.trading_focus_items.splice(index, 1);
   } else {
-    layer.msg('至少保留一行交易重点', { icon: 3 });
+    layer.msg('至少保留一行分享重点', { icon: 3 });
   }
 }
 
@@ -442,8 +483,22 @@ async function toSubmit() {
       loading.value = false;
       return;
     }
-    if (!model11.value.trading_focus_items || model11.value.trading_focus_items.length === 0) {
-      layer.msg('交易重点不能为空', { icon: 3 });
+    const validFocusItems = (model11.value.trading_focus_items as TradingFocusItem[]).filter((item) =>
+      item.symbol?.trim() ||
+      formatBuyTime(item.buy_time) ||
+      item.buy_price?.trim() ||
+      normalizePosition(item.position)
+    );
+
+    if (validFocusItems.length === 0) {
+      layer.msg('请至少填写一条分享重点', { icon: 3 });
+      loading.value = false;
+      return;
+    }
+
+    const invalidItem = validFocusItems.find((item) => !item.symbol?.trim());
+    if (invalidItem) {
+      layer.msg('每条分享重点都需要填写分享股票代码', { icon: 3 });
       loading.value = false;
       return;
     }
@@ -456,7 +511,12 @@ async function toSubmit() {
     // 创建提交数据对象
     const submitData = {
       market_analysis: model11.value.market_analysis,
-      trading_focus: model11.value.trading_focus_items,
+      trading_focus: validFocusItems.map((item) => ({
+        symbol: item.symbol.trim(),
+        buy_time: formatBuyTime(item.buy_time),
+        buy_price: item.buy_price.trim(),
+        position: normalizePosition(item.position),
+      })),
       risk_warning: model11.value.risk_warning,
       stype: model11.value.stype,
       analysis_path: model11.value.analysis_path,
@@ -737,11 +797,23 @@ function handleWarnFileUploadSuccess(response: any) {
   text-decoration: underline;
 }
 
+.trading-focus-tip {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #f0f7ff;
+  border: 1px solid #cfe3ff;
+  color: #4b5563;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
 .trading-focus-item {
   display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  padding: 10px;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 12px;
   background-color: #f8f9fa;
   border-radius: 6px;
   transition: background-color 0.2s;
@@ -751,8 +823,24 @@ function handleWarnFileUploadSuccess(response: any) {
   background-color: #e9ecef;
 }
 
-.trading-focus-item .lay-input {
+.trading-focus-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
   flex: 1;
+}
+
+.trading-focus-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #666;
+}
+
+.trading-focus-field :deep(.layui-input),
+.trading-focus-field :deep(.layui-select),
+.trading-focus-field :deep(.layui-date-picker) {
+  width: 100%;
 }
 
 .layui-icon-addition {

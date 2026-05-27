@@ -1,37 +1,47 @@
 <template>
-  <div class="global-tab" v-if="appStore.tab">
-    <lay-tab
-      :modelValue="currentPath"
-      :allowClose="true"
-      @change="to"
-      @close="close"
-    >
-      <template :key="tab" v-for="tab in tabs">
-        <lay-tab-item :id="tab.id" :title="tab.title" :closable="tab.closable">
-          <template #title>
-            <span class="dot"></span>
-            {{ tab.title }}
-          </template>
-        </lay-tab-item>
-      </template>
-    </lay-tab>
+  <div
+    class="global-tab"
+    v-if="appStore.tab"
+    :class="appStore.tagsTheme === 'designer' ? 'designer' : ''"
+  >
+    <div class="global-tab-list">
+      <div
+        v-for="tab in tabs"
+        :key="tab.id"
+        class="global-tab-item"
+        :class="{ 'is-active': currentPath === tab.id }"
+        @click="to(tab.id)"
+      >
+        <span class="dot"></span>
+        <span class="global-tab-title">{{ tab.title }}</span>
+        <lay-icon
+          v-if="tab.closable !== false"
+          type="layui-icon-close"
+          class="global-tab-close"
+          @click.stop="close(tab.id)"
+        />
+      </div>
+    </div>
     <lay-dropdown>
-      <lay-icon type="layui-icon-down" :class=" appStore.tagsTheme == 'designer' ? 'designer-last-icon' : ''"></lay-icon>
+      <lay-icon
+        type="layui-icon-down"
+        :class="appStore.tagsTheme === 'designer' ? 'designer-last-icon' : 'global-tab-menu'"
+      ></lay-icon>
       <template #content>
         <lay-dropdown-menu>
-          <lay-dropdown-menu-item @click="closeAll"
-            >关闭全部</lay-dropdown-menu-item
-          >
+          <lay-dropdown-menu-item @click="closeAll">
+            关闭全部
+          </lay-dropdown-menu-item>
         </lay-dropdown-menu>
         <lay-dropdown-menu>
-          <lay-dropdown-menu-item @click="closeOther"
-            >关闭其他</lay-dropdown-menu-item
-          >
+          <lay-dropdown-menu-item @click="closeOther">
+            关闭其他
+          </lay-dropdown-menu-item>
         </lay-dropdown-menu>
         <lay-dropdown-menu>
-          <lay-dropdown-menu-item @click="closeCurrent"
-            >关闭当前</lay-dropdown-menu-item
-          >
+          <lay-dropdown-menu-item @click="closeCurrent">
+            关闭当前
+          </lay-dropdown-menu-item>
         </lay-dropdown-menu>
       </template>
     </lay-dropdown>
@@ -45,137 +55,108 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import { useAppStore } from '../../store/app'
 import { useTab } from '../composable/useTab'
 
 const appStore = useAppStore()
-const route = useRoute()
-
-const { tabs, to, close, closeAll, closeOther, closeCurrent, currentPath } =
-  useTab()
-function toChangPage(id: any) {
-  to(id)
-}
+const { tabs, to, close, closeAll, closeOther, closeCurrent, currentPath } = useTab()
 </script>
 
 <style lang="less">
 .global-tab {
   display: flex;
+  align-items: stretch;
+  flex: 0 0 auto;
   position: relative;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
   border-top: 1px solid whitesmoke;
+  background: #fff;
   z-index: 999;
+  min-height: 40px;
 }
 
-.global-tab .layui-tab {
-  flex-grow: 1;
-  width: calc(100% - 40px);
+.global-tab-list {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
 }
 
-.global-tab .layui-tab .layui-tab-bar {
-  border: none;
-  border-left: 1px solid whitesmoke;
-}
-
-.global-tab .layui-tab .layui-tab-bar.prev {
-  border-left: none;
-}
-
-.global-tab > i {
-  width: 40px;
-  background: white;
-  height: 100%;
+.global-tab-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 40px;
   line-height: 40px;
-  text-align: center;
-  border-left: 1px solid whitesmoke;
+  padding: 0 15px;
+  font-size: 14px;
+  color: dimgray;
+  cursor: pointer;
+  border-right: 1px solid whitesmoke;
+  flex-shrink: 0;
+  user-select: none;
 }
 
-.global-tab .layui-tab .dot {
+.global-tab-item.is-active {
+  color: var(--global-primary-color, #009688);
+}
+
+.global-tab-item .dot {
   display: inline-block;
   background-color: whitesmoke;
-  margin-right: 8px;
+  margin-right: 4px;
   border-radius: 50px;
   height: 8px;
   width: 8px;
 }
 
-.global-tab .layui-tab .layui-this .dot {
-  background-color: var(--global-primary-color);
+.global-tab-item.is-active .dot {
+  background-color: var(--global-primary-color, #009688);
 }
 
-.global-tab .layui-tab .layui-tab-close:hover {
-  background: transparent !important;
-  color: #e2e2e2 !important;
+.global-tab-close {
+  margin-left: 6px;
+  font-size: 12px !important;
+  color: #999;
 }
-.designer {
-  display: flex;
-  width: calc(100% - 15px);
-  height: 37px;
-  position: relative;
-  font-size: 14px;
-  color: dimgray;
-  cursor: pointer;
 
-  .layui-tab .layui-tab-bar {
-    height: 32px;
-    line-height: 32px;
-    margin-top: 5px;
-  }
+.global-tab-close:hover {
+  color: #ff5722;
+}
 
-  .layui-tab .layui-tab-bar.prev {
-    border-left: none;
-    height: 32px;
-    line-height: 32px;
-    margin-top: 5px;
-  }
+.global-tab-menu {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border-left: 1px solid whitesmoke;
+  background: #fff;
+  flex-shrink: 0;
+}
 
+.global-tab.designer {
   box-shadow: unset;
-  z-index: 999;
-  .designer-tab {
-    display: inline-block;
-    flex-grow: 1;
-    width: 100%;
-    padding-left: 15px;
-  }
-  .designer-tab-item {
-    display: inline-block;
-    height: 32px !important;
-    line-height: 32px !important;
-    padding: 0px 10px;
-    margin-top: 5px;
-    background-color: #fff;
-    border-radius: 4px;
-    margin-right: 5px;
-  }
-  .dot {
-    display: inline-block;
-    background-color: whitesmoke;
-    margin-right: 8px;
-    border-radius: 50px;
-    height: 8px;
-    width: 8px;
-  }
+  padding-left: 5px;
+  min-height: 37px;
+}
 
-  .designer-close {
-    position: relative;
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    line-height: 20px;
-    margin-left: 8px;
-    top: 1px;
-    text-align: center;
-    font-size: 14px;
-    color: var(--global-neutral-color-8);
-    transition: all 0.2s;
-    -webkit-transition: all 0.2s;
-  }
+.global-tab.designer .global-tab-list {
+  align-items: flex-end;
+  padding-top: 5px;
 }
-.dot-this {
-  background-color: var(--global-primary-color) !important;
+
+.global-tab.designer .global-tab-item {
+  height: 32px;
+  line-height: 32px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 4px;
+  background: #fff;
 }
+
 .designer-last-icon {
   width: 32px !important;
   height: 32px !important;
@@ -184,5 +165,6 @@ function toChangPage(id: any) {
   line-height: 32px !important;
   text-align: center;
   border-radius: 4px;
+  border-left: none !important;
 }
 </style>
