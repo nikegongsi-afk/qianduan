@@ -3,63 +3,71 @@
     <div class="number-flow"></div>
     <navcomponent />
     <div class="main-content">
-     <div class="section center" style="max-width: 1400px;">
-        <h1 class="gold-text" style="font-size:3.2rem;font-weight:900;letter-spacing:2px;margin-bottom:8px;">
-            Welcome back, esteemed {{ user_info.username }} ({{ user_info.membership_level }})
-        </h1>
-        <div style="color:#b0c4e6;font-size:1.3rem;margin-bottom:20px;">
-            Let professional investment strategies help you grow your wealth
+     <section class="dashboard-hero">
+        <div class="hero-bg-shapes" aria-hidden="true">
+          <div class="hero-shape hero-shape-1"></div>
+          <div class="hero-shape hero-shape-2"></div>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:24px;">
-            <!-- Top welcome area avatar -->
-            <div style="position:relative;cursor:pointer;" id="avatar-preview-trigger" @click="handleAvatarClick">
-                <img 
-                  :src="user_info?.avatar_url || 'https://lnndxivliqxifhpdpidr.supabase.co/storage/v1/object/public/avatars/avatars/avatars/123456_0868673e94664ac2959bbe029a76675d.webp'" 
-                  alt="avatar" 
-                  class="avatar-glow" 
-                  style="width:120px;height:120px;border-radius:50%;background:#232b3e;object-fit:cover;"
-                >
-                <input
-                  ref="avatarFileInput"
-                  type="file"
-                  accept="image/*"
-                  style="display: none;"
-                  @change="handleAvatarFileChange"
-                >
-                <!-- Remove svg icon, no longer displayed -->
+        <div class="hero-inner">
+          <div class="hero-profile-block">
+            <button type="button" class="avatar-ring" id="avatar-preview-trigger" @click="handleAvatarClick">
+              <img
+                :src="user_info?.avatar_url || 'https://lnndxivliqxifhpdpidr.supabase.co/storage/v1/object/public/avatars/avatars/avatars/123456_0868673e94664ac2959bbe029a76675d.webp'"
+                alt="avatar"
+                class="hero-avatar"
+              >
+              <input
+                ref="avatarFileInput"
+                type="file"
+                accept="image/*"
+                style="display: none;"
+                @change="handleAvatarFileChange"
+              >
+            </button>
+            <div class="hero-copy">
+              <span class="membership-badge">{{ user_info.membership_level || 'Member' }}</span>
+              <h1 class="hero-title">Welcome back, {{ user_info.username }}</h1>
+              <p class="hero-subtitle">Let professional investment strategies help you grow your wealth</p>
+              <div class="hero-actions">
+                <button type="button" class="btn-primary-gradient" @click="handleUploadTradeRecord">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  Upload Trade Record
+                </button>
+                <button type="button" class="btn-secondary-glass" id="settings-btn" @click="handleSettingsClick">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                  Settings
+                </button>
+              </div>
             </div>
-            <div style="display:flex;gap:20px;justify-content:center;margin-top:18px;">
-                <button class="ant-btn ant-btn-primary styled-button" style="font-weight:700;border-radius:12px;" @click="handleUploadTradeRecord"><span class="anticon"><svg viewBox="64 64 896 896" focusable="false" data-icon="upload" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M872 474H728V184c0-4.4-3.6-8-8-8H304c-4.4 0-8 3.6-8 8v290H152c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h720c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8z"></path></svg></span> Upload Trade Record</button>
-                <button class="ant-btn styled-button" id="settings-btn" style="font-weight:700;border-radius:12px;" @click="handleSettingsClick"><span class="anticon"><svg viewBox="64 64 896 896" focusable="false" data-icon="setting" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M925.8 731.1l-74.2-43.1c3.7-23.2 5.6-46.9 5.6-70.9s-1.9-47.7-5.6-70.9l74.2-43.1c7.7-4.5 11-14.1 7.7-22.3l-48.1-111.2c-3.3-8.2-12.2-12.1-20.4-9.1l-74.2 29.7c-19.6-15.1-40.5-28.1-62.6-38.7l-11.3-78.7c-1.2-8.6-8.6-14.8-17.2-14.8h-120c-8.6 0-16 6.2-17.2 14.8l-11.3 78.7c-22.1 10.6-43 23.6-62.6 38.7l-74.2-29.7c-8.2-3.3-17.1.9-20.4 9.1l-48.1 111.2c-3.3 8.2 0 17.8 7.7 22.3l74.2 43.1c-3.7 23.2-5.6 46.9-5.6 70.9s1.9 47.7 5.6 70.9l-74.2 43.1c-7.7 4.5-11 14.1-7.7 22.3l48.1 111.2c3.3 8.2 12.2 12.1 20.4 9.1l74.2-29.7c19.6 15.1 40.5 28.1 62.6 38.7l11.3 78.7c1.2 8.6 8.6 14.8 17.2 14.8h120c8.6 0 16-6.2 17.2-14.8l11.3-78.7c22.1-10.6 43-23.6 62.6-38.7l74.2 29.7c8.2 3.3 17.1-.9 20.4-9.1l48.1 111.2c3.3 8.2 0 17.8-7.7 22.3zM512 704c-106 0-192-86-192-192s86-192 192-192 192 86 192 192-86 192-192 192z"></path></svg></span> Settings</button>
-            </div>
+          </div>
         </div>
-    </div>
+     </section>
 
-    <!-- Five major data cards -->
-    <div class="glass-stat-card-grid" style="max-width: 1400px;">
-      <div class="glass-stat-card">
-        <div class="glass-stat-label">Initial Capital</div>
-        <div class="glass-stat-value" style="color:#00ffae; font-size: 18px;">{{ formatCurrency(user_info.initial_asset) }}<span class="glass-stat-unit">$</span></div>
+    <!-- Stats overview -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Initial Capital</div>
+        <div class="stat-value stat-positive">{{ formatCurrency(user_info.initial_asset) }}<span class="stat-unit">$</span></div>
       </div>
-      <div class="glass-stat-card">
-        <div class="glass-stat-label">Total Profit</div>
-        <div class="glass-stat-value" style="color:#ffd700; font-size: 18px;">{{ formatCurrency(user_info.utotle_profit) }}<span class="glass-stat-unit">$</span></div>
+      <div class="stat-card">
+        <div class="stat-label">Total Profit</div>
+        <div class="stat-value stat-accent">{{ formatCurrency(user_info.utotle_profit) }}<span class="stat-unit">$</span></div>
       </div>
-      <div class="glass-stat-card">
-        <div class="glass-stat-label">Monthly Profit</div>
-        <div class="glass-stat-value" style="color:#52c41a; font-size: 18px;">{{ formatCurrency(user_info.umonth_profit) }}<span class="glass-stat-unit">$</span></div>
+      <div class="stat-card">
+        <div class="stat-label">Monthly Profit</div>
+        <div class="stat-value stat-positive">{{ formatCurrency(user_info.umonth_profit) }}<span class="stat-unit">$</span></div>
       </div>
-      <div class="glass-stat-card">
-        <div class="glass-stat-label">Last Month Profit</div>
-        <div class="glass-stat-value" style="color:#52c41a; font-size: 18px;">{{ formatCurrency(user_info.uprvmonth_profit) }}<span class="glass-stat-unit">$</span></div>
+      <div class="stat-card">
+        <div class="stat-label">Last Month Profit</div>
+        <div class="stat-value stat-positive">{{ formatCurrency(user_info.uprvmonth_profit) }}<span class="stat-unit">$</span></div>
       </div>
-      <div class="glass-stat-card">
-        <div class="glass-stat-label">Holding Profit</div>
-        <div class="glass-stat-value" id="holding-profit-card" style="color:#faad14; font-size: 18px;">{{ formatCurrency(user_info.hold_profit) }}<span class="glass-stat-unit">$</span></div>
+      <div class="stat-card">
+        <div class="stat-label">Holding Profit</div>
+        <div class="stat-value stat-warning" id="holding-profit-card">{{ formatCurrency(user_info.hold_profit) }}<span class="stat-unit">$</span></div>
       </div>
-       <div class="glass-stat-card">
-        <div class="glass-stat-label">Available Points</div>
-        <div class="glass-stat-value" id="holding-profit-card" style="color:#faad14; font-size: 18px;">{{ formatCurrency(user_info.membership_points) }}</div>
+      <div class="stat-card">
+        <div class="stat-label">Available Points</div>
+        <div class="stat-value stat-accent">{{ formatCurrency(user_info.membership_points) }}</div>
       </div>
     </div>
 
@@ -245,7 +253,7 @@
                 </div>
                 <!-- Close Trade Button - Only show when exit price is empty, positioned on the right -->
                 <div v-if="!t.exit_price" class="trade-close-btn-container" style="display:flex;justify-content:flex-end;margin-top:2px;">
-                  <a class="styled-button close-trade-btn" @click="openCloseTradeModal(t)" style="background:linear-gradient(90deg, #FFD700 0%, #FFB300 100%);color:#181F2A;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:600;font-size: 12px;">Close Trade</a>
+                  <a class="btn-primary-gradient close-trade-btn" @click="openCloseTradeModal(t)">Close Trade</a>
                 </div>
               
             </div>
@@ -1376,6 +1384,239 @@ const handleImageChange = async (event) => {
 </script>
 
 <style scoped>
+/* ===== VIP Dashboard — unified site design system ===== */
+.dashboard-hero {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-2xl);
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.hero-bg-shapes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-shape {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(102, 126, 234, 0.12);
+}
+
+.hero-shape-1 {
+  width: 220px;
+  height: 220px;
+  top: -80px;
+  right: -40px;
+}
+
+.hero-shape-2 {
+  width: 160px;
+  height: 160px;
+  bottom: -60px;
+  left: -20px;
+  background: rgba(250, 112, 154, 0.1);
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-profile-block {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+.avatar-ring {
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.hero-avatar {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(102, 126, 234, 0.55);
+  box-shadow: 0 0 0 6px rgba(102, 126, 234, 0.12), var(--shadow-md);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.avatar-ring:hover .hero-avatar {
+  transform: scale(1.03);
+  box-shadow: 0 0 0 8px rgba(102, 126, 234, 0.18), var(--shadow-glow);
+}
+
+.hero-copy {
+  flex: 1;
+  min-width: 240px;
+}
+
+.membership-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  margin-bottom: 12px;
+  border-radius: 999px;
+  background: rgba(102, 126, 234, 0.18);
+  border: 1px solid rgba(102, 126, 234, 0.35);
+  color: #c4b5fd;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.hero-title {
+  font-size: clamp(1.75rem, 4vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 10px;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: var(--spacing-lg);
+  max-width: 560px;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.btn-primary-gradient,
+.btn-secondary-glass {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: var(--border-radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.btn-primary-gradient svg,
+.btn-secondary-glass svg {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-primary-gradient {
+  border: none;
+  background: var(--primary-gradient);
+  color: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary-gradient:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+.btn-secondary-glass {
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+}
+
+.btn-secondary-glass:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(102, 126, 234, 0.45);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.stat-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg) var(--spacing-md);
+  text-align: center;
+  transition: all var(--transition-base);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(102, 126, 234, 0.35);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-label {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  word-break: break-word;
+}
+
+.stat-unit {
+  font-size: 0.85rem;
+  margin-left: 2px;
+  opacity: 0.75;
+}
+
+.stat-positive { color: #34d399; }
+.stat-accent { color: #c4b5fd; }
+.stat-warning { color: #fbbf24; }
+
+@media (max-width: 1200px) {
+  .stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 768px) {
+  .dashboard-hero { padding: var(--spacing-xl) var(--spacing-lg); }
+  .hero-profile-block { flex-direction: column; text-align: center; }
+  .hero-subtitle { margin-left: auto; margin-right: auto; }
+  .hero-actions { justify-content: center; }
+  .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.close-trade-btn {
+  padding: 8px 16px !important;
+  font-size: 12px !important;
+  height: auto !important;
+  text-decoration: none;
+}
+
  /* Form Styles for Modals */
  .form-item {
    margin-bottom: 16px;
@@ -1414,64 +1655,19 @@ const handleImageChange = async (event) => {
  }
  
  .app-container {
-  background: linear-gradient(120deg, #181c2b 0%, #23243a 100%);
-  color: #ffffff;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-family-primary);
   margin: 0;
   padding: 0;
   position: relative;
-  align-items: center;
-  overflow-x: hidden;
-  overflow-y: hidden;
   min-height: 100vh;
 }
 
-/* 添加光纤划过效果 */
-.app-container::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.03) 30%,
-    rgba(255, 255, 255, 0.05) 40%,
-    transparent 100%
-  );
-  animation: lightBeam 8s infinite linear;
-  pointer-events: none;
-  align-items: center;
-}
-
-/* 增强背景科技感 */
-.app-container::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: 
-    radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(0, 255, 174, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.02) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* 数字流动背景效果 */
+.app-container::before,
+.app-container::after,
 .number-flow {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: 0;
+  display: none;
 }
 
 .number-flow::before,
@@ -1535,18 +1731,21 @@ const handleImageChange = async (event) => {
         .main-content {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 48px 32px 80px 32px;
+            padding: var(--spacing-xl) var(--spacing-lg) 80px;
+            position: relative;
+            z-index: 1;
         }
         @media (max-width: 900px) { .main-content { padding: 24px 8px 40px 8px; } }
         .section {
-            background: rgba(24, 31, 42, 0.98);
-            border-radius: 28px;
-            box-shadow: 0 12px 48px 0 #181F2A55, 0 2px 24px #FFD70022;
-            margin-bottom: 48px;
-            padding: 48px 36px;
-            border: 1.5px solid rgba(255,255,255,0.08);
+            background: var(--bg-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-xl) var(--spacing-lg);
+            border: 1px solid var(--border-color);
             position: relative;
-           
         }
         @media (max-width: 600px) {
           html, body {
@@ -1594,228 +1793,110 @@ const handleImageChange = async (event) => {
           }
         }
         .gold-text { 
-            color: #FFD700; 
-            font-weight: 900; 
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFE55C 50%, #FFD700 100%);
+            color: var(--text-primary);
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
-            animation: titleGlow 3s ease-in-out infinite alternate;
         }
         .green-text { 
-            color: #00FFAE; 
-            font-weight: 700;
-            text-shadow: 0 0 20px rgba(0, 255, 174, 0.4);
+            color: #34d399; 
+            font-weight: 600;
         }
         .big-number { 
             font-family: 'Roboto Mono', 'Inter', monospace; 
-            font-size: 2.6rem; 
-            color: #00ffae; 
-            font-weight: 900; 
-            text-shadow: 
-                0 0 16px #00ffae55,
-                0 0 32px rgba(0, 255, 174, 0.3);
-            animation: pulseGreen 2s ease-in-out infinite alternate;
+            font-size: 2rem; 
+            color: #34d399; 
+            font-weight: 700;
         }
         .gold-number { 
-            color: #ffd700; 
-            text-shadow: 
-                0 0 16px #ffd70077,
-                0 0 32px rgba(255, 215, 0, 0.4);
-            animation: pulseGold 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes titleGlow {
-            0% { text-shadow: 0 0 30px rgba(255, 215, 0, 0.3); }
-            100% { text-shadow: 0 0 50px rgba(255, 215, 0, 0.7); }
-        }
-
-        @keyframes pulseGreen {
-            0% { text-shadow: 0 0 16px #00ffae55, 0 0 32px rgba(0, 255, 174, 0.2); }
-            100% { text-shadow: 0 0 24px #00ffae88, 0 0 48px rgba(0, 255, 174, 0.4); }
-        }
-
-        @keyframes pulseGold {
-            0% { text-shadow: 0 0 16px #ffd70077, 0 0 32px rgba(255, 215, 0, 0.3); }
-            100% { text-shadow: 0 0 24px #ffd700aa, 0 0 48px rgba(255, 215, 0, 0.5); }
+            color: #c4b5fd;
+            font-weight: 700;
         }
         .card-title,
         .section h2,
         .agreement-title,
         h2.card-title {
-            color: #FFD700 !important;
-            font-weight: 900;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 8px #181F2A88;
-            margin-top: 36px;
-            margin-bottom: 28px;
+            color: var(--text-primary) !important;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            margin-top: 28px;
+            margin-bottom: 20px;
             position: relative;
             z-index: 2;
             background: transparent;
             display: inline-block;
         }
-        .styled-button, .ant-btn-primary {
-            background: linear-gradient(135deg, #FFD700 0%, #FFB300 50%, #FFD700 100%) !important;
-            color: #181F2A !important;
-            border: none !important;
-            font-weight: 900;
-            border-radius: 16px !important;
-            box-shadow: 
-                0 8px 32px rgba(255, 215, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3),
-                0 0 0 1px rgba(255, 215, 0, 0.5);
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            height: 48px;
-            padding: 0 32px;
-            font-size: 1.15rem;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        .styled-button::before, .ant-btn-primary::before {
+        .card-title::after,
+        .section h2::after,
+        h2.card-title::after {
             content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.4), 
-                transparent
-            );
-            transition: left 0.5s ease;
+            display: block;
+            width: 48px;
+            height: 3px;
+            margin-top: 10px;
+            border-radius: 999px;
+            background: var(--primary-gradient);
         }
-
-        .styled-button:hover::before, .ant-btn-primary:hover::before {
-            left: 100%;
+        .styled-button, .ant-btn-primary {
+            background: var(--primary-gradient) !important;
+            color: #fff !important;
+            border: none !important;
+            font-weight: 600;
+            border-radius: var(--border-radius-sm) !important;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-base);
+            height: 44px;
+            padding: 0 24px;
+            font-size: 0.95rem;
         }
         .styled-button:hover, .ant-btn-primary:hover {
-            background: linear-gradient(135deg, #FFE066 0%, #FFD700 50%, #FFE066 100%) !important;
-            color: #181F2A !important;
-            box-shadow: 
-                0 16px 48px rgba(255, 215, 0, 0.6),
-                inset 0 1px 0 rgba(255, 255, 255, 0.4),
-                0 0 0 2px rgba(255, 215, 0, 0.7),
-                0 0 60px rgba(255, 215, 0, 0.2);
-            transform: translateY(-4px) scale(1.05);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg), var(--shadow-glow);
         }
         .avatar-glow, .ant-avatar {
-            border: 3px solid #FFD700 !important;
-            box-shadow: 
-                0 0 30px rgba(255, 215, 0, 0.8),
-                0 0 0 8px rgba(255, 215, 0, 0.15),
-                0 0 60px rgba(255, 215, 0, 0.3);
-            background: linear-gradient(135deg, #232b3e 0%, #2a3444 100%) !important;
-            animation: avatarGlow 4s ease-in-out infinite alternate;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        @keyframes avatarGlow {
-            0% {
-                box-shadow: 
-                    0 0 30px rgba(255, 215, 0, 0.6),
-                    0 0 0 8px rgba(255, 215, 0, 0.1),
-                    0 0 60px rgba(255, 215, 0, 0.2);
-            }
-            100% {
-                box-shadow: 
-                    0 0 45px rgba(255, 215, 0, 0.9),
-                    0 0 0 12px rgba(255, 215, 0, 0.25),
-                    0 0 80px rgba(255, 215, 0, 0.4);
-            }
+            border: 3px solid rgba(102, 126, 234, 0.5) !important;
+            box-shadow: 0 0 0 6px rgba(102, 126, 234, 0.12) !important;
+            background: var(--bg-secondary) !important;
         }
         .glass-stat-card-grid {
-            display: flex;
-            gap: 40px;
-            justify-content: space-between;
-            margin: 48px 0 40px 0;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
         }
         .glass-stat-card {
-            flex: 1 1 0%;
-            min-width: 0;
-            max-width: none;
-            background: linear-gradient(135deg, #232B3E 60%, #222a3a 100%);
-            border-radius: 24px;
-            box-shadow: 
-                0 8px 32px #181F2A44, 
-                0 0 0 2px #FFD70033,
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            border: 1.5px solid rgba(255, 255, 255, 0.12);
-            color: #fff;
-            padding: 40px 28px;
-            margin-bottom: 18px;
+            background: var(--bg-glass);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: var(--spacing-lg) var(--spacing-md);
             text-align: center;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-sizing: border-box;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-
-        .glass-stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                #FFD700 20%, 
-                #FFE55C 50%, 
-                #FFD700 80%, 
-                transparent 100%
-            );
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .glass-stat-card:hover::before {
-            opacity: 0.8;
-        }
-        @media (max-width: 900px) {
-            .glass-stat-card-grid { gap: 16px; }
-            .glass-stat-card { padding: 18px 8px; min-width: 120px; border-radius: 10px; }
+            transition: all var(--transition-base);
         }
         .glass-stat-card:hover {
-            box-shadow: 
-                0 20px 80px 0 #FFD70055, 
-                0 0 0 3px #FFD700,
-                inset 0 1px 0 rgba(255, 255, 255, 0.2),
-                0 0 60px rgba(255, 215, 0, 0.15);
-            border-color: #FFD700;
-            transform: translateY(-8px) scale(1.05);
-            background: linear-gradient(135deg, #2a3444 60%, #252d3a 100%);
+            transform: translateY(-4px);
+            border-color: rgba(102, 126, 234, 0.35);
+            box-shadow: var(--shadow-md);
         }
-        .glass-stat-label { color: #b0c4e6; font-size: 1.15rem; margin-bottom: 10px; font-weight: 600;height: 60px; }
+        .glass-stat-label { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px; font-weight: 500; min-height: auto; }
         .glass-stat-value {
-            font-size: 2.2rem;
-            font-weight: 900;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-            word-break: break-all;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: 0.02em;
         }
-        .glass-stat-sub { color: #ffd700; font-size: 1.1rem; margin-top: 8px; font-weight: 700; }
-        .glass-stat-unit { font-size: 1.1rem; margin-left: 4px; color: #b0c4e6; }
+        .glass-stat-sub { color: #c4b5fd; font-size: 0.95rem; margin-top: 6px; font-weight: 600; }
+        .glass-stat-unit { font-size: 0.85rem; margin-left: 4px; color: var(--text-muted); }
         .ant-table { background: transparent !important; color: #fff; border-radius: 16px; overflow: hidden; }
-        .ant-table-thead > tr > th { background: #232e4a !important; color: #FFD700 !important; font-weight: 900; font-size: 1.1rem; border-bottom: 2.5px solid #FFD700; text-align: center; letter-spacing: 1px; }
-        .ant-table-tbody > tr > td { background: transparent !important; color: #fff; font-size: 1.05rem; border-bottom: 1.5px solid #2e3c5d !important; text-align: center; font-weight: 600; }
-        .ant-table-tbody > tr:hover > td { background: #232b3e !important; }
-        .ant-tag { border-radius: 10px !important; font-weight: 900; font-size: 1.05rem; padding: 2px 16px; letter-spacing: 1px; }
-        .ant-progress-bg { border-radius: 8px !important; }
-        .ant-btn-link { color: #FFD700 !important; font-weight: 900; }
-        .ant-btn-link:hover { color: #FFB300 !important; }
+        .ant-table-thead > tr > th { background: rgba(102, 126, 234, 0.12) !important; color: var(--text-primary) !important; font-weight: 600; font-size: 0.95rem; border-bottom: 1px solid var(--border-color) !important; text-align: center; }
+        .ant-table-tbody > tr > td { background: transparent !important; color: var(--text-primary); font-size: 0.95rem; border-bottom: 1px solid var(--border-color) !important; text-align: center; font-weight: 500; }
+        .ant-table-tbody > tr:hover > td { background: rgba(102, 126, 234, 0.08) !important; }
+        .ant-btn-link { color: #c4b5fd !important; font-weight: 600; }
+        .ant-btn-link:hover { color: #a78bfa !important; }
         .flex-row { display: flex; flex-wrap: wrap; gap: 40px; }
         .flex-col { display: flex; flex-direction: column; gap: 18px; }
         .mb-32 { margin-bottom: 32px; }
@@ -1825,22 +1906,22 @@ const handleImageChange = async (event) => {
         .center { text-align: center; }
         .w-100 { width: 100%; }
         .card {
-            background: linear-gradient(135deg, #232B3E 60%, #222a3a 100%);
-            border-radius: 22px;
-            box-shadow: 0 8px 32px #181F2A33, 0 0 0 2px #FFD70022;
-            border: 1.5px solid rgba(255, 255, 255, 0.10);
-            color: #fff;
-            padding: 36px 28px;
-            margin-bottom: 28px;
-            transition: all 0.3s cubic-bezier(.4,2,.6,1);
+            background: var(--bg-glass);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+            transition: all var(--transition-base);
         }
         .card:hover {
-            box-shadow: 0 16px 64px 0 #FFD70044, 0 0 0 3px #FFD700;
-            border-color: #FFD700;
-            transform: translateY(-6px) scale(1.03);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(102, 126, 234, 0.35);
+            transform: translateY(-4px);
         }
-        .progress-bar { background: linear-gradient(90deg,#FFD700 0%,#FFB300 100%); height: 10px; border-radius: 8px; box-shadow: 0 2px 8px #FFD70033; }
-        .progress-labels { display: flex; justify-content: space-between; color: #b0c4e6; font-size: 1.05rem; margin-top: 10px; font-weight: 600; }
+        .progress-bar { background: var(--primary-gradient); height: 8px; border-radius: 999px; }
+        .progress-labels { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.9rem; margin-top: 10px; font-weight: 500; }
         /* 福利卡片优化 */
         .benefit-card { box-shadow: 0 8px 32px #FFD70022, 0 0 0 2px #FFD70022; border: 1.5px solid #FFD70033; background: linear-gradient(135deg, #232B3E 60%, #232e4a 100%); }
         .benefit-card:hover { box-shadow: 0 16px 64px 0 #FFD70044, 0 0 0 3px #FFD700; border-color: #FFD700; transform: translateY(-6px) scale(1.04); }
