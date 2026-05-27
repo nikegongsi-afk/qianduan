@@ -5,11 +5,7 @@
       <div class="nav-logo">
         <a :href="trader_profiles.home_top_title_link || '/'" class="logo-link">
           <div class="logo-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <img src="/logo.png" alt="Logo" class="logo-img" />
           </div>
           <span class="logo-text">{{ trader_profiles.home_top_title || 'Trading Platform' }}</span>
         </a>
@@ -257,18 +253,16 @@ onUnmounted(() => {
 .logo-icon {
   width: 40px;
   height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--primary-gradient);
+  flex-shrink: 0;
   border-radius: 10px;
-  padding: 8px;
-  color: white;
+  overflow: hidden;
 }
 
-.logo-icon svg {
+.logo-img {
   width: 100%;
   height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 .logo-text {
