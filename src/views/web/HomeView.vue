@@ -1049,7 +1049,7 @@ const handleLikeClick = async () => {
     const likeKey = `traderlikes_${today}`;
     
       if (localStorage.getItem(likeKey)) {
-         layer.msg("Today and past, please come back tomorrow. Thank you for your support!", { icon : 6, time: 1000})
+         layer.msg("Today and past, please come back tomorrow. Thank you for your support!", { icon : 6, time: 2500})
        
         return;
       }
@@ -1066,7 +1066,7 @@ const handleLikeClick = async () => {
     if (response.success) {
       localStorage.setItem(likeKey, '1');
       isLiked.value = response.isLiked;
-       layer.msg("Liked successfully, thank you!", { icon : 6, time: 1000})
+       layer.msg("Liked successfully, thank you!", { icon : 6, time: 2500})
       // 更新点赞数
       if (isLiked.value) {
         likesCount.value++;
@@ -2909,7 +2909,7 @@ const formatLikesCount = (count: number | string | undefined) => {
 
 .mobile-like-count {
   font-size: 10px;
-  color: var(--text-muted);
+  color: #c4b5fd;
   margin-top: -2px;
 }
 
@@ -4497,11 +4497,9 @@ body {
 .action-value {
   font-size: 13px;
   font-weight: 600;
-  background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-  background-clip: text;
-        }
+  color: #c4b5fd;
+  letter-spacing: 0.02em;
+}
 @keyframes slideUp {
   from {
     opacity: 0;

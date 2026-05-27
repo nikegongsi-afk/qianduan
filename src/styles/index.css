@@ -301,3 +301,22 @@ body:not(.admin-layout)::before {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-primary-dark);
 }
+
+/* 前台页面 layer 提示框：深色背景下确保文字可见 */
+body:not(.admin-layout) .layui-layer-msg,
+body:not(.admin-layout) .layui-layer-dialog {
+  background: rgba(26, 31, 58, 0.96) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45) !important;
+}
+
+body:not(.admin-layout) .layui-layer-msg .layui-layer-content,
+body:not(.admin-layout) .layui-layer-dialog .layui-layer-content {
+  color: #ffffff !important;
+}
+
+body:not(.admin-layout) .layui-layer-msg .layui-layer-padding,
+body:not(.admin-layout) .layui-layer-dialog .layui-layer-padding {
+  color: #ffffff !important;
+}

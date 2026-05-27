@@ -587,7 +587,7 @@ const handleLikeClick = async (id:number) => {
         const today = new Date().toISOString().slice(0, 10);
         const likeKey = `loadlikes_${today}`;
       if (localStorage.getItem(likeKey)) {
-         layer.msg("Today and past, please come back tomorrow. Thank you for your support!", { icon : 6, time: 1000})
+         layer.msg("Today and past, please come back tomorrow. Thank you for your support!", { icon : 6, time: 2500})
        
         return;
       }
@@ -595,7 +595,7 @@ const handleLikeClick = async (id:number) => {
     
     if (response.success) {
        localStorage.setItem(likeKey, '1');
-       layer.msg("Liked successfully, thank you!", { icon : 6, time: 1000})
+       layer.msg("Liked successfully, thank you!", { icon : 6, time: 2500})
       get_leaderboard();
     //  isLiked.value = response.isLiked;
       
