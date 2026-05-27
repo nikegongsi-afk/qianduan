@@ -429,15 +429,23 @@
                     {{(value.trade_market || '').toUpperCase()}}
               </div>
                 </div>
-                <div class="status-indicator" :class="getStatusClass(value.status, value.Ratio)">
+                <div class="status-indicator" :class="getStatusClass(value.status, getTradeMetrics(value).ratio)">
                   <span class="status-dot"></span>
-                  <span class="status-label">{{getStatusText(value.status, value.Ratio)}}</span>
+                  <span class="status-label">{{getStatusText(value.status, getTradeMetrics(value).ratio)}}</span>
                 </div>
               </div>
 
-              <div class="trade-image-wrapper" v-if="value.image_url" @click="openImageModal(value.symbol,value.image_url)">
-                <img :src="value.image_url" alt="Chart" class="trade-image">
-                <div class="image-overlay">
+              <div
+                class="trade-image-wrapper"
+                @click="value.image_url && openImageModal(value.symbol, value.image_url)"
+              >
+                <img
+                  :src="value.image_url || '/trade-placeholder.svg'"
+                  alt="Chart"
+                  class="trade-image"
+                  :class="{ 'trade-image-default': !value.image_url }"
+                >
+                <div class="image-overlay" v-if="value.image_url">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                     <circle cx="12" cy="12" r="3"></circle>
@@ -453,9 +461,10 @@
                     <span class="trade-price">{{ value.currency }}{{ formatCurrency(value.entry_price) }}</span>
                   </div>
                   <div class="trade-pair-sep" aria-hidden="true"></div>
-                  <div class="trade-pair-side" v-if="value.status == 'Active'">
-                    <span class="trade-label trade-label-live">Current</span>
-                    <span class="trade-price trade-price-highlight">{{ value.currency }}{{ formatCurrency(value.current_price) }}</span>
+                  <div class="trade-pair-side" v-if="isActiveTrade(value)">
+                    <span class="trade-label trade-label-exit">Current</span>
+                    <span class="trade-date">{{ formatUSDate(new Date().toISOString()) }}</span>
+                    <span class="trade-price">{{ value.currency }}{{ formatCurrency(getTradeMetrics(value).price) }}</span>
                   </div>
                   <div class="trade-pair-side" v-else>
                     <span class="trade-label trade-label-exit">Exit</span>
@@ -467,25 +476,25 @@
                 <div class="trade-metrics">
                   <div class="trade-metric">
                     <span class="trade-label">Entry Amount</span>
-                    <span class="trade-metric-val">{{ value.currency || '' }}{{ formatCurrency((value.entry_price || 0) * (value.size || 0)) }}</span>
+                    <span class="trade-metric-val">{{ value.currency || '' }}{{ formatCurrency(getTradeMetrics(value).entryAmount) }}</span>
                   </div>
                   <div class="trade-metric">
                     <span class="trade-label">Market Value</span>
-                    <span class="trade-metric-val">{{ value.currency || '' }}{{ formatCurrency(value.Market_Value || 0) }}</span>
+                    <span class="trade-metric-val">{{ value.currency || '' }}{{ formatCurrency(getTradeMetrics(value).marketValue) }}</span>
                   </div>
                 </div>
 
                 <div
                   class="trade-pnl-bar"
-                  :class="(value.Ratio || 0) > 0 ? 'pnl-profit' : (value.Ratio || 0) < 0 ? 'pnl-loss' : 'pnl-neutral'"
+                  :class="getPnlClass(getTradeMetrics(value).ratio)"
                 >
                   <div class="trade-pnl-side">
                     <span class="trade-label">P&L Ratio</span>
-                    <span class="trade-pnl-val">{{ value.Ratio || 0 }}%</span>
+                    <span class="trade-pnl-val">{{ formatRatio(getTradeMetrics(value).ratio) }}%</span>
                   </div>
                   <div class="trade-pnl-side">
                     <span class="trade-label">P&L Amount</span>
-                    <span class="trade-pnl-val">{{ value.currency || '' }}{{ formatCurrency(value.Amount || 0) }}</span>
+                    <span class="trade-pnl-val">{{ value.currency || '' }}{{ formatCurrency(getTradeMetrics(value).amount) }}</span>
                   </div>
                 </div>
               </div>
@@ -502,7 +511,7 @@
                   <th>Status</th>
                   <th>Entry Date</th>
                   <th>Entry Price</th>
-                  <th v-if="trades.some(t => t.status === 'Active')">Current Price</th>
+                  <th v-if="trades.some(t => isActiveTrade(t))">Current Price</th>
                   <th>Exit Date</th>
                   <th>Exit Price</th>
                   <th>P&L Ratio</th>
@@ -521,33 +530,33 @@
                     </span>
                   </td>
                   <td>
-                    <span class="status-badge" :class="getStatusClass(value.status, value.Ratio)">
-                      {{getStatusText(value.status, value.Ratio)}}
+                    <span class="status-badge" :class="getStatusClass(value.status, getTradeMetrics(value).ratio)">
+                      {{getStatusText(value.status, getTradeMetrics(value).ratio)}}
                     </span>
                   </td>
                   <td>{{formatUSDate(value.entry_date)}}</td>
                   <td>{{value.currency}}{{formatCurrency(value.entry_price)}}</td>
-                  <td v-if="trades.some(t => t.status === 'Active')">
-                    <span v-if="value.status == 'Active'">{{value.currency}}{{formatCurrency(value.current_price)}}</span>
+                  <td v-if="trades.some(t => isActiveTrade(t))">
+                    <span v-if="isActiveTrade(value)">{{value.currency}}{{formatCurrency(getTradeMetrics(value).price)}}</span>
                     <span v-else>-</span>
                   </td>
                   <td>{{value.exit_date ? formatUSDate(value.exit_date) : '-'}}</td>
                   <td>
-                    <span v-if="value.status == 'Active'">-</span>
+                    <span v-if="isActiveTrade(value)">-</span>
                     <span v-else>{{ value.currency }}{{ formatCurrency(value.exit_price) }}</span>
                   </td>
                   <td>
-                    <span class="pnl-ratio" :class="(value.Ratio || 0) > 0 ? 'profit' : 'loss'">
-                      {{value.Ratio || 0}}%
+                    <span class="pnl-ratio" :class="Number(getTradeMetrics(value).ratio) > 0 ? 'profit' : Number(getTradeMetrics(value).ratio) < 0 ? 'loss' : ''">
+                      {{ formatRatio(getTradeMetrics(value).ratio) }}%
                     </span>
                   </td>
                   <td>
-                    <span class="pnl-amount" :class="(value.Ratio || 0) > 0 ? 'profit' : 'loss'">
-                      {{value.currency || ''}}{{formatCurrency(value.Amount || 0)}}
+                    <span class="pnl-amount" :class="Number(getTradeMetrics(value).ratio) > 0 ? 'profit' : Number(getTradeMetrics(value).ratio) < 0 ? 'loss' : ''">
+                      {{value.currency || ''}}{{formatCurrency(getTradeMetrics(value).amount)}}
                     </span>
                   </td>
                   <td>
-                    <button v-if="value.image_url" @click="openImageModal(value.symbol,value.image_url)" class="chart-btn">
+                    <button @click="openImageModal(value.symbol, value.image_url || '/trade-placeholder.svg')" class="chart-btn">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                         <circle cx="12" cy="12" r="3"></circle>
@@ -816,6 +825,7 @@ const strategy_info=ref({
 });
 const trades=ref([]);
 const Activecount=ref(0)
+let tradeRefreshTimer: number | null = null;
 const Monthly=ref(0)
 const Total=ref(0)
 const userStore = useUserStore()
@@ -1020,6 +1030,12 @@ onMounted(() => {
   }, 100);
 
   startStrategyTabRotation();
+
+  tradeRefreshTimer = window.setInterval(() => {
+    if (trades.value.some((item: any) => isActiveTrade(item))) {
+      getindexdata();
+    }
+  }, 60000);
 });
 
 // 复制ID
@@ -1042,6 +1058,10 @@ const copyId = () => {
 onUnmounted(() => {
   window.removeEventListener('resize', checkMobile);
   stopStrategyTabRotation();
+  if (tradeRefreshTimer) {
+    window.clearInterval(tradeRefreshTimer);
+    tradeRefreshTimer = null;
+  }
 });
 
 // 处理点赞点击事件
@@ -1384,13 +1404,13 @@ const getCountryFlag = (market: string) => {
 };
 
 // 获取状态样式类
-const getStatusClass = (status: string, ratio: number) => {
+const getStatusClass = (status: string, ratio: number | string) => {
   if (!status) return 'status-default';
+  const r = Number(ratio) || 0;
   if (status.toLowerCase() === 'active') {
     return 'status-active';
   } else {
-    // 对于所有非Active状态，根据盈亏情况判断是止盈还是止损
-    if (ratio > 0) {
+    if (r > 0) {
       return 'status-take-profit';
     } else {
       return 'status-stop-loss';
@@ -1515,6 +1535,43 @@ const formatUSTime = (dateString: string) => {
 };
 
 // 格式化货币金额，添加千位分隔符
+const isActiveTrade = (trade: any) =>
+  trade?.status === 'Active' || (!trade?.exit_date && !trade?.exit_price);
+
+const getTradeMetrics = (trade: any) => {
+  const entryPrice = Number(trade?.entry_price) || 0;
+  const size = Number(trade?.size) || 0;
+  const direction = Number(trade?.direction) || 1;
+  const active = isActiveTrade(trade);
+
+  let price = active ? Number(trade?.current_price) : Number(trade?.exit_price);
+  if (!price || Number.isNaN(price)) {
+    price = entryPrice;
+  }
+
+  const entryAmount = entryPrice * size;
+  const marketValue = price * size;
+  const amount = (price - entryPrice) * size * direction;
+  const ratio = entryPrice > 0 ? ((price - entryPrice) / entryPrice) * 100 : 0;
+
+  return { entryAmount, marketValue, amount, ratio, price, active };
+};
+
+const formatRatio = (ratio: number | string) => {
+  const num = Number(ratio) || 0;
+  return num.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
+const getPnlClass = (ratio: number | string) => {
+  const num = Number(ratio) || 0;
+  if (num > 0) return 'pnl-profit';
+  if (num < 0) return 'pnl-loss';
+  return 'pnl-neutral';
+};
+
 const formatCurrency = (amount: number | string) => {
   if (!amount && amount !== 0) return '0';
   
@@ -2488,6 +2545,11 @@ const formatLikesCount = (count: number | string | undefined) => {
   height: 100%;
   object-fit: fill;
   object-position: center;
+}
+
+.trade-image-default {
+  object-fit: cover;
+  background: #1a2332;
 }
 
 .image-overlay {
