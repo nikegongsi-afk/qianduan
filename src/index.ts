@@ -39,7 +39,7 @@ export default {
 <script>
   // 运行时注入环境变量（从 Cloudflare Worker env 读取）
   window.__ENV__ = {
-    VITE_API_URL: ${JSON.stringify(env.VITE_API_URL || "https://apistock-1hgl.onrender.com")},
+    VITE_API_URL: ${JSON.stringify(env.VITE_API_URL || "https://houduan-api.onrender.com")},
     VITE_Web_Trader_UUID: ${JSON.stringify(env.VITE_Web_Trader_UUID || "default-trader-uuid")}
   };
   
@@ -77,7 +77,7 @@ export default {
 <script>
   // 运行时注入环境变量（从 Cloudflare Worker env 读取）
   window.__ENV__ = {
-    VITE_API_URL: ${JSON.stringify(env.VITE_API_URL || "https://apistock-1hgl.onrender.com")},
+    VITE_API_URL: ${JSON.stringify(env.VITE_API_URL || "https://houduan-api.onrender.com")},
     VITE_Web_Trader_UUID: ${JSON.stringify(env.VITE_Web_Trader_UUID || "default-trader-uuid")}
   };
   

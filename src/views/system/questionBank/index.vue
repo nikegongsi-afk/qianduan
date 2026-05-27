@@ -140,7 +140,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import { layer } from '@layui/layui-vue';
 import { getQuestionList, addQuestion, updateQuestion, deleteQuestion, toggleQuestionStatus } from '../../../api/module/questionBank';
-const uploadvideosUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/images":"https://apistock-1hgl.onrender.com/api/upload/images"
+const uploadvideosUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/images":"https://houduan-api.onrender.com/api/upload/images"
 // 定义题目接口
 interface Question {
   id: number;

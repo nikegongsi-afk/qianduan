@@ -215,8 +215,8 @@ interface TraderProfile {
   likes_count: number;
   pay_qr_code_img?: string;
 }
-const uploadImageUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/images":"https://apistock-1hgl.onrender.com/api/upload/images"
-const uploaddocumentsUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/documents":"https://apistock-1hgl.onrender.com/api/upload/documents"
+const uploadImageUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/images":"https://houduan-api.onrender.com/api/upload/images"
+const uploaddocumentsUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/documents":"https://houduan-api.onrender.com/api/upload/documents"
 
 
 // 表格列配置

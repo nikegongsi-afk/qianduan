@@ -195,7 +195,7 @@ import {
 
 const uploadImageUrl = import.meta.env.VITE_API_URL 
   ? import.meta.env.VITE_API_URL + "/api/upload/images" 
-  : "https://apistock-1hgl.onrender.com/api/upload/images"
+  : "https://houduan-api.onrender.com/api/upload/images"
 
 // 定义支付记录接口
 interface PaymentRecord {

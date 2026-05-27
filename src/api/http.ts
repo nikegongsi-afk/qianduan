@@ -13,7 +13,7 @@ const getApiUrl = () => {
   if (typeof window !== 'undefined' && (window as any).__ENV__?.VITE_API_URL) {
     return (window as any).__ENV__.VITE_API_URL;
   }
-  return import.meta.env.VITE_API_URL || "https://apistock-1hgl.onrender.com";
+  return import.meta.env.VITE_API_URL || "https://houduan-api.onrender.com";
 };
 
 const config: TAxiosOption = {

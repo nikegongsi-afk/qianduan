@@ -12,7 +12,7 @@ main = "./src/index.ts"
 # 环境变量（前端可通过 import.meta.env 访问）
 [vars]
 NODE_ENV = "production"
-VITE_API_URL = "https://apistock-1hgl.onrender.com"
+VITE_API_URL = "https://houduan-api.onrender.com"
 VITE_Web_Trader_UUID = "39968c24-67bd-4f12-a5e4-ff959ce03c50"
 
 # 静态资源配置

@@ -130,7 +130,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getVideos, createVideo, updateVideo, deleteVideo } from '../../../api/module/videos'
-const uploadvideosUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/videos":"https://apistock-1hgl.onrender.com/api/upload/videos"
+const uploadvideosUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/videos":"https://houduan-api.onrender.com/api/upload/videos"
 // 定义视频接口
 interface Video {
   id: number;

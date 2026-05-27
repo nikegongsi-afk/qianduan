@@ -134,7 +134,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getDocuments, createDocument, updateDocument, deleteDocument, uploadDocument } from '@/api/module/documents'
-const uploaddocumentsUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/documents":"https://apistock-1hgl.onrender.com/api/upload/documents"
+const uploaddocumentsUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/documents":"https://houduan-api.onrender.com/api/upload/documents"
 // 定义文档接口
 interface Document {
   id: number;

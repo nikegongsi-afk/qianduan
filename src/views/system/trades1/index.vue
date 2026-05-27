@@ -171,7 +171,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getTrades1, createTrade1, updateTrade1, deleteTrade1 } from '../../../api/module/trades1'
 import { getTradeMarkets } from '../../../api/module/tradeMarket'
-const uploadvideosUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/images":"https://apistock-1hgl.onrender.com/api/upload/images"
+const uploadvideosUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/images":"https://houduan-api.onrender.com/api/upload/images"
 // 定义交易员交易记录接口
 interface Trade1 {
   id: number;
