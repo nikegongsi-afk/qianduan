@@ -134,7 +134,9 @@
 import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getDocuments, createDocument, updateDocument, deleteDocument, uploadDocument } from '@/api/module/documents'
-const uploaddocumentsUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/documents":"https://houduan-api.onrender.com/api/upload/documents"
+import { getUploadUrl, parseUploadResponse, isAllowedDocumentFile } from '@/utils/apiUrl'
+
+const uploaddocumentsUrl = getUploadUrl('documents')
 // 定义文档接口
 interface Document {
   id: number;
@@ -541,30 +543,16 @@ function formatFileType(mimeType: string): string {
 
 // 文档上传前校验
 const beforeUploadDocument = (file: File) => {
-  layer.load(0, {time: 3000})
-  var isOver = false
-  if (file.size > 100 * 1024 * 1024) { // 100MB限制
-    isOver = true
-    layer.msg(`文件大小超过100MB`, { icon: 2 })
+  if (file.size > 200 * 1024 * 1024) {
+    layer.msg('文件大小超过200MB', { icon: 2 })
     return new Promise((resolver) => resolver(false))
   }
-  
-  // 检查文件类型
-  const validTypes = [
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/vnd.ms-excel',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'application/zip',
-    'application/x-rar-compressed'
-  ];
-  if (!validTypes.includes(file.type)) {
-    layer.msg(`不支持的文件类型: ${file.type}`, { icon: 2 });
+
+  if (!isAllowedDocumentFile(file)) {
+    layer.msg(`不支持的文件类型: ${file.type || file.name}`, { icon: 2 });
     return new Promise((resolver) => resolver(false));
   }
   
-  // 设置上传中状态
   uploading.value = true;
   layer.load(2, { shade: [0.3, '#fff'] });
   return new Promise((resolver) => resolver(true))
@@ -574,37 +562,19 @@ const beforeUploadDocument = (file: File) => {
 function handleDocumentUploadSuccess(response: any) {
   layer.closeAll()
   uploading.value = false;
-  layer.closeAll('loading'); // 关闭上传提示
   
-  // 确保上传状态正确重置
-  setTimeout(() => {
-    uploading.value = false;
-  }, 100);
-  
-  try {
-    let updataData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
-    if (updataData && updataData.success) {
-      // 将上传成功后的文档URL赋值给file_url字段
-      model11.value.file_url = updataData.data.url;
-      model11.value.file_type = updataData.data.mimeType;
-      layer.msg('文档上传成功', { icon: 1 });
-      
-      // 重置文件上传组件状态
-      documentFile.value = null;
-      
-    } else {
-      layer.msg('文档上传失败', { icon: 2 });
-      // 重置状态
-      documentFile.value = null;
-      uploading.value = false;
-    }
-  } catch (error) {
-    console.error('解析上传响应异常:', error);
-    layer.msg('文档上传失败，请重试', { icon: 2 });
-    // 重置状态
+  const updataData = parseUploadResponse(response);
+  if (updataData?.success && updataData.data?.url) {
+    model11.value.file_url = updataData.data.url;
+    model11.value.file_type = updataData.data.mimeType || '';
+    layer.msg('文档上传成功', { icon: 1 });
     documentFile.value = null;
-    uploading.value = false;
+    return;
   }
+
+  layer.msg(updataData?.error || '文档上传失败', { icon: 2 });
+  documentFile.value = null;
+  uploading.value = false;
 }
 </script>
 

@@ -130,7 +130,9 @@
 import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getVideos, createVideo, updateVideo, deleteVideo } from '../../../api/module/videos'
-const uploadvideosUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/videos":"https://houduan-api.onrender.com/api/upload/videos"
+import { getUploadUrl, parseUploadResponse, isAllowedVideoFile } from '@/utils/apiUrl'
+
+const uploadvideosUrl = getUploadUrl('videos')
 // 定义视频接口
 interface Video {
   id: number;
@@ -497,22 +499,16 @@ function formatDateTime(dateTime: string | Date): string {
 
 // 视频上传前校验
 const beforeUploadVideo = (file: File) => {
-  layer.load(0, {time: 3000})
-  var isOver = false
-  if (file.size > 100 * 1024 * 1024) { // 100MB限制
-    isOver = true
-    layer.msg(`文件大小超过100MB`, { icon: 2 })
+  if (file.size > 200 * 1024 * 1024) {
+    layer.msg('文件大小超过200MB', { icon: 2 })
     return new Promise((resolver) => resolver(false))
   }
-  
-  // 检查文件类型
-  const validTypes = ['video/mp4', 'video/mov', 'video/avi', 'video/mkv', 'video/webm'];
-  if (!validTypes.includes(file.type)) {
-    layer.msg(`不支持的文件类型: ${file.type}`, { icon: 2 });
+
+  if (!isAllowedVideoFile(file)) {
+    layer.msg(`不支持的文件类型: ${file.type || file.name}`, { icon: 2 });
     return new Promise((resolver) => resolver(false));
   }
   
-  // 设置上传中状态
   uploading.value = true;
   layer.load(2, { shade: [0.3, '#fff'] });
   return new Promise((resolver) => resolver(true))
@@ -522,36 +518,18 @@ const beforeUploadVideo = (file: File) => {
 function handleVideoUploadSuccess(response: any) {
   layer.closeAll()
   uploading.value = false;
-  layer.closeAll('loading'); // 关闭上传提示
   
-  // 确保上传状态正确重置
-  setTimeout(() => {
-    uploading.value = false;
-  }, 100);
-  
-  try {
-    let updataData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
-    if (updataData && updataData.success) {
-      // 将上传成功后的视频URL赋值给video_url字段
-      model11.value.video_url = updataData.data.url;
-      layer.msg('视频上传成功', { icon: 1 });
-      
-      // 重置文件上传组件状态
-      videoFile.value = null;
-      
-    } else {
-      layer.msg('视频上传失败', { icon: 2 });
-      // 重置状态
-      videoFile.value = null;
-      uploading.value = false;
-    }
-  } catch (error) {
-    console.error('解析上传响应异常:', error);
-    layer.msg('视频上传失败，请重试', { icon: 2 });
-    // 重置状态
+  const updataData = parseUploadResponse(response);
+  if (updataData?.success && updataData.data?.url) {
+    model11.value.video_url = updataData.data.url;
+    layer.msg('视频上传成功', { icon: 1 });
     videoFile.value = null;
-    uploading.value = false;
+    return;
   }
+
+  layer.msg(updataData?.error || '视频上传失败', { icon: 2 });
+  videoFile.value = null;
+  uploading.value = false;
 }
 </script>
 
