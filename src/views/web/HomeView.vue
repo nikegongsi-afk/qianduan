@@ -256,10 +256,8 @@
                   <div class="analysis-icon-wrap" aria-hidden="true">
                     <span class="analysis-icon">📊</span>
                   </div>
-                  <div class="analysis-content">
-                    <div class="analysis-label">Market View</div>
-                    <p class="analysis-text">{{ strategy_info.market_analysis }}</p>
-                  </div>
+                  <div class="analysis-label">Market View</div>
+                  <p class="analysis-text">{{ strategy_info.market_analysis }}</p>
                 </div>
                 <div class="media-container" v-if="strategy_info.analysis_path">
                   <audio v-if="strategy_info.stype==1" :src="strategy_info.analysis_path" controls class="media-player"></audio>
@@ -649,13 +647,13 @@
     
     <!-- Welcome Popup Modal -->
     <div class="modal fade" id="welcomePopupModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered welcome-modal-dialog">
-            <div class="modal-content welcome-popup-modal">
-                <div class="welcome-modal-glow welcome-modal-glow--primary"></div>
-                <div class="welcome-modal-glow welcome-modal-glow--secondary"></div>
+        <div class="modal-dialog modal-dialog-centered welcome-modal-dialog" :class="{ 'welcome-modal-dialog--mobile': isMobile }">
+            <div class="modal-content welcome-popup-modal" :class="{ 'welcome-popup-modal--mobile': isMobile }">
+                <div v-if="!isMobile" class="welcome-modal-glow welcome-modal-glow--primary"></div>
+                <div v-if="!isMobile" class="welcome-modal-glow welcome-modal-glow--secondary"></div>
 
                 <button
-                    v-if="announcementData && announcementData.allow_close_dialog===1"
+                    v-if="isMobile || (announcementData && announcementData.allow_close_dialog===1)"
                     type="button"
                     class="welcome-close-btn"
                     data-bs-dismiss="modal"
@@ -667,8 +665,8 @@
                     </svg>
                 </button>
 
-                <div class="welcome-modal-body">
-                    <div class="welcome-profile-header">
+                <div class="welcome-modal-body" :class="{ 'welcome-modal-body--mobile-simple': isMobile }">
+                    <div v-if="!isMobile" class="welcome-profile-header welcome-desktop-only">
                         <div class="welcome-avatar-ring">
                             <img :src="trader_profiles.profile_image_url" alt="Trader" class="welcome-avatar">
                         </div>
@@ -679,11 +677,11 @@
                         </div>
                     </div>
 
-                    <p class="welcome-tagline">
+                    <p v-if="!isMobile" class="welcome-tagline welcome-desktop-only">
                         Dedicated to providing professional trading strategy analysis and real-time market guidance for investors
                     </p>
 
-                    <div class="welcome-stats-grid">
+                    <div v-if="!isMobile" class="welcome-stats-grid welcome-desktop-only">
                         <div class="welcome-stat-card">
                             <div class="welcome-stat-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -720,8 +718,12 @@
                         </div>
                     </div>
 
-                    <div class="welcome-announcement" v-if="announcementData?.title || announcementData?.content">
-                        <div class="welcome-announcement-header">
+                    <div
+                        class="welcome-announcement"
+                        :class="{ 'welcome-announcement--mobile': isMobile }"
+                        v-if="announcementData?.title || announcementData?.content"
+                    >
+                        <div v-if="!isMobile" class="welcome-announcement-header welcome-desktop-only">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M3 11l18-5v12L3 14v-3z"></path>
                                 <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path>
@@ -732,7 +734,7 @@
                         <p class="welcome-announcement-text">{{ announcementData?.content || '' }}</p>
                     </div>
 
-                    <div class="welcome-benefits">
+                    <div v-if="!isMobile" class="welcome-benefits welcome-desktop-only">
                         <h4 class="welcome-benefits-title">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -770,7 +772,7 @@
                         </div>
                     </div>
 
-                    <button class="welcome-cta-btn" @click="joinCommunity">
+                    <button v-if="!isMobile" class="welcome-cta-btn welcome-desktop-only" @click="joinCommunity">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                             <circle cx="9" cy="7" r="4"></circle>
@@ -1840,9 +1842,10 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .analysis-box {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-lg);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 10px var(--spacing-lg);
   padding: var(--spacing-xl) var(--spacing-lg);
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.22) 0%, rgba(118, 75, 162, 0.12) 100%);
   border: 1px solid rgba(129, 140, 248, 0.45);
@@ -1853,11 +1856,14 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .analysis-icon-wrap {
+  grid-column: 1;
+  grid-row: 1 / 3;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 56px;
   height: 56px;
+  align-self: start;
   flex-shrink: 0;
   border-radius: 50%;
   background: var(--primary-gradient);
@@ -1869,14 +1875,12 @@ const formatLikesCount = (count: number | string | undefined) => {
   line-height: 1;
 }
 
-.analysis-content {
-  flex: 1;
-  min-width: 0;
-}
-
 .analysis-label {
+  grid-column: 2;
+  grid-row: 1;
   display: inline-block;
-  margin-bottom: 10px;
+  align-self: start;
+  margin-bottom: 0;
   padding: 4px 12px;
   border-radius: 999px;
   background: rgba(102, 126, 234, 0.22);
@@ -1889,6 +1893,8 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .analysis-text {
+  grid-column: 2;
+  grid-row: 2;
   margin: 0;
   font-size: clamp(1.2rem, 2.5vw, 1.5rem);
   font-weight: 800;
@@ -3379,17 +3385,92 @@ const formatLikesCount = (count: number | string | undefined) => {
   }
 
   .analysis-box {
-    padding: var(--spacing-lg) var(--spacing-md);
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    gap: 10px 12px;
+    padding: var(--spacing-md);
   }
 
   .analysis-icon-wrap {
-    width: 48px;
-    height: 48px;
+    grid-column: 1;
+    grid-row: 1;
+    width: 40px;
+    height: 40px;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.18), var(--shadow-md);
+  }
+
+  .analysis-icon {
+    font-size: 20px;
+  }
+
+  .analysis-label {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
   }
 
   .analysis-text {
-    font-size: 13px;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    font-size: 14px;
     font-weight: 600;
+    line-height: 1.6;
+  }
+
+  .welcome-desktop-only {
+    display: none !important;
+  }
+
+  .welcome-modal-glow {
+    display: none !important;
+  }
+
+  .welcome-popup-modal {
+    background: rgba(22, 27, 48, 0.98);
+    border-color: rgba(255, 215, 0, 0.25);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .welcome-modal-dialog {
+    margin: 16px;
+    max-width: calc(100% - 32px);
+  }
+
+  .welcome-modal-body {
+    padding: 1.25rem 1rem;
+  }
+
+  .welcome-announcement--mobile,
+  .welcome-announcement {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+
+  .welcome-announcement-title {
+    font-size: 1rem;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+    color: #ffd700;
+    text-align: center;
+  }
+
+  .welcome-announcement-text {
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.92);
+    text-align: left;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .welcome-close-btn {
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
   }
 
   .warning-text {
@@ -4132,6 +4213,52 @@ body {
 }
 
 @media (max-width: 768px) {
+  .welcome-modal-dialog--mobile {
+    margin: 16px;
+    max-width: calc(100% - 32px);
+  }
+
+  .welcome-popup-modal--mobile {
+    background: rgba(22, 27, 48, 0.98);
+    border-color: rgba(255, 215, 0, 0.25);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .welcome-modal-body--mobile-simple {
+    padding: 1.5rem 1.25rem 1.25rem;
+  }
+
+  .welcome-announcement--mobile {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+
+  .welcome-announcement--mobile .welcome-announcement-title {
+    font-size: 1.125rem;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+    color: #ffd700;
+    text-align: center;
+  }
+
+  .welcome-announcement--mobile .welcome-announcement-text {
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.92);
+    text-align: left;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .welcome-popup-modal--mobile .welcome-close-btn {
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+  }
+
   .welcome-modal-body {
     padding: 1.5rem 1.25rem;
   }
@@ -4219,6 +4346,19 @@ body {
   .update-badge {
     font-size: 10px;
     padding: 3px 8px;
+  }
+
+  .welcome-modal-body--mobile-simple {
+    padding: 1.25rem 1rem 1rem;
+  }
+
+  .welcome-announcement--mobile .welcome-announcement-title {
+    font-size: 1rem;
+  }
+
+  .welcome-announcement--mobile .welcome-announcement-text {
+    font-size: 0.875rem;
+    line-height: 1.6;
   }
 
   .welcome-modal-body {
