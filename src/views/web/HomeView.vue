@@ -487,8 +487,37 @@
             </div>
         </div>
 
-          <!-- 表格视图 -->
-          <div v-if="viewMode === 'table'" class="trades-table-wrapper">
+          <!-- 移动端列表视图（表格模式） -->
+          <div v-if="viewMode === 'table' && isMobile" class="trades-mobile-list">
+            <div
+              v-for="value in trades"
+              :key="value.id || value.symbol"
+              class="trades-mobile-row"
+              @click="openImageModal(value.symbol, value.image_url || '/trade-placeholder.svg')"
+            >
+              <div class="trades-mobile-row-top">
+                <span class="trades-mobile-symbol">{{ value.symbol || '-' }}</span>
+                <span class="market-badge trades-mobile-market" :class="getCountryClass(value.trade_market)">
+                  {{ (value.trade_market || '').toUpperCase() }}
+                </span>
+                <span
+                  class="status-badge trades-mobile-status"
+                  :class="getStatusClass(value.status, getTradeMetrics(value).ratio)"
+                >
+                  {{ getStatusText(value.status, getTradeMetrics(value).ratio) }}
+                </span>
+              </div>
+              <div class="trades-mobile-row-bottom">
+                <span class="trades-mobile-date">{{ formatUSDate(value.entry_date) }}</span>
+                <span class="trades-mobile-price">
+                  {{ value.currency }}{{ formatCurrency(value.entry_price) }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 表格视图（桌面端） -->
+          <div v-if="viewMode === 'table' && !isMobile" class="trades-table-wrapper">
             <table class="trades-table">
               <thead>
                 <tr>
@@ -2752,6 +2781,88 @@ const formatLikesCount = (count: number | string | undefined) => {
   height: 16px;
 }
 
+/* 移动端交易列表 */
+.trades-mobile-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--spacing-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.trades-mobile-row {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.trades-mobile-row:last-child {
+  border-bottom: none;
+}
+
+.trades-mobile-row:active {
+  background: rgba(102, 126, 234, 0.08);
+}
+
+.trades-mobile-row-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.trades-mobile-symbol {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+}
+
+.trades-mobile-market {
+  flex-shrink: 0;
+  padding: 2px 6px;
+  font-size: 9px;
+  line-height: 1.2;
+}
+
+.trades-mobile-status {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.trades-mobile-row-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+  min-width: 0;
+}
+
+.trades-mobile-date {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.trades-mobile-price {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
 /* 响应式设计 */
 @media (max-width: 1200px) {
   .modern-home-layout {
@@ -3652,6 +3763,23 @@ const formatLikesCount = (count: number | string | undefined) => {
     font-size: 15px;
   }
   
+  .trades-mobile-symbol {
+    font-size: 13px;
+  }
+
+  .trades-mobile-status {
+    font-size: 9px;
+    padding: 2px 7px;
+  }
+
+  .trades-mobile-date {
+    font-size: 10px;
+  }
+
+  .trades-mobile-price {
+    font-size: 12px;
+  }
+
   .trades-table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
