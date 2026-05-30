@@ -86,23 +86,20 @@ export function formatTradingFocusPreview(raw: unknown): string {
     .join('；');
 }
 
+import { formatUSDate } from './dateFormat';
+
 export function formatBuyTime(value: unknown): string {
   if (!value) return '';
 
   if (typeof value === 'string') {
-    return value.trim();
+    return formatUSDate(value.trim());
   }
 
   if (value instanceof Date && !Number.isNaN(value.getTime())) {
-    const year = value.getFullYear();
-    const month = String(value.getMonth() + 1).padStart(2, '0');
-    const day = String(value.getDate()).padStart(2, '0');
-    const hours = String(value.getHours()).padStart(2, '0');
-    const minutes = String(value.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day} ${hours}:${minutes}`;
+    return formatUSDate(value);
   }
 
-  return String(value).trim();
+  return formatUSDate(String(value).trim());
 }
 
 type NormalizedTradingFocusItem = string | Record<string, unknown>;

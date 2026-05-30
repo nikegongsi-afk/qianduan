@@ -158,6 +158,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getVipAnnouncements, createVipAnnouncement, updateVipAnnouncement, deleteVipAnnouncement } from '../../../api/module/vipAnnouncements'
 import type { VipAnnouncement } from '../../../api/module/vipAnnouncements'
+import { formatDatesForDisplay } from '@/utils/dateFormat'
 
 // 搜索条件
 const searchQuery = ref({
@@ -265,10 +266,10 @@ const change = async (page: any) => {
     const { data, success, total } = await getVipAnnouncements(params)
     if (success) {
       // 转换数据格式以适应表格
-      dataSource.value = data.map((item: any) => ({
+      dataSource.value = data.map((item: any) => formatDatesForDisplay({
         ...item,
         ispublic: item.ispublic === 1
-      }))
+      }, ['created_at']))
       
       // 处理分页逻辑
       page.total = total || 0;

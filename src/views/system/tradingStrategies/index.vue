@@ -98,6 +98,9 @@
           <template v-slot:warntype="{ row }">
           {{ getStrategyTypeLabel(row.warntype) }}
         </template>
+        <template v-slot:updated_at="{ row }">
+          <span>{{ formatUSDate(row.updated_at) }}</span>
+        </template>
       </lay-table>
     </div>
 
@@ -215,6 +218,7 @@ import {
   POSITION_OPTIONS,
   type TradingFocusItem
 } from '@/utils/parseTradingFocus'
+import { formatUSDate } from '@/utils/dateFormat'
 const uploadvideosUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/videos":"https://houduan-api.onrender.com/api/upload/videos"
 const positionOptions = POSITION_OPTIONS
 // 定义交易策略接口
@@ -254,7 +258,7 @@ const columns = ref([
   { title: '分析路径', width: '150px', key: 'analysis_path' },
   { title: '警告附件类型', width: '100px', key: 'warntype', customSlot: 'warntype' },
   { title: '警告路径', width: '150px', key: 'warn_path' },
-  { title: '最后更新', width: '150px', key: 'updated_at' },
+  { title: '最后更新', width: '150px', key: 'updated_at', customSlot: 'updated_at' },
   { title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right' }
 ])
 

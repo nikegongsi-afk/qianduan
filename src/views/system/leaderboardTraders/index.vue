@@ -142,6 +142,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getList, create, update, del } from '../../../api/module/leaderboardTraders'
+import { formatDatesForDisplay } from '@/utils/dateFormat'
 const uploadvideosUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/images":"https://houduan-api.onrender.com/api/upload/images"
 // 定义交易员排行榜接口
 interface LeaderboardTrader {
@@ -293,7 +294,7 @@ const change = async (pageData: any) => {
         item.index = index + 1
       })
       // 更新数据源
-      dataSource.value = data || []
+      dataSource.value = (data || []).map((item: any) => formatDatesForDisplay(item, ['created_at']))
       // 处理分页逻辑
       page.total = total || 0;
     } else {

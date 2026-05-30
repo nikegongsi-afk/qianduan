@@ -728,7 +728,11 @@ const getCardClass = (level: string) => {
   const classMap: Record<string, string> = {
     '黄金会员': 'premium',
     '钻石会员': 'diamond',
-    '至尊黑卡': 'supreme'
+    '至尊黑卡': 'supreme',
+    'Gold Member': 'premium',
+    'Diamond Member': 'diamond',
+    'Supreme Black Card': 'supreme',
+    'Regular Member': '',
   };
   return classMap[level] || '';
 };

@@ -1,7 +1,7 @@
 <template>
   <div v-if="organizations.length > 0" class="partner-footer">
     <div class="partner-wrap">
-      <h3 class="partner-title">{{ sectionTitle || '合作机构' }}</h3>
+      <h3 class="partner-title">{{ sectionTitle }}</h3>
       <div class="partner-list">
         <div
           v-for="org in organizations"
@@ -30,21 +30,20 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { getPartnerOrganizations, type PartnerOrganization } from '../api/module/partnerOrganizations';
+import { DEFAULT_PARTNER_SECTION_TITLE, normalizePartnerSectionTitle } from '../utils/partnerOrganizations';
 
 const organizations = ref<PartnerOrganization[]>([]);
-const sectionTitle = ref('合作机构');
+const sectionTitle = ref(DEFAULT_PARTNER_SECTION_TITLE);
 
 const loadOrganizations = async () => {
   try {
     const response = await getPartnerOrganizations();
     if (response.success && response.data) {
       organizations.value = response.data;
-      if (response.section_title?.trim()) {
-        sectionTitle.value = response.section_title;
-      }
+      sectionTitle.value = normalizePartnerSectionTitle(response.section_title);
     }
   } catch (error) {
-    console.error('加载合作单位失败:', error);
+    console.error('Failed to load partner organizations:', error);
   }
 };
 

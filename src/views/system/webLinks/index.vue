@@ -113,6 +113,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getWebLinks, createWebLink, updateWebLink, deleteWebLink } from '@/api/module/webLinks'
 import { useUserStore } from '@/store/user'
+import { formatUSDate } from '@/utils/dateFormat'
 
 // 定义网站链接接口
 interface WebLink {
@@ -187,9 +188,7 @@ function toSearch() {
 
 // 格式化日期
 function formatDate(dateString: string) {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  return date.toLocaleString('zh-CN')
+  return formatUSDate(dateString)
 }
 
 // 获取数据

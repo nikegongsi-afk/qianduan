@@ -132,6 +132,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getContactRecords, getContactRecordById, createContactRecord, updateContactRecord, deleteContactRecord } from '../../../api/module/contactRecords'
+import { formatDatesForDisplay } from '@/utils/dateFormat'
 
 // 定义联系记录接口 - 与数据库表结构匹配
 interface ContactRecord {
@@ -283,7 +284,14 @@ const change = async (page: any) => {
     // 调用API获取联系记录列表
     const response = await getContactRecords(params)
     if (response && response.success && response.data) {
-      dataSource.value = response.data.items || response.data
+      const rows = Array.isArray(response.data?.items)
+        ? response.data.items
+        : Array.isArray(response.data)
+          ? response.data
+          : []
+      dataSource.value = rows.map((item: any) =>
+        formatDatesForDisplay(item, ['click_time', 'timestamp'])
+      )
       page.total = response.data.total || 0;
     } else {
       layer.msg('获取联系记录列表失败', { icon: 2 })

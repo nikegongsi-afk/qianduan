@@ -95,6 +95,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getTradeMarkets, createTradeMarket, updateTradeMarket, deleteTradeMarket } from '../../../api/module/tradeMarket'
+import { formatUSDate } from '@/utils/dateFormat'
 
 // 定义交易市场接口
 interface TradeMarket {
@@ -182,14 +183,7 @@ const change = async (page: any) => {
         // 确保汇率是字符串类型
         exchange_rate: item.exchange_rate?.toString() || '',
         // 格式化日期时间
-        created_at: item.created_at ? new Date(item.created_at).toLocaleString('zh-CN', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit'
-        }) : ''
+        created_at: item.created_at ? formatUSDate(item.created_at) : ''
       }))
       
       page.total = total || 0;

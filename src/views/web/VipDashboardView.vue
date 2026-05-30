@@ -766,6 +766,7 @@ import{ get_userinfo,get_membership_levels,get_VipDashboardData,closetrades, upd
 import{ gettrader_profiles} from '../../api/module/web/index'
 import { uploadImage } from '../../api/module/commone'
 import { useUserStore } from '@/store';
+import { formatUSDate } from '@/utils/dateFormat';
 const router = useRouter();
 const userStore = useUserStore()
 // Video modal state
@@ -799,42 +800,6 @@ const getProfitColor = (value: number) => {
   if (value > 0) return 'profit-positive'; // 盈利用绿色
   if (value < 0) return 'profit-negative'; // 亏损用红色
   return 'profit-neutral'; // 中性用默认色
-};
-
-// Format date to US time format
-const formatUSDate = (dateString: string) => {
-  if (!dateString) return '';
-  
-  try {
-    // 确保正确解析UTC时间字符串
-    let date: Date;
-    
-    // 如果时间字符串没有时区信息，假设它是UTC时间
-    if (dateString.includes('T') && !dateString.includes('Z') && !dateString.includes('+') && !dateString.includes('-', 10)) {
-      // 添加Z表示UTC时间
-      date = new Date(dateString + 'Z');
-    } else {
-      date = new Date(dateString);
-    }
-    
-    // 验证日期是否有效
-    if (isNaN(date.getTime())) {
-      console.error('无效的时间字符串:', dateString);
-      return dateString;
-    }
-    
-    const usTime = date.toLocaleDateString('en-US', {
-      timeZone: 'America/New_York',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-    
-    return usTime;
-  } catch (error) {
-    console.error('时间转换错误:', error, '原始时间:', dateString);
-    return dateString; // If parsing fails, return original string
-  }
 };
 
 // Format currency, add thousand separators

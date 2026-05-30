@@ -378,6 +378,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { Modal } from 'bootstrap';
+import { formatUSTime } from '@/utils/dateFormat';
 
 // State for contact popup
 const showContactPopup = ref(false);
@@ -449,64 +450,17 @@ const handleAvatarUpload = (event: Event) => {
   
   // Check file type and size
   if (!file.type.startsWith('image/')) {
-    alert('请上传图片文件');
+    alert('Please upload an image file');
     return;
   }
   
   if (file.size > 5 * 1024 * 1024) {
-    alert('图片大小不能超过5MB');
+    alert('Image size must be less than 5MB');
     return;
   }
   
   // In a real application, you would upload the file here
   alert('Avatar upload functionality would be implemented here');
-};
-
-// 格式化时间，转换为美国当地时间
-const formatUSTime = (dateString: string) => {
-  if (!dateString) return '';
-  
-  try {
-    // 确保正确解析UTC时间字符串
-    let date: Date;
-    
-    // 如果时间字符串没有时区信息，假设它是UTC时间
-    if (dateString.includes('T') && !dateString.includes('Z') && !dateString.includes('+') && !dateString.includes('-', 10)) {
-      // 添加Z表示UTC时间
-      date = new Date(dateString + 'Z');
-    } else {
-      date = new Date(dateString);
-    }
-    
-    // 验证日期是否有效
-    if (isNaN(date.getTime())) {
-      console.error('无效的时间字符串:', dateString);
-      return dateString;
-    }
-    
-    // 转换为美国东部时间 (EST/EDT)
-    const usTime = date.toLocaleString('en-US', {
-      timeZone: 'America/New_York',
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
-    
-    // 添加时区标识
-    const timeZone = date.toLocaleString('en-US', {
-      timeZone: 'America/New_York',
-      timeZoneName: 'short'
-    }).split(' ').pop();
-    
-    return `${usTime} ${timeZone}`;
-  } catch (error) {
-    console.error('时间转换错误:', error, '原始时间:', dateString);
-    // 如果解析失败，返回原始字符串
-    return dateString;
-  }
 };
 
 // Set up event listeners when component mounts

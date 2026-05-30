@@ -78,6 +78,9 @@
           <span v-else-if="row.direction === -1" style="color: red">卖出</span>
           <span v-else>未知</span>
         </template>
+        <template v-slot:entry_date="{ row }">
+          <span>{{ formatUSDate(row.entry_date) }}</span>
+        </template>
         <template v-slot:operator="{ row }">
           <lay-button
             size="xs"
@@ -171,6 +174,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getTrades1, createTrade1, updateTrade1, deleteTrade1 } from '../../../api/module/trades1'
 import { getTradeMarkets } from '../../../api/module/tradeMarket'
+import { formatUSDate } from '@/utils/dateFormat'
 const uploadvideosUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/images":"https://houduan-api.onrender.com/api/upload/images"
 // 定义交易员交易记录接口
 interface Trade1 {
@@ -254,7 +258,7 @@ const columns = ref([
   { title: 'ID', width: '80px', key: 'id' },
   { title: '股票代码', width: '120px', key: 'symbol', sort: 'desc' },
   { title: '入场价格', width: '120px', key: 'entry_price' },
-  { title: '入场日期', width: '180px', key: 'entry_date' },
+  { title: '入场日期', width: '180px', key: 'entry_date', customSlot: 'entry_date' },
   { title: '交易数量', width: '120px', key: 'size' },
   { title: '出场价格', width: '120px', key: 'exit_price' },
   { title: '出场日期', width: '180px', key: 'exit_date' },

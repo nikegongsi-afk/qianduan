@@ -90,7 +90,12 @@
         @change="change"
         @sortChange="sortChange"
       >
-     
+        <template v-slot:entry_date="{ row }">
+          <span>{{ formatUSDate(row.entry_date) }}</span>
+        </template>
+        <template v-slot:created_at="{ row }">
+          <span>{{ formatUSDate(row.created_at) }}</span>
+        </template>
         <template v-slot:operator="{ row }">
           <lay-button
             size="xs"
@@ -211,6 +216,7 @@ import { ref, reactive, onMounted } from 'vue';
 import { layer } from '@layui/layui-vue';
 import { getTrades, getTradeById, createTrade, updateTrade, deleteTrade } from '../../../api/module/trades';
 import { getTradeMarkets } from '../../../api/module/tradeMarket';
+import { formatUSDate } from '@/utils/dateFormat';
 
 // 定义交易记录接口
 interface Trade {
@@ -262,8 +268,8 @@ const columns = ref([
   { title: '出场价格', width: '100px', key: 'exit_price' },
   { title: '数量', width: '100px', key: 'size' },
   { title: '利润', width: '100px', customSlot: 'profit', key: 'profit', sort: 'desc' },
-  { title: '入场日期', width: '160px', key: 'entry_date' },
-  { title: '创建时间', width: '160px', key: 'created_at' },
+  { title: '入场日期', width: '160px', key: 'entry_date', customSlot: 'entry_date' },
+  { title: '创建时间', width: '160px', key: 'created_at', customSlot: 'created_at' },
   { title: '交易图片', width: '100px', customSlot: 'image', key: 'image_url' },
   { title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right' }
 ])
