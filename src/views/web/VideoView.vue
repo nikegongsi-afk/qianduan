@@ -153,6 +153,7 @@ import {
   isPublicContent,
   isVipContent,
 } from '@/utils/contentAccess';
+import { formatUSDate } from '@/utils/dateFormat';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -163,46 +164,6 @@ let activeFilter = ref('all');
 onMounted(() => {
   getVipDashboardData();
 });
-
-// 格式化日期为美国时间格式
-const formatUSDate = (dateString: string) => {
-  if (!dateString) return '';
-  
-  try {
-    let date: Date;
-    
-    if (dateString.includes('T') && !dateString.includes('Z') && !dateString.includes('+') && !dateString.includes('-', 10)) {
-      date = new Date(dateString + 'Z');
-    } else {
-      date = new Date(dateString);
-    }
-    
-    if (isNaN(date.getTime())) {
-      console.error('无效的时间字符串:', dateString);
-      return dateString;
-    }
-    
-    const usTime = date.toLocaleDateString('en-US', {
-      timeZone: 'America/New_York',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
-    
-    const timeZone = date.toLocaleString('en-US', {
-      timeZone: 'America/New_York',
-      timeZoneName: 'short'
-    }).split(' ').pop();
-    
-    return `${usTime} ${timeZone}`;
-  } catch (error) {
-    console.error('时间转换错误:', error, '原始时间:', dateString);
-    return dateString;
-  }
-};
 
 const getVipDashboardData = async () => {
   const res = await getvideos(null);
@@ -328,7 +289,7 @@ const watchVideo = (videoData: any) => {
         <body>
           <video controls autoplay style="width: 100%; height: auto;">
             <source src="${videoData.video_url}" type="video/mp4">
-            您的浏览器不支持视频播放。
+            Your browser does not support video playback.
           </video>
         </body>
         </html>

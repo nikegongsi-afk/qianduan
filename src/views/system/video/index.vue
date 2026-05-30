@@ -67,6 +67,9 @@
         <template v-slot:status="{ row }">
           <lay-switch v-model="row.ispublic" :checked="row.ispublic === 1" @change="changeStatus($event, row)" trueValue="1" falseValue="0"></lay-switch>
         </template>
+        <template v-slot:last_update="{ row }">
+          <span>{{ formatUSDate(row.last_update) }}</span>
+        </template>
         <template v-slot:operator="{ row }">
           <lay-button
             size="xs"
@@ -131,6 +134,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getVideos, createVideo, updateVideo, deleteVideo } from '../../../api/module/videos'
 import { getUploadUrl, parseUploadResponse, isAllowedVideoFile } from '@/utils/apiUrl'
+import { formatUSDate } from '@/utils/dateFormat'
 
 const uploadvideosUrl = getUploadUrl('videos')
 // 定义视频接口
@@ -164,7 +168,7 @@ const columns = ref([
   { title: '视频描述', width: '300px', key: 'description' },
   { title: '视频地址', width: '250px', key: 'video_url' },
   { title: '是否公开', width: '100px', key: 'ispublic', customSlot: 'status' },
-  { title: '最后更新', width: '150px', key: 'last_update' },
+  { title: '最后更新', width: '150px', key: 'last_update', customSlot: 'last_update' },
   { title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right' }
 ])
 
@@ -353,7 +357,7 @@ const changeVisible11 = (text: string, row?: Video) => {
     // 编辑模式，复制行数据并格式化时间
     model11.value = { 
       ...row, 
-      last_update: row.last_update ? formatDateTime(row.last_update) : '' 
+      last_update: row.last_update ? formatUSDate(row.last_update) : '' 
     }
   } else {
     // 新增模式，设置当前时间
@@ -482,19 +486,6 @@ async function confirm(data: Video) {
 // 取消删除
 function cancel() {
   layer.msg('您已取消操作')
-}
-
-// 格式化日期时间
-function formatDateTime(dateTime: string | Date): string {
-  if (!dateTime) return '';
-  const date = new Date(dateTime);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 // 视频上传前校验

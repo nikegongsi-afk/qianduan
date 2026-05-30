@@ -167,6 +167,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement } from '../../../api/module/announcements'
+import { formatDatesForDisplay } from '@/utils/dateFormat'
 
 // 定义公告接口
 interface Announcement {
@@ -265,7 +266,7 @@ const change = async (page: any) => {
     // 调用API获取公告列表
     const { data, success, total } = await getAnnouncements(params)
     if (success) {
-      dataSource.value = data
+      dataSource.value = data.map((item: any) => formatDatesForDisplay(item, ['created_at', 'updated_at']))
       page.total = total || 0;
     } else {
       layer.msg('获取公告列表失败', { icon: 2 })

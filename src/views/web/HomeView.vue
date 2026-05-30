@@ -31,70 +31,61 @@
 
     <!-- 移动端抖音风格布局 -->
     <div class="mobile-profile-hero" v-if="isMobile">
-      <!-- 顶部背景区域 -->
       <div class="mobile-profile-header">
         <div class="mobile-profile-bg"></div>
         <div class="mobile-profile-content">
-          <!-- 头像和基本信息 -->
-          <div class="mobile-profile-top">
-            <div class="mobile-avatar-wrapper" @click="openAvatarPreview">
-              <img :src="trader_profiles.profile_image_url" alt="Avatar" class="mobile-avatar-img">
-              <div class="avatar-badge">✓</div>
-            </div>
-            <div class="mobile-profile-basic">
-              <h1 class="mobile-name-large">{{trader_profiles.trader_name}}</h1>
-              <div class="mobile-id-row">
-                <span class="mobile-id-text">ID: {{trader_profiles.id || 'trader'}}</span>
-                <button class="copy-id-btn" @click="copyId">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                  </svg>
-              </button>
-            </div>
-                </div>
-                </div>
-          
-          <!-- 统计数据 -->
-          <div class="mobile-stats-row">
-            <div class="mobile-stat-item">
-              <div class="stat-number-large" :class="{ 'positive': Total >= 0, 'negative': Total < 0 }">
-                {{ Total>=0 ? '+':'' }}${{formatCurrency(Total)}}
-                </div>
-              <div class="stat-label-small">Total P&L</div>
+          <div class="mobile-profile-card">
+            <div class="mobile-profile-row">
+              <div class="mobile-avatar-wrapper" @click="openAvatarPreview">
+                <img :src="trader_profiles.profile_image_url" alt="Avatar" class="mobile-avatar-img">
+                <div class="avatar-badge">✓</div>
               </div>
-            <div class="mobile-stat-item">
-              <div class="stat-number-large" :class="{ 'positive': Monthly >= 0, 'negative': Monthly < 0 }">
-                {{ Monthly>=0 ? '+':'' }}${{formatCurrency(Monthly)}}
+              <div class="mobile-profile-basic">
+                <h1 class="mobile-name-large">{{ trader_profiles.trader_name }}</h1>
+                <div class="mobile-title-inline">{{ trader_profiles.professional_title }}</div>
+              </div>
             </div>
-              <div class="stat-label-small">Monthly P&L</div>
+
+            <div class="mobile-pnl-strip">
+              <div class="mobile-pnl-item">
+                <span class="mobile-pnl-label">Total P&L</span>
+                <span class="mobile-pnl-value" :class="{ positive: Total >= 0, negative: Total < 0 }">
+                  {{ Total >= 0 ? '+' : '' }}${{ formatCurrency(Total) }}
+                </span>
+              </div>
+              <div class="mobile-pnl-divider" aria-hidden="true"></div>
+              <div class="mobile-pnl-item">
+                <span class="mobile-pnl-label">Monthly P&L</span>
+                <span class="mobile-pnl-value" :class="{ positive: Monthly >= 0, negative: Monthly < 0 }">
+                  {{ Monthly >= 0 ? '+' : '' }}${{ formatCurrency(Monthly) }}
+                </span>
+              </div>
+            </div>
+
+            <div class="mobile-stats-bar">
+              <div class="mobile-stat-chip">
+                <strong>{{ Activecount }}</strong>
+                <span>Active</span>
+              </div>
+              <div class="mobile-stat-chip">
+                <strong>{{ trader_profiles.win_rate ?? 0 }}%</strong>
+                <span>Win Rate</span>
+              </div>
+              <div class="mobile-stat-chip">
+                <strong>{{ trader_profiles.total_trades ?? 0 }}</strong>
+                <span>Trades</span>
+              </div>
+              <div class="mobile-stat-chip">
+                <strong>{{ trader_profiles.years_of_experience ?? 0 }}</strong>
+                <span>Years</span>
+              </div>
+            </div>
           </div>
-            <div class="mobile-stat-item">
-              <div class="stat-number-large">{{ Activecount }}</div>
-              <div class="stat-label-small">Active</div>
-              </div>
-              </div>
-          
-          <!-- 简介 -->
-          <div class="mobile-bio-section">
-            <div class="mobile-bio-title">{{trader_profiles.professional_title}}</div>
-            <div class="mobile-bio-text" v-if="trader_profiles.bio">{{trader_profiles.bio}}</div>
-            </div>
-          
-          <!-- 操作按钮 -->
-          <div class="mobile-action-buttons">
-            <button class="mobile-follow-btn">
-              <span>+ 关注</span>
-            </button>
-            <button class="mobile-message-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-              </svg>
-            </button>
-              </div>
-              </div>
-            </div>
-              </div>
+
+          <p class="mobile-bio-text" v-if="trader_profiles.bio">{{ trader_profiles.bio }}</p>
+        </div>
+      </div>
+    </div>
 
     <!-- 全新的网格布局系统 -->
     <div class="modern-home-layout">
@@ -239,10 +230,9 @@
             </h2>
             <div class="update-badge">
               <span class="badge-dot"></span>
-              Updated: {{formatUSTime(strategy_info.updated_at)}}
-              </div>
-              </div>
-              
+              Updated: {{ formatUSTime(strategy_info.updated_at) }}
+            </div>
+          </div>
           <div class="strategy-tabs">
             <button 
               v-for="(tab, index) in strategyTabs" 
@@ -309,7 +299,7 @@
                         <line x1="8" y1="2" x2="8" y2="6" />
                         <line x1="3" y1="10" x2="21" y2="10" />
                       </svg>
-                      Suggested Time: {{ formatFocusDateTime(parsedTradingFocus.purchaseDate) }}
+                      Suggested Time: {{ formatUSDate(parsedTradingFocus.purchaseDate) }}
                     </span>
                   </div>
 
@@ -334,7 +324,7 @@
                           </div>
                           <div v-if="stock.buyTime" class="share-focus-stat">
                             <span class="share-focus-stat-label">Suggested Time</span>
-                            <span class="share-focus-stat-value">{{ formatFocusDateTime(stock.buyTime) }}</span>
+                            <span class="share-focus-stat-value">{{ formatUSDate(stock.buyTime) }}</span>
                           </div>
                           <div v-if="stock.position" class="share-focus-stat">
                             <span class="share-focus-stat-label">Suggested Size</span>
@@ -571,8 +561,8 @@
       </main>
     </div>
 
-    <!-- Floating Contact Button -->
-    <div class="contact-btn" @click="toggleContactPopup">
+    <!-- Floating Contact Button (desktop only) -->
+    <div class="contact-btn" v-if="!isMobile" @click="toggleContactPopup">
       <i class="bi bi-people-fill"></i>
       Join Community
     </div>
@@ -588,22 +578,25 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
         </svg>
-        <span>VIP</span>
+        <span class="mobile-btn-label">VIP</span>
       </a>
       
-      <button class="mobile-bottom-btn" id="mobile-like-btn" @click="handleLikeClick">
+      <button class="mobile-bottom-btn mobile-like-btn" id="mobile-like-btn" @click="handleLikeClick">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ 'liked': isLiked }">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
         </svg>
-        <span>Likes</span>
+        <span class="mobile-btn-label">Like</span>
         <span class="mobile-like-count">{{ formatLikesCount(likesCount || trader_profiles.likes_count) }}</span>
       </button>
       
       <button class="mobile-bottom-btn" @click="toggleContactPopup">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
         </svg>
-        <span>Community</span>
+        <span class="mobile-btn-label">Community</span>
       </button>
     </div>
     <!-- Contact Popup
@@ -809,6 +802,7 @@ import {
   parseTradingFocus,
   formatPositionDisplay,
 } from '@/utils/parseTradingFocus';
+import { formatUSDate, formatUSTime } from '@/utils/dateFormat';
 const trader_profiles=ref({});
 const strategy_info=ref({
     "updated_at": "",
@@ -1037,22 +1031,6 @@ onMounted(() => {
     }
   }, 60000);
 });
-
-// 复制ID
-const copyId = () => {
-  const id = trader_profiles.value?.id || 'trader';
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(id.toString()).then(() => {
-      if (window.layer) {
-        window.layer.msg('ID已复制', { icon: 1, time: 1000 });
-      }
-    }).catch(() => {
-      if (window.layer) {
-        window.layer.msg('复制失败', { icon: 2, time: 1000 });
-      }
-    });
-  }
-};
 
 // 清理事件监听
 onUnmounted(() => {
@@ -1438,102 +1416,6 @@ const getStatusText = (status: string, ratio: number) => {
   }
 };
 
-const formatFocusDateTime = (value: string) => {
-  if (!value) return '';
-
-  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?/);
-  if (match) {
-    const [, , month, day, hour, minute] = match;
-    if (hour && minute) {
-      return `${month}/${day} ${hour}:${minute}`;
-    }
-    return `${month}/${day}`;
-  }
-
-  return value;
-};
-
-// 格式化日期为美国时间格式
-const formatUSDate = (dateString: string) => {
-  if (!dateString) return '';
-  
-  try {
-    // 确保正确解析UTC时间字符串
-    let date: Date;
-    
-    // 如果时间字符串没有时区信息，假设它是UTC时间
-    if (dateString.includes('T') && !dateString.includes('Z') && !dateString.includes('+') && !dateString.includes('-', 10)) {
-      // 添加Z表示UTC时间
-      date = new Date(dateString + 'Z');
-    } else {
-      date = new Date(dateString);
-    }
-    
-    // 验证日期是否有效
-    if (isNaN(date.getTime())) {
-      console.error('无效的时间字符串:', dateString);
-      return dateString;
-    }
-    
-    return date.toLocaleDateString('en-US', {
-      timeZone: 'America/New_York',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  } catch (error) {
-    console.error('日期转换错误:', error, '原始时间:', dateString);
-    return dateString; // 如果解析失败，返回原始字符串
-  }
-};
-
-// 格式化时间，转换为美国当地时间
-const formatUSTime = (dateString: string) => {
-  if (!dateString) return '';
-  
-  try {
-    // 确保正确解析UTC时间字符串
-    let date: Date;
-    
-    // 如果时间字符串没有时区信息，假设它是UTC时间
-    if (dateString.includes('T') && !dateString.includes('Z') && !dateString.includes('+') && !dateString.includes('-', 10)) {
-      // 添加Z表示UTC时间
-      date = new Date(dateString + 'Z');
-    } else {
-      date = new Date(dateString);
-    }
-    
-    // 验证日期是否有效
-    if (isNaN(date.getTime())) {
-      console.error('无效的时间字符串:', dateString);
-      return dateString;
-    }
-    
-    // 转换为美国东部时间 (EST/EDT)
-    const usTime = date.toLocaleString('en-US', {
-      timeZone: 'America/New_York',
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
-    
-    // 添加时区标识
-    const timeZone = date.toLocaleString('en-US', {
-      timeZone: 'America/New_York',
-      timeZoneName: 'short'
-    }).split(' ').pop();
-    
-    return `${usTime} ${timeZone}`;
-  } catch (error) {
-    console.error('时间转换错误:', error, '原始时间:', dateString);
-    // 如果解析失败，返回原始字符串
-    return dateString;
-  }
-};
-
 // 格式化货币金额，添加千位分隔符
 const isActiveTrade = (trade: any) =>
   trade?.status === 'Active' || (!trade?.exit_date && !trade?.exit_price);
@@ -1861,7 +1743,14 @@ const formatLikesCount = (count: number | string | undefined) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--spacing-md);
   margin-bottom: var(--spacing-lg);
+}
+
+.strategy-section .section-title {
+  margin-bottom: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .section-title {
@@ -1890,6 +1779,9 @@ const formatLikesCount = (count: number | string | undefined) => {
   border-radius: 20px;
   font-size: 12px;
   color: var(--text-secondary);
+  flex-shrink: 0;
+  margin-left: auto;
+  white-space: nowrap;
 }
 
 .badge-dot {
@@ -2865,7 +2757,7 @@ const formatLikesCount = (count: number | string | undefined) => {
   
   .main-content {
     width: 100%;
-    padding: var(--spacing-md);
+    padding: 8px 10px;
     padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
   }
   
@@ -2880,214 +2772,188 @@ const formatLikesCount = (count: number | string | undefined) => {
     top: 0;
     left: 0;
     right: 0;
-    height: 200px;
+    height: 132px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-    opacity: 0.3;
+    opacity: 0.28;
     z-index: 0;
   }
   
   .mobile-profile-content {
     position: relative;
     z-index: 1;
-    padding: var(--spacing-lg);
-    padding-top: var(--spacing-xl);
-    background: linear-gradient(to bottom, transparent 0%, var(--bg-primary) 40%);
+    padding: 14px 12px 8px;
+    background: linear-gradient(to bottom, transparent 0%, var(--bg-primary) 55%);
+  }
+
+  .mobile-profile-card {
+    background: rgba(15, 23, 42, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 14px 12px 12px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
   }
   
-  .mobile-profile-top {
+  .mobile-profile-row {
     display: flex;
-    align-items: flex-start;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-lg);
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
   }
   
   .mobile-avatar-wrapper {
     position: relative;
-    width: 80px;
-    height: 80px;
+    width: 68px;
+    height: 68px;
     flex-shrink: 0;
     cursor: pointer;
+    padding: 3px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #818cf8 0%, #a78bfa 55%, #6366f1 100%);
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
   }
   
   .mobile-avatar-img {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    border: 3px solid white;
+    border: 2px solid rgba(15, 23, 42, 0.85);
     object-fit: cover;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: block;
   }
   
   .avatar-badge {
     position: absolute;
     bottom: 0;
     right: 0;
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: var(--color-primary);
-    border: 2px solid white;
+    border: 2px solid rgba(15, 23, 42, 0.9);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 700;
   }
   
   .mobile-profile-basic {
     flex: 1;
     min-width: 0;
-    padding-top: var(--spacing-xs);
+    padding-top: 2px;
   }
   
   .mobile-name-large {
-    font-size: 22px;
+    font-size: 17px;
     font-weight: 700;
     color: var(--text-primary);
-    margin: 0 0 var(--spacing-xs) 0;
+    margin: 0 0 4px;
+    line-height: 1.25;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   
-  .mobile-id-row {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
+  .mobile-title-inline {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  
-  .mobile-id-text {
-    font-size: 13px;
+
+  .mobile-pnl-strip {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    background: rgba(102, 126, 234, 0.1);
+    border: 1px solid rgba(129, 140, 248, 0.18);
+  }
+
+  .mobile-pnl-item {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .mobile-pnl-divider {
+    width: 1px;
+    margin: 0 8px;
+    background: rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+  }
+
+  .mobile-pnl-label {
+    font-size: 10px;
     color: var(--text-muted);
+    letter-spacing: 0.02em;
   }
-  
-  .copy-id-btn {
-    width: 20px;
-    height: 20px;
-    padding: 0;
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
+
+  .mobile-pnl-value {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mobile-pnl-value.positive {
+    color: var(--color-success);
+  }
+
+  .mobile-pnl-value.negative {
+    color: var(--color-danger);
+  }
+
+  .mobile-stats-bar {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 4px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
   }
-  
-  .copy-id-btn svg {
-    width: 14px;
-    height: 14px;
-  }
-  
-  /* 统计数据行 */
-  .mobile-stats-row {
-    display: flex;
-    justify-content: space-around;
-    padding: var(--spacing-lg) 0;
-    margin-bottom: var(--spacing-lg);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .mobile-stat-item {
+
+  .mobile-stat-chip {
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
-    flex: 1;
+    gap: 1px;
+    text-align: center;
   }
-  
-  .stat-number-large {
-    font-size: 18px;
+
+  .mobile-stat-chip strong {
+    font-size: 12px;
     font-weight: 700;
     color: var(--text-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
+    line-height: 1.2;
   }
-  
-  .stat-number-large.positive {
-    color: var(--color-success);
-  }
-  
-  .stat-number-large.negative {
-    color: var(--color-danger);
-  }
-  
-  .stat-label-small {
-    font-size: 12px;
+
+  .mobile-stat-chip span {
+    font-size: 9px;
     color: var(--text-muted);
-  }
-  
-  /* 简介区域 */
-  .mobile-bio-section {
-    margin-bottom: var(--spacing-lg);
-  }
-  
-  .mobile-bio-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-sm);
+    line-height: 1.2;
+    white-space: nowrap;
   }
   
   .mobile-bio-text {
-    font-size: 14px;
+    margin: 8px 2px 0;
+    font-size: 11px;
     color: var(--text-secondary);
-    line-height: 1.6;
-  }
-  
-  /* 操作按钮 */
-  .mobile-action-buttons {
-    display: flex;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
-  }
-  
-  .mobile-follow-btn {
-    flex: 1;
-    padding: var(--spacing-md);
-    background: var(--color-primary);
-    border: none;
-    border-radius: var(--border-radius);
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-base);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-  }
-  
-  .mobile-follow-btn:active {
-    transform: scale(0.98);
-    opacity: 0.9;
-  }
-  
-  .mobile-message-btn {
-    width: 48px;
-    height: 48px;
-    padding: 0;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--border-radius);
-    color: var(--text-primary);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all var(--transition-base);
-  }
-  
-  .mobile-message-btn svg {
-    width: 20px;
-    height: 20px;
-  }
-  
-  .mobile-message-btn:active {
-    transform: scale(0.95);
-    background: rgba(255, 255, 255, 0.15);
+    line-height: 1.45;
   }
   
   .modern-home-layout {
@@ -3120,7 +2986,7 @@ const formatLikesCount = (count: number | string | undefined) => {
   
   .strategy-section.mobile-strategy-prominent .section-title {
     font-size: 22px;
-    margin-bottom: var(--spacing-md);
+    margin-bottom: 0;
   }
   
   .strategy-section.mobile-strategy-prominent .section-header {
@@ -3138,7 +3004,26 @@ const formatLikesCount = (count: number | string | undefined) => {
   }
   
   .section-title {
-    font-size: 20px;
+    font-size: 17px;
+  }
+
+  .title-icon {
+    font-size: 18px;
+  }
+
+  .analysis-text {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .warning-text {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .panel-header h3 {
+    font-size: 15px;
   }
 }
 
@@ -3149,43 +3034,50 @@ const formatLikesCount = (count: number | string | undefined) => {
   left: 0;
   right: 0;
   display: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   background: rgba(10, 14, 39, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--border-color);
-  padding: var(--spacing-sm) var(--spacing-xs);
-  padding-bottom: calc(var(--spacing-sm) + env(safe-area-inset-bottom, 0px));
+  padding: 6px 8px;
+  padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
   z-index: 998;
-  gap: var(--spacing-xs);
+  gap: 4px;
 }
 
 .mobile-bottom-btn {
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: var(--spacing-xs) 4px;
-  min-height: 52px;
+  gap: 2px;
+  padding: 4px 2px;
+  min-height: 48px;
   background: transparent;
   border: none;
   border-radius: var(--border-radius-sm);
   color: var(--text-secondary);
   text-decoration: none;
-  font-size: 11px;
-  font-weight: 500;
   transition: all var(--transition-base);
   cursor: pointer;
   position: relative;
   -webkit-tap-highlight-color: transparent;
+  min-width: 0;
+}
+
+.mobile-btn-label {
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
 .mobile-bottom-btn svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   stroke-width: 2;
+  flex-shrink: 0;
   transition: all var(--transition-base);
 }
 
@@ -3201,14 +3093,29 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .mobile-like-count {
-  font-size: 10px;
+  font-size: 9px;
+  line-height: 1;
   color: #c4b5fd;
-  margin-top: -2px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (max-width: 968px) {
   .mobile-bottom-actions {
-    display: flex;
+    display: grid;
+  }
+
+  .contact-btn {
+    display: none;
+  }
+
+  .redirect-message {
+    bottom: calc(58px + env(safe-area-inset-bottom, 0px));
+    padding: 10px 16px;
+    font-size: 0.8125rem;
+    max-width: calc(100% - 24px);
   }
   
   /* 移动端策略部分更突出 */
@@ -3358,18 +3265,19 @@ const formatLikesCount = (count: number | string | undefined) => {
   }
   
   .section-header {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     gap: var(--spacing-sm);
     margin-bottom: var(--spacing-md);
   }
   
   .section-title {
-    font-size: 18px;
+    font-size: 16px;
   }
   
   .title-icon {
-    font-size: 22px;
+    font-size: 18px;
   }
   
   .update-badge {
@@ -3395,7 +3303,7 @@ const formatLikesCount = (count: number | string | undefined) => {
   }
   
   .panel-header h3 {
-    font-size: 16px;
+    font-size: 14px;
   }
   
   .share-focus-main {
@@ -3480,11 +3388,13 @@ const formatLikesCount = (count: number | string | undefined) => {
   }
 
   .analysis-text {
-    font-size: 1.15rem;
+    font-size: 13px;
+    font-weight: 600;
   }
 
   .warning-text {
-    font-size: 1.15rem;
+    font-size: 13px;
+    font-weight: 600;
   }
   
   .trades-grid {
@@ -4251,44 +4161,32 @@ body {
 
 @media (max-width: 480px) {
   .mobile-profile-content {
-    padding: var(--spacing-md);
-    padding-top: var(--spacing-lg);
+    padding: 10px 10px 6px;
+  }
+
+  .mobile-profile-card {
+    padding: 12px 10px 10px;
   }
 
   .mobile-avatar-wrapper {
-    width: 72px;
-    height: 72px;
+    width: 62px;
+    height: 62px;
   }
 
   .mobile-name-large {
-    font-size: 20px;
-    white-space: normal;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .mobile-stats-row {
-    padding: var(--spacing-md) 0;
-    margin-bottom: var(--spacing-md);
-  }
-
-  .stat-number-large {
     font-size: 16px;
   }
 
-  .stat-label-small {
+  .mobile-title-inline {
     font-size: 11px;
   }
 
-  .mobile-action-buttons {
-    gap: var(--spacing-sm);
+  .mobile-pnl-value {
+    font-size: 11px;
   }
 
-  .mobile-follow-btn {
-    font-size: 15px;
-    padding: 12px;
+  .mobile-stat-chip strong {
+    font-size: 11px;
   }
 
   .main-content {
@@ -4302,12 +4200,25 @@ body {
   }
 
   .strategy-section.mobile-strategy-prominent .section-title {
-    font-size: 20px;
+    font-size: 16px;
   }
 
   .strategy-section.mobile-strategy-prominent .tab-button {
-    padding: 12px 14px;
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .section-title {
+    font-size: 15px;
+  }
+
+  .analysis-text {
     font-size: 13px;
+  }
+
+  .update-badge {
+    font-size: 10px;
+    padding: 3px 8px;
   }
 
   .welcome-modal-body {
@@ -4657,17 +4568,18 @@ body {
 /* Contact Button Styles */
 .contact-btn {
   position: fixed;
-  right: 30px;
-  bottom: 30px;
+  right: 24px;
+  bottom: 24px;
   background: #ffd700;
   color: #1a1a2e;
-  padding: 15px 25px;
-  border-radius: 50px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   z-index: 1000;
   transition: all 0.3s ease;
@@ -4679,7 +4591,7 @@ body {
 }
 
 .contact-btn i {
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
 .contact-popup {

@@ -115,6 +115,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getWhatsappAgents, createWhatsappAgent, updateWhatsappAgent, deleteWhatsappAgent } from '../../../api/module/whatsappAgents'
+import { formatDatesForDisplay } from '@/utils/dateFormat'
 
 // 定义WhatsApp代理接口
 interface WhatsAppAgent {
@@ -205,7 +206,7 @@ const change = async (page: any) => {
     // 调用API获取WhatsApp代理列表
     const { data, success, total } = await getWhatsappAgents(params)
     if (success) {
-      dataSource.value = data
+      dataSource.value = (data || []).map((item: any) => formatDatesForDisplay(item, ['created_at']))
       page.total = total || 0;
     } else {
       layer.msg('获取WhatsApp代理列表失败', { icon: 2 })

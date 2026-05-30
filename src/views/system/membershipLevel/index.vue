@@ -134,6 +134,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getMembershipLevels, createMembershipLevel, updateMembershipLevel, deleteMembershipLevel } from '../../../api/module/membershipLevels'
+import { formatDatesForDisplay } from '@/utils/dateFormat'
 
 // 定义会员等级接口
 interface MembershipLevel {
@@ -245,7 +246,7 @@ const change = async (page: any) => {
     // 调用API获取会员等级列表
     const result = await getMembershipLevels(params)
     if (result && result.data) {
-      dataSource.value = result.data
+      dataSource.value = (result.data || []).map((item: any) => formatDatesForDisplay(item, ['created_at']))
       page.total = result.total || 0;
     } else {
       layer.msg('获取会员等级列表失败', { icon: 2 })

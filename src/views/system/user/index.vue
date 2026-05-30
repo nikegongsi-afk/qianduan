@@ -227,6 +227,7 @@ import { layer } from '@layui/layui-vue'
 import { getUsers, createUser, updateUser, deleteUser } from '../../../api/module/user'
 import { getMembershipLevels as apiGetMembershipLevels } from '../../../api/module/membershipLevels'
 import { useUserStore } from '@/store';
+import { formatDatesForDisplay } from '@/utils/dateFormat';
 const uploadImageUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/images":"https://houduan-api.onrender.com/api/upload/images"
 // 定义用户接口
 interface User {
@@ -397,11 +398,11 @@ const change = async (page: any) => {
     const { data, success, total } = await getUsers(params)
     if (success) {
       // 转换数据格式以适应表格
-      dataSource.value = data.map((item: any) => ({
-        ...item,
-        joinTime: item.created_at, // 兼容原表格字段
-      
-      }))
+      dataSource.value = data.map((item: any) => {
+        const row = formatDatesForDisplay({ ...item }, ['created_at'])
+        row.joinTime = row.created_at
+        return row
+      })
       
       // 处理分页逻辑 - 后端现在已返回total字段，直接使用
       page.total = total || 0;

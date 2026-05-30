@@ -159,7 +159,7 @@
       <div style="padding: 20px">
         <lay-form :model="titleForm" :pane="true" ref="titleFormRef" required>
           <lay-form-item label="区块标题" prop="section_title" :label-width="120">
-            <lay-input v-model="titleForm.section_title" placeholder="例如：合作机构、合作伙伴等"></lay-input>
+            <lay-input v-model="titleForm.section_title" placeholder="e.g. Partner Institutions, Partners"></lay-input>
           </lay-form-item>
         </lay-form>
         <div style="width: 100%; text-align: right; margin-top: 20px">
@@ -184,6 +184,8 @@ import {
   updateSectionTitle,
   type PartnerOrganization 
 } from '../../../api/module/partnerOrganizations'
+import { formatDatesForDisplay } from '@/utils/dateFormat'
+import { DEFAULT_PARTNER_SECTION_TITLE, normalizePartnerSectionTitle } from '@/utils/partnerOrganizations'
 
 // 上传相关
 const logoFile = ref<any>(null)
@@ -226,10 +228,10 @@ const isSaving = ref(false)
 
 // 标题设置相关
 const titleDialogVisible = ref(false)
-const titleForm = ref({ section_title: '合作机构' })
+const titleForm = ref({ section_title: DEFAULT_PARTNER_SECTION_TITLE })
 const titleFormRef = ref()
 const isSavingTitle = ref(false)
-const currentSectionTitle = ref('合作机构')
+const currentSectionTitle = ref(DEFAULT_PARTNER_SECTION_TITLE)
 
 // 初始化加载数据
 onMounted(() => {
@@ -270,12 +272,13 @@ const change = async (page: any) => {
     
     const response = await getPartnerOrganizationsAdmin(params)
     if (response.success) {
-      dataSource.value = response.data
+      dataSource.value = (response.data || []).map((item: any) => formatDatesForDisplay(item, ['created_at']))
       page.total = response.total || 0;
       // 获取当前标题
       if (response.section_title) {
-        currentSectionTitle.value = response.section_title
-        titleForm.value.section_title = response.section_title
+        const normalizedTitle = normalizePartnerSectionTitle(response.section_title)
+        currentSectionTitle.value = normalizedTitle
+        titleForm.value.section_title = normalizedTitle
       }
     } else {
       layer.msg('获取合作单位列表失败', { icon: 2 })

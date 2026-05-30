@@ -121,6 +121,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getAiStockPickers, getAiStockPickerById, createAiStockPicker, updateAiStockPicker, deleteAiStockPicker } from '../../../api/module/aiStockPicker'
+import { formatDatesForDisplay } from '@/utils/dateFormat'
 
 // 定义AI股票选股接口，与后端数据结构匹配
 interface AiStockPicker {
@@ -238,7 +239,7 @@ async function loadData() {
     }
     
     const response = await getAiStockPickers(params)
-    dataSource.value = response.data || []
+    dataSource.value = (response.data || []).map((item: any) => formatDatesForDisplay(item, ['put_time']))
     page.total = response.total || 0
   } catch (error) {
     console.error('加载数据失败:', error)

@@ -78,7 +78,7 @@ class Http {
             if (error.response) {
                 // 服务器返回错误状态码
                 const status = error.response.status;
-                message = error.response.data?.message || error.response.data?.msg || '请求失败';
+                message = error.response.data?.message || error.response.data?.msg || 'Request failed';
                  const userInfoStore = useUserStore();
                 if (status === 401) {
                 layer.msg('Login and failure, please log in again!', { icon: 2 });
@@ -100,7 +100,7 @@ class Http {
                 layer.msg('The network connection failed. Please check the network settings', { icon: 2 });
             } else {
                 // 请求配置出错
-                layer.msg('请求配置错误', { icon: 2 });
+                layer.msg('Request configuration error', { icon: 2 });
             }
             return Promise.reject(error)
         })

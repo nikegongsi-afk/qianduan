@@ -199,6 +199,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getTraderProfiles, createTraderProfile, updateTraderProfile, deleteTraderProfile } from '../../../api/module/traderProfiles'
 import { useUserStore } from '@/store'
+import { formatDatesForDisplay } from '@/utils/dateFormat'
 // 定义交易者档案接口
 interface TraderProfile {
   id: string;
@@ -321,13 +322,15 @@ const change = async (page: any) => {
       if (response.success) {
         // 更新数据源
         if (Array.isArray(response.data)) {
-          dataSource.value = response.data || []
+          dataSource.value = (response.data || []).map((item: any) => formatDatesForDisplay(item, ['created_at', 'updated_at']))
           page.value.total = response.data.length || 0
         } else if (response.data && Array.isArray(response.data.items)) {
-          dataSource.value = response.data.items || []
+          dataSource.value = (response.data.items || []).map((item: any) => formatDatesForDisplay(item, ['created_at', 'updated_at']))
           page.value.total = response.data.total || 0
         } else if (response.data) {
-          dataSource.value = response.data || []
+          dataSource.value = Array.isArray(response.data)
+            ? response.data.map((item: any) => formatDatesForDisplay(item, ['created_at', 'updated_at']))
+            : [formatDatesForDisplay(response.data, ['created_at', 'updated_at'])]
           page.value.total = response.total || 0
         } else {
           console.error('Invalid response format:', response);

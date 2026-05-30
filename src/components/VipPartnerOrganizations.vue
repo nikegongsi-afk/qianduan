@@ -1,7 +1,7 @@
 <template>
   <div v-if="organizations.length > 0 && !loading" class="partner-footer">
     <div class="partner-wrap">
-      <h3 class="partner-title">{{ sectionTitle || '合作机构' }}</h3>
+      <h3 class="partner-title">{{ sectionTitle }}</h3>
       <div class="partner-list">
         <div
           v-for="org in organizations"
@@ -30,10 +30,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { getVipPartnerOrganizations, type PartnerOrganization } from '../api/module/partnerOrganizations';
+import { DEFAULT_PARTNER_SECTION_TITLE, normalizePartnerSectionTitle } from '../utils/partnerOrganizations';
 
 const organizations = ref<PartnerOrganization[]>([]);
 const loading = ref(false);
-const sectionTitle = ref('合作机构');
+const sectionTitle = ref(DEFAULT_PARTNER_SECTION_TITLE);
 
 const loadOrganizations = async () => {
   try {
@@ -47,12 +48,10 @@ const loadOrganizations = async () => {
       } else {
         organizations.value = [];
       }
-      if (response.section_title?.trim()) {
-        sectionTitle.value = response.section_title;
-      }
+      sectionTitle.value = normalizePartnerSectionTitle(response.section_title);
     }
   } catch (error) {
-    console.error('加载VIP合作单位失败:', error);
+    console.error('Failed to load VIP partner organizations:', error);
     organizations.value = [];
   } finally {
     loading.value = false;

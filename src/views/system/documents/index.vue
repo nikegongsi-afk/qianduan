@@ -71,6 +71,9 @@
         <template v-slot:fileType="{ row }">
           <span>{{ formatFileType(row.file_type) }}</span>
         </template>
+        <template v-slot:last_update="{ row }">
+          <span>{{ formatUSDate(row.last_update) }}</span>
+        </template>
         <template v-slot:operator="{ row }">
           <lay-button
             size="xs"
@@ -135,6 +138,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getDocuments, createDocument, updateDocument, deleteDocument, uploadDocument } from '@/api/module/documents'
 import { getUploadUrl, parseUploadResponse, isAllowedDocumentFile } from '@/utils/apiUrl'
+import { formatUSDate } from '@/utils/dateFormat'
 
 const uploaddocumentsUrl = getUploadUrl('documents')
 // 定义文档接口
@@ -171,7 +175,7 @@ const columns = ref([
   { title: '文件类型', width: '100px', key: 'file_type', customSlot: 'fileType' },
   { title: '查看次数', width: '100px', key: 'views' },
   { title: '是否公开', width: '100px', key: 'ispublic', customSlot: 'status' },
-  { title: '最后更新', width: '150px', key: 'last_update' },
+  { title: '最后更新', width: '150px', key: 'last_update', customSlot: 'last_update' },
   { title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right' }
 ])
 
@@ -356,26 +360,6 @@ function toRemove() {
   })
 }
 
-// 格式化日期时间显示
-function formatDateTime(dateString: string): string {
-  if (!dateString) return ''
-  try {
-    const date = new Date(dateString)
-    // 格式化为本地时间字符串：YYYY-MM-DD HH:mm:ss
-    return date.toLocaleString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    }).replace(/\//g, '-')
-  } catch (e) {
-    console.error('日期格式化失败:', e)
-    return dateString
-  }
-}
-
 // 打开新增/编辑对话框
 const changeVisible11 = (text: string, row?: Document) => {
   title.value = text
@@ -383,7 +367,7 @@ const changeVisible11 = (text: string, row?: Document) => {
     // 编辑模式，复制行数据并格式化时间
     model11.value = { 
       ...row,
-      last_update: row.last_update ? formatDateTime(row.last_update) : ''
+      last_update: row.last_update ? formatUSDate(row.last_update) : ''
     }
   } else {
     // 新增模式，清空表单并设置当前时间

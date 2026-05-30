@@ -139,6 +139,7 @@ import { getAIHistory } from '@/api/module/web/ai'
 import navcomponent from '../component/nav/nav.vue'
 import { useUserStore } from '@/store';
 import router from '@/router';
+import { formatUSDate } from '@/utils/dateFormat';
 export default {
   name: 'AIHistoryView',
   components: {
@@ -298,12 +299,7 @@ export default {
     
     // 新增的方法
     formatDate(dateString) {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
+      return formatUSDate(dateString);
     },
     
     getDaysAgo(dateString) {

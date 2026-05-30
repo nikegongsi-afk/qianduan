@@ -192,6 +192,7 @@ import {
   deletePaymentRecord,
   reviewPaymentRecord
 } from '../../../api/module/paymentRecords'
+import { formatDatesForDisplay } from '@/utils/dateFormat'
 
 const uploadImageUrl = import.meta.env.VITE_API_URL 
   ? import.meta.env.VITE_API_URL + "/api/upload/images" 
@@ -326,7 +327,7 @@ const change = async (page: any) => {
     
     const { data, success, total } = await getPaymentRecords(params)
     if (success) {
-      dataSource.value = data
+      dataSource.value = (data || []).map((item: any) => formatDatesForDisplay(item, ['payment_time', 'review_time']))
       page.total = total || 0;
     } else {
       layer.msg('获取支付记录列表失败', { icon: 2 })

@@ -181,6 +181,7 @@ import { ref, reactive, onMounted } from 'vue';
 import { layer } from '@layui/layui-vue';
 import { getVipTrades, getVipTradeById, createVipTrade, updateVipTrade, deleteVipTrade } from '@/api/module/vipTrades';
 import { getTradeMarkets } from '@/api/module/tradeMarket';
+import { formatDatesForDisplay } from '@/utils/dateFormat';
 
 // 定义VIP交易记录接口
 interface VipTrade {
@@ -311,7 +312,7 @@ async function change(page: any) {
     // 调用API获取VIP交易记录列表
     const response = await getVipTrades(params)
     if (response && !response.error) {
-      dataSource.value = response.data || []
+      dataSource.value = (response.data || []).map((item: any) => formatDatesForDisplay(item, ['created_at']))
       page.total = response.total || 0;
     } else {
       layer.msg(response?.error || '获取VIP交易记录列表失败', { icon: 2 })
