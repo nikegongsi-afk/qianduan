@@ -364,10 +364,8 @@
                   <div class="warning-icon-wrap" aria-hidden="true">
                     <span class="warning-icon">!</span>
                   </div>
-                  <div class="warning-content">
-                    <div class="warning-label">Important Notice</div>
-                    <p class="warning-text">{{ strategy_info.risk_warning }}</p>
-                  </div>
+                  <div class="warning-label">Important Notice</div>
+                  <p class="warning-text">{{ strategy_info.risk_warning }}</p>
                 </div>
                 <div class="media-container" v-if="strategy_info.warn_path">
                   <audio v-if="strategy_info.warntype==1" :src="strategy_info.warn_path" controls class="media-player"></audio>
@@ -2229,9 +2227,10 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .warning-box {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-lg);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 10px var(--spacing-lg);
   padding: var(--spacing-xl) var(--spacing-lg);
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(127, 29, 29, 0.12) 100%);
   border: 1px solid rgba(248, 113, 113, 0.45);
@@ -2242,11 +2241,14 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .warning-icon-wrap {
+  grid-column: 1;
+  grid-row: 1 / 3;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 56px;
   height: 56px;
+  align-self: start;
   flex-shrink: 0;
   border-radius: 50%;
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
@@ -2260,14 +2262,12 @@ const formatLikesCount = (count: number | string | undefined) => {
   color: #fff;
 }
 
-.warning-content {
-  flex: 1;
-  min-width: 0;
-}
-
 .warning-label {
+  grid-column: 2;
+  grid-row: 1;
   display: inline-block;
-  margin-bottom: 10px;
+  align-self: start;
+  margin-bottom: 0;
   padding: 4px 12px;
   border-radius: 999px;
   background: rgba(239, 68, 68, 0.25);
@@ -2280,6 +2280,8 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .warning-text {
+  grid-column: 2;
+  grid-row: 2;
   margin: 0;
   font-size: clamp(1.2rem, 2.5vw, 1.5rem);
   font-weight: 800;
@@ -3388,19 +3390,37 @@ const formatLikesCount = (count: number | string | undefined) => {
   }
   
   .warning-box {
-    padding: var(--spacing-lg) var(--spacing-md);
-    flex-direction: row;
-    text-align: left;
-    align-items: flex-start;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    gap: 10px 12px;
+    padding: var(--spacing-md);
   }
 
   .warning-icon-wrap {
-    width: 48px;
-    height: 48px;
+    grid-column: 1;
+    grid-row: 1;
+    width: 40px;
+    height: 40px;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2), 0 4px 12px rgba(239, 68, 68, 0.3);
   }
 
   .warning-icon {
-    font-size: 24px;
+    font-size: 22px;
+  }
+
+  .warning-label {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+  }
+
+  .warning-text {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.65;
   }
 
   .analysis-box {
