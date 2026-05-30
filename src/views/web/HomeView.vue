@@ -723,6 +723,15 @@
                         :class="{ 'welcome-announcement--mobile': isMobile }"
                         v-if="announcementData?.title || announcementData?.content"
                     >
+                        <div v-if="isMobile" class="welcome-mobile-topbar">
+                            <div class="welcome-mobile-badge">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 11l18-5v12L3 14v-3z"></path>
+                                    <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path>
+                                </svg>
+                                <span>Announcement</span>
+                            </div>
+                        </div>
                         <div v-if="!isMobile" class="welcome-announcement-header welcome-desktop-only">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M3 11l18-5v12L3 14v-3z"></path>
@@ -730,8 +739,18 @@
                             </svg>
                             <span>Important Announcement</span>
                         </div>
-                        <h4 class="welcome-announcement-title">{{ announcementData?.title || '' }}</h4>
-                        <p class="welcome-announcement-text">{{ announcementData?.content || '' }}</p>
+                        <h4 v-if="announcementData?.title" class="welcome-announcement-title">{{ announcementData.title }}</h4>
+                        <div v-if="announcementData?.content" class="welcome-announcement-scroll">
+                            <p class="welcome-announcement-text">{{ announcementData.content }}</p>
+                        </div>
+                        <button
+                            v-if="isMobile"
+                            type="button"
+                            class="welcome-mobile-dismiss"
+                            data-bs-dismiss="modal"
+                        >
+                            Got it
+                        </button>
                     </div>
 
                     <div v-if="!isMobile" class="welcome-benefits welcome-desktop-only">
@@ -3426,51 +3445,143 @@ const formatLikesCount = (count: number | string | undefined) => {
     display: none !important;
   }
 
-  .welcome-popup-modal {
-    background: rgba(22, 27, 48, 0.98);
-    border-color: rgba(255, 215, 0, 0.25);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  .welcome-popup-modal,
+  .welcome-popup-modal--mobile {
+    background: linear-gradient(165deg, #1a2240 0%, #12182e 100%);
+    border: 1px solid rgba(129, 140, 248, 0.35);
+    border-radius: 20px;
+    box-shadow:
+      0 24px 48px rgba(0, 0, 0, 0.45),
+      0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+    overflow: hidden;
   }
 
-  .welcome-modal-dialog {
-    margin: 16px;
+  .welcome-popup-modal::before,
+  .welcome-popup-modal--mobile::before {
+    content: '';
+    display: block;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea 0%, #fbbf24 50%, #764ba2 100%);
+  }
+
+  .welcome-modal-dialog,
+  .welcome-modal-dialog--mobile {
+    margin: 20px 16px;
     max-width: calc(100% - 32px);
   }
 
-  .welcome-modal-body {
-    padding: 1.25rem 1rem;
+  .welcome-modal-body,
+  .welcome-modal-body--mobile-simple {
+    padding: 0;
   }
 
-  .welcome-announcement--mobile,
-  .welcome-announcement {
+  .welcome-announcement--mobile {
+    display: flex;
+    flex-direction: column;
     margin: 0;
-    padding: 0;
+    padding: 0 0 1rem;
     background: transparent;
     border: none;
   }
 
-  .welcome-announcement-title {
-    font-size: 1rem;
-    line-height: 1.4;
-    margin-bottom: 0.75rem;
-    color: #ffd700;
-    text-align: center;
+  .welcome-mobile-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 3rem 0.5rem;
   }
 
-  .welcome-announcement-text {
+  .welcome-mobile-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(102, 126, 234, 0.18);
+    border: 1px solid rgba(129, 140, 248, 0.35);
+    color: #c4b5fd;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .welcome-mobile-badge svg {
+    width: 14px;
+    height: 14px;
+    color: #a5b4fc;
+  }
+
+  .welcome-announcement--mobile .welcome-announcement-title {
+    margin: 0;
+    padding: 0.25rem 1.25rem 0.75rem;
+    padding-right: 3rem;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.45;
+    color: #fde68a;
+    text-align: left;
+    letter-spacing: 0.01em;
+  }
+
+  .welcome-announcement-scroll {
+    margin: 0 1rem;
+    max-height: min(52vh, 360px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 1rem 1rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .welcome-announcement--mobile .welcome-announcement-text {
+    margin: 0;
     font-size: 0.9375rem;
-    line-height: 1.65;
-    color: rgba(255, 255, 255, 0.92);
+    font-weight: 400;
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.88);
     text-align: left;
     white-space: pre-wrap;
     word-break: break-word;
   }
 
+  .welcome-mobile-dismiss {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 2rem);
+    margin: 1rem auto 0;
+    padding: 13px 20px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .welcome-mobile-dismiss:active {
+    transform: scale(0.98);
+    box-shadow: 0 3px 12px rgba(102, 126, 234, 0.3);
+  }
+
   .welcome-close-btn {
-    top: 10px;
-    right: 10px;
-    width: 32px;
-    height: 32px;
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.7);
+    z-index: 3;
   }
 
   .warning-text {
@@ -4213,56 +4324,6 @@ body {
 }
 
 @media (max-width: 768px) {
-  .welcome-modal-dialog--mobile {
-    margin: 16px;
-    max-width: calc(100% - 32px);
-  }
-
-  .welcome-popup-modal--mobile {
-    background: rgba(22, 27, 48, 0.98);
-    border-color: rgba(255, 215, 0, 0.25);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-  }
-
-  .welcome-modal-body--mobile-simple {
-    padding: 1.5rem 1.25rem 1.25rem;
-  }
-
-  .welcome-announcement--mobile {
-    margin: 0;
-    padding: 0;
-    background: transparent;
-    border: none;
-  }
-
-  .welcome-announcement--mobile .welcome-announcement-title {
-    font-size: 1.125rem;
-    line-height: 1.4;
-    margin-bottom: 0.75rem;
-    color: #ffd700;
-    text-align: center;
-  }
-
-  .welcome-announcement--mobile .welcome-announcement-text {
-    font-size: 0.9375rem;
-    line-height: 1.65;
-    color: rgba(255, 255, 255, 0.92);
-    text-align: left;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
-  .welcome-popup-modal--mobile .welcome-close-btn {
-    top: 10px;
-    right: 10px;
-    width: 32px;
-    height: 32px;
-  }
-
-  .welcome-modal-body {
-    padding: 1.5rem 1.25rem;
-  }
-
   .welcome-profile-header {
     flex-direction: column;
     text-align: center;
@@ -4278,11 +4339,6 @@ body {
 
   .welcome-trader-name {
     font-size: 1.25rem;
-  }
-
-  .welcome-modal-dialog {
-    margin: 12px;
-    max-width: calc(100% - 24px);
   }
 }
 
@@ -4348,21 +4404,24 @@ body {
     padding: 3px 8px;
   }
 
-  .welcome-modal-body--mobile-simple {
-    padding: 1.25rem 1rem 1rem;
-  }
-
   .welcome-announcement--mobile .welcome-announcement-title {
     font-size: 1rem;
+    padding-right: 2.75rem;
+  }
+
+  .welcome-announcement-scroll {
+    max-height: min(48vh, 300px);
+    padding: 0.875rem;
   }
 
   .welcome-announcement--mobile .welcome-announcement-text {
     font-size: 0.875rem;
-    line-height: 1.6;
+    line-height: 1.7;
   }
 
-  .welcome-modal-body {
-    padding: 1.25rem 1rem;
+  .welcome-mobile-dismiss {
+    padding: 12px 18px;
+    font-size: 0.875rem;
   }
 
   .welcome-cta-btn {
