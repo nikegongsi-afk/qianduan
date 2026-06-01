@@ -131,7 +131,7 @@
             <lay-input v-model="model11.entry_date" type="datetime-local" placeholder="请输入入场日期"></lay-input>
           </lay-form-item>
           <lay-form-item label="交易数量" prop="size">
-            <lay-input v-model="model11.size" type="number" placeholder="请输入交易数量"></lay-input>
+            <lay-input v-model="model11.size" type="number" step="0.01" placeholder="请输入交易数量（支持两位小数）"></lay-input>
           </lay-form-item>
           <lay-form-item label="出场价格" prop="exit_price" v-if="model11.id>0">
             <lay-input v-model="model11.exit_price" type="number" placeholder="请输入出场价格"></lay-input>
@@ -557,7 +557,7 @@ async function toSubmit() {
       symbol: model11.value.symbol,
       entry_date: model11.value.entry_date,
       entry_price: parseFloat(model11.value.entry_price),
-      size: parseInt(model11.value.size),
+      size: Math.round(parseFloat(String(model11.value.size)) * 100) / 100,
       exit_date: model11.value.exit_date || null,
       exit_price: model11.value.exit_price ? parseFloat(model11.value.exit_price) : null,
       current_price: model11.value.current_price ? parseFloat(model11.value.current_price) : null,
