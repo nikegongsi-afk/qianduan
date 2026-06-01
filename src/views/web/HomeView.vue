@@ -461,6 +461,10 @@
 
                 <div class="trade-metrics">
                   <div class="trade-metric">
+                    <span class="trade-label">Shares</span>
+                    <span class="trade-metric-val">{{ formatQuantity(value.size) }}</span>
+                  </div>
+                  <div class="trade-metric">
                     <span class="trade-label">Entry Amount</span>
                     <span class="trade-metric-val">{{ value.currency || '' }}{{ formatCurrency(getTradeMetrics(value).entryAmount) }}</span>
                   </div>
@@ -851,6 +855,7 @@ import {
   formatPositionDisplay,
 } from '@/utils/parseTradingFocus';
 import { formatUSDate, formatUSTime } from '@/utils/dateFormat';
+import { formatQuantity, parseShareSize } from '@/utils/formatNumber';
 const trader_profiles=ref({});
 const strategy_info=ref({
     "updated_at": "",
@@ -1470,7 +1475,7 @@ const isActiveTrade = (trade: any) =>
 
 const getTradeMetrics = (trade: any) => {
   const entryPrice = Number(trade?.entry_price) || 0;
-  const size = Number(trade?.size) || 0;
+  const size = parseShareSize(trade?.size);
   const direction = Number(trade?.direction) || 1;
   const active = isActiveTrade(trade);
 
@@ -1512,20 +1517,6 @@ const formatCurrency = (amount: number | string) => {
   return num.toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
-  });
-};
-
-// 格式化数量，添加千位分隔符
-const formatQuantity = (quantity: number | string) => {
-  if (!quantity && quantity !== 0) return '0';
-  
-  // 转换为数字
-  const num = typeof quantity === 'string' ? parseFloat(quantity) : quantity;
-  
-  // 添加千位分隔符，不显示小数位
-  return num.toLocaleString('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
   });
 };
 
@@ -2594,7 +2585,7 @@ const formatLikesCount = (count: number | string | undefined) => {
 
 .trade-metrics {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
 }
 
