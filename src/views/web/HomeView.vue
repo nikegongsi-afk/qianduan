@@ -425,6 +425,7 @@
                 class="trade-image-wrapper"
                 @click="value.image_url && openImageModal(value.symbol, value.image_url)"
               >
+                <span v-if="value.image_url" class="trade-image-badge">Chart snapshot</span>
                 <img
                   :src="value.image_url || '/trade-placeholder.svg'"
                   alt="Chart"
@@ -452,7 +453,7 @@
                     </svg>
                   </div>
                   <div class="trade-price-block" v-if="isActiveTrade(value)">
-                    <span class="trade-block-label trade-block-label-current">Current</span>
+                    <span class="trade-block-label trade-block-label-current">Live Price</span>
                     <span class="trade-block-date">{{ formatUSDate(new Date().toISOString()) }}</span>
                     <span class="trade-block-price trade-block-price-live">{{ value.currency }}{{ formatCurrency(getTradeMetrics(value).price) }}</span>
                   </div>
@@ -2482,6 +2483,23 @@ const formatLikesCount = (count: number | string | undefined) => {
   overflow: hidden;
   cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.trade-image-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  pointer-events: none;
 }
 
 .trade-image {
