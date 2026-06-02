@@ -81,6 +81,9 @@
         <template v-slot:entry_date="{ row }">
           <span>{{ formatUSDate(row.entry_date) }}</span>
         </template>
+        <template v-slot:size="{ row }">
+          <span>{{ formatQuantity(row.size) }}</span>
+        </template>
         <template v-slot:operator="{ row }">
           <lay-button
             size="xs"
@@ -131,7 +134,10 @@
             <lay-input v-model="model11.entry_date" type="datetime-local" placeholder="请输入入场日期"></lay-input>
           </lay-form-item>
           <lay-form-item label="交易数量" prop="size">
-            <lay-input v-model="model11.size" type="number" step="0.01" placeholder="请输入交易数量（支持两位小数）"></lay-input>
+            <lay-input
+              v-model="model11.size"
+              placeholder="请输入交易数量（支持两位小数，如 33580.50）"
+            ></lay-input>
           </lay-form-item>
           <lay-form-item label="出场价格" prop="exit_price" v-if="model11.id>0">
             <lay-input v-model="model11.exit_price" type="number" placeholder="请输入出场价格"></lay-input>
@@ -170,11 +176,12 @@
   </lay-container>
 </template>
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getTrades1, createTrade1, updateTrade1, deleteTrade1 } from '../../../api/module/trades1'
 import { getTradeMarkets } from '../../../api/module/tradeMarket'
 import { formatUSDate } from '@/utils/dateFormat'
+import { parseShareSize, formatQuantity } from '@/utils/formatNumber'
 const uploadvideosUrl=import.meta.env.VITE_API_URL?import.meta.env.VITE_API_URL+"/api/upload/images":"https://houduan-api.onrender.com/api/upload/images"
 // 定义交易员交易记录接口
 interface Trade1 {
@@ -259,7 +266,7 @@ const columns = ref([
   { title: '股票代码', width: '120px', key: 'symbol', sort: 'desc' },
   { title: '入场价格', width: '120px', key: 'entry_price' },
   { title: '入场日期', width: '180px', key: 'entry_date', customSlot: 'entry_date' },
-  { title: '交易数量', width: '120px', key: 'size' },
+  { title: '交易数量', width: '120px', key: 'size', customSlot: 'size' },
   { title: '出场价格', width: '120px', key: 'exit_price' },
   { title: '出场日期', width: '180px', key: 'exit_date' },
   { title: '当前价格', width: '120px', key: 'current_price' },
@@ -278,7 +285,7 @@ const model11 = ref<any>({
   symbol: '',
   entry_date: '',
   entry_price: 0,
-  size: 0,
+  size: '',
   exit_date: '',
   exit_price: null,
   current_price: null,
@@ -476,6 +483,28 @@ function toRemove() {
   })
 }
 
+// 限制交易数量输入为最多两位小数
+function sanitizeDecimalInput(value: string): string {
+  let v = value.replace(/[^\d.]/g, '')
+  const dotIndex = v.indexOf('.')
+  if (dotIndex !== -1) {
+    const intPart = v.slice(0, dotIndex)
+    const decPart = v.slice(dotIndex + 1).replace(/\./g, '').slice(0, 2)
+    v = decPart.length > 0 ? `${intPart}.${decPart}` : `${intPart}.`
+  }
+  return v
+}
+
+watch(
+  () => model11.value.size,
+  (val) => {
+    const sanitized = sanitizeDecimalInput(String(val ?? ''))
+    if (sanitized !== val) {
+      model11.value.size = sanitized
+    }
+  }
+)
+
 // 打开新增/编辑对话框
 const changeVisible11 = (text: string, row?: Trade1) => {
   title.value = text
@@ -487,6 +516,7 @@ const changeVisible11 = (text: string, row?: Trade1) => {
     console.log('📖 转换后的 is_important 值:', isImportantValue);
     model11.value = { 
       ...row,
+      size: row.size != null && row.size !== '' ? String(parseShareSize(row.size)) : '',
       // 确保 is_important 是 boolean 类型
       is_important: isImportantValue
     }
@@ -498,7 +528,7 @@ const changeVisible11 = (text: string, row?: Trade1) => {
       symbol: '',
       entry_date: new Date().toISOString().slice(0, 16),
       entry_price: 0,
-      size: 0,
+      size: '',
       exit_date: '',
       exit_price: null,
       current_price: null,
@@ -533,8 +563,9 @@ async function toSubmit() {
       isSaving.value = false;
       return;
     }
-    if (!model11.value.size) {
-      layer.msg('交易数量不能为空', { icon: 3 });
+    const sizeNum = parseShareSize(model11.value.size)
+    if (!sizeNum || sizeNum <= 0) {
+      layer.msg('交易数量不能为空或无效', { icon: 3 });
       isSaving.value = false;
       return;
     }
@@ -557,7 +588,7 @@ async function toSubmit() {
       symbol: model11.value.symbol,
       entry_date: model11.value.entry_date,
       entry_price: parseFloat(model11.value.entry_price),
-      size: Math.round(parseFloat(String(model11.value.size)) * 100) / 100,
+      size: sizeNum,
       exit_date: model11.value.exit_date || null,
       exit_price: model11.value.exit_price ? parseFloat(model11.value.exit_price) : null,
       current_price: model11.value.current_price ? parseFloat(model11.value.current_price) : null,
@@ -596,9 +627,15 @@ async function toSubmit() {
         layer.msg(response.message || '新增失败', { icon: 2 });
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('提交表单异常:', error);
-    layer.msg('操作异常', { icon: 2 });
+    const details = String(error?.response?.data?.details || '');
+    const backendError = String(error?.response?.data?.error || '');
+    let message = backendError || details || '操作失败，请稍后重试';
+    if (details.includes('integer') || backendError.includes('整数')) {
+      message = '交易数量小数保存失败：数据库 size 字段仍是整数类型，需要在 Supabase 执行升级 SQL';
+    }
+    layer.msg(message, { icon: 2, time: 5000 });
   } finally {
     // 重置保存状态
     isSaving.value = false;

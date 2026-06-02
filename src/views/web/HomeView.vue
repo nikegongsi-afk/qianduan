@@ -440,51 +440,56 @@
               </div>
                
               <div class="trade-card-body">
-                <div class="trade-pair">
-                  <div class="trade-pair-side">
-                    <span class="trade-label trade-label-entry">Entry</span>
-                    <span class="trade-date">{{ formatUSDate(value.entry_date) }}</span>
-                    <span class="trade-price">{{ value.currency }}{{ formatCurrency(value.entry_price) }}</span>
+                <div class="trade-prices-row">
+                  <div class="trade-price-block">
+                    <span class="trade-block-label trade-block-label-entry">Entry</span>
+                    <span class="trade-block-date">{{ formatUSDate(value.entry_date) }}</span>
+                    <span class="trade-block-price">{{ value.currency }}{{ formatCurrency(value.entry_price) }}</span>
                   </div>
-                  <div class="trade-pair-sep" aria-hidden="true"></div>
-                  <div class="trade-pair-side" v-if="isActiveTrade(value)">
-                    <span class="trade-label trade-label-exit">Current</span>
-                    <span class="trade-date">{{ formatUSDate(new Date().toISOString()) }}</span>
-                    <span class="trade-price">{{ value.currency }}{{ formatCurrency(getTradeMetrics(value).price) }}</span>
+                  <div class="trade-price-arrow" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M5 12h14M13 6l6 6-6 6"></path>
+                    </svg>
                   </div>
-                  <div class="trade-pair-side" v-else>
-                    <span class="trade-label trade-label-exit">Exit</span>
-                    <span class="trade-date">{{ formatUSDate(value.exit_date) }}</span>
-                    <span class="trade-price">{{ value.currency }}{{ formatCurrency(value.exit_price) }}</span>
+                  <div class="trade-price-block" v-if="isActiveTrade(value)">
+                    <span class="trade-block-label trade-block-label-current">Current</span>
+                    <span class="trade-block-date">{{ formatUSDate(new Date().toISOString()) }}</span>
+                    <span class="trade-block-price trade-block-price-live">{{ value.currency }}{{ formatCurrency(getTradeMetrics(value).price) }}</span>
+                  </div>
+                  <div class="trade-price-block" v-else>
+                    <span class="trade-block-label trade-block-label-exit">Exit</span>
+                    <span class="trade-block-date">{{ formatUSDate(value.exit_date) }}</span>
+                    <span class="trade-block-price">{{ value.currency }}{{ formatCurrency(value.exit_price) }}</span>
                   </div>
                 </div>
 
-                <div class="trade-metrics">
-                  <div class="trade-metric">
-                    <span class="trade-label">Shares</span>
-                    <span class="trade-metric-val">{{ formatQuantity(value.size) }}</span>
+                <div class="trade-stats-list">
+                  <div class="trade-stat-row">
+                    <span class="trade-stat-label">Shares</span>
+                    <span class="trade-stat-value">{{ formatQuantity(value.size) }}</span>
                   </div>
-                  <div class="trade-metric">
-                    <span class="trade-label">Entry Amount</span>
-                    <span class="trade-metric-val">{{ value.currency || '' }}{{ formatCurrency(getTradeMetrics(value).entryAmount) }}</span>
+                  <div class="trade-stat-row">
+                    <span class="trade-stat-label">Entry Amount</span>
+                    <span class="trade-stat-value">{{ value.currency || '' }}{{ formatCurrency(getTradeMetrics(value).entryAmount) }}</span>
                   </div>
-                  <div class="trade-metric">
-                    <span class="trade-label">Market Value</span>
-                    <span class="trade-metric-val">{{ value.currency || '' }}{{ formatCurrency(getTradeMetrics(value).marketValue) }}</span>
+                  <div class="trade-stat-row">
+                    <span class="trade-stat-label">Market Value</span>
+                    <span class="trade-stat-value">{{ value.currency || '' }}{{ formatCurrency(getTradeMetrics(value).marketValue) }}</span>
                   </div>
                 </div>
 
                 <div
-                  class="trade-pnl-bar"
+                  class="trade-pnl-footer"
                   :class="getPnlClass(getTradeMetrics(value).ratio)"
                 >
-                  <div class="trade-pnl-side">
-                    <span class="trade-label">P&L Ratio</span>
-                    <span class="trade-pnl-val">{{ formatRatio(getTradeMetrics(value).ratio) }}%</span>
+                  <div class="trade-pnl-item">
+                    <span class="trade-pnl-label">P&L Ratio</span>
+                    <span class="trade-pnl-number">{{ formatRatio(getTradeMetrics(value).ratio) }}%</span>
                   </div>
-                  <div class="trade-pnl-side">
-                    <span class="trade-label">P&L Amount</span>
-                    <span class="trade-pnl-val">{{ value.currency || '' }}{{ formatCurrency(getTradeMetrics(value).amount) }}</span>
+                  <div class="trade-pnl-divider" aria-hidden="true"></div>
+                  <div class="trade-pnl-item">
+                    <span class="trade-pnl-label">P&L Amount</span>
+                    <span class="trade-pnl-number">{{ value.currency || '' }}{{ formatCurrency(getTradeMetrics(value).amount) }}</span>
                   </div>
                 </div>
               </div>
@@ -2362,23 +2367,24 @@ const formatLikesCount = (count: number | string | undefined) => {
 /* 网格视图 */
 .trades-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--spacing-md);
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--spacing-lg);
   margin-top: var(--spacing-lg);
 }
 
 .trade-card-modern {
-  background: var(--bg-glass);
+  background: linear-gradient(165deg, rgba(26, 31, 58, 0.95) 0%, rgba(15, 20, 40, 0.92) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
   transition: all var(--transition-base);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
 }
 
 .trade-card-modern:hover {
@@ -2512,35 +2518,209 @@ const formatLikesCount = (count: number | string | undefined) => {
   height: 32px;
 }
 
-/* Balanced data layout */
+/* Trade card data layout */
 .trade-card-body {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-.trade-pair {
-  display: flex;
-  align-items: stretch;
-  padding: 12px 14px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.04);
+.trade-prices-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.trade-pair-side {
-  flex: 1;
+.trade-price-block {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
   min-width: 0;
 }
 
-.trade-pair-sep {
-  width: 1px;
-  margin: 0 14px;
-  background: rgba(255, 255, 255, 0.1);
+.trade-price-block:last-child {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.trade-price-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(102, 126, 234, 0.12);
+  color: rgba(165, 180, 252, 0.9);
   flex-shrink: 0;
+}
+
+.trade-price-arrow svg {
+  width: 14px;
+  height: 14px;
+}
+
+.trade-block-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.trade-block-label-entry {
+  color: #a5b4fc;
+}
+
+.trade-block-label-current {
+  color: #6ee7b7;
+}
+
+.trade-block-label-exit {
+  color: #94a3b8;
+}
+
+.trade-block-date {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.trade-block-price {
+  font-size: clamp(14px, 2.4vw, 17px);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.trade-block-price-live {
+  color: #6ee7b7;
+}
+
+.trade-stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.trade-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.trade-stat-row:last-child {
+  border-bottom: none;
+}
+
+.trade-stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.trade-stat-value {
+  font-size: clamp(13px, 2.2vw, 15px);
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-align: right;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trade-pnl-footer {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+}
+
+.trade-pnl-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.trade-pnl-item:last-child {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.trade-pnl-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
+}
+
+.trade-pnl-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.trade-pnl-number {
+  font-size: clamp(15px, 2.6vw, 18px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.trade-pnl-footer.pnl-profit {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.14) 0%, rgba(16, 185, 129, 0.06) 100%);
+  border-color: rgba(16, 185, 129, 0.22);
+}
+
+.trade-pnl-footer.pnl-profit .trade-pnl-number {
+  color: #34d399;
+}
+
+.trade-pnl-footer.pnl-loss {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.14) 0%, rgba(239, 68, 68, 0.06) 100%);
+  border-color: rgba(239, 68, 68, 0.22);
+}
+
+.trade-pnl-footer.pnl-loss .trade-pnl-number {
+  color: #f87171;
+}
+
+.trade-pnl-footer.pnl-neutral {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.trade-pnl-footer.pnl-neutral .trade-pnl-number {
+  color: var(--text-primary);
 }
 
 .trade-label {
@@ -2549,114 +2729,6 @@ const formatLikesCount = (count: number | string | undefined) => {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--text-muted);
-}
-
-.trade-label-entry {
-  color: #a5b4fc;
-}
-
-.trade-label-exit {
-  color: #94a3b8;
-}
-
-.trade-label-live {
-  color: #6ee7b7;
-}
-
-.trade-date {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  line-height: 1.3;
-}
-
-.trade-price {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.25;
-  word-break: break-word;
-}
-
-.trade-price-highlight {
-  color: var(--color-success);
-  margin-top: 2px;
-}
-
-.trade-metrics {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.trade-metric {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  min-width: 0;
-}
-
-.trade-metric-val {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.3;
-  word-break: break-word;
-}
-
-.trade-pnl-bar {
-  display: flex;
-  gap: 12px;
-  padding: 11px 14px;
-  border-radius: 10px;
-  border: 1px solid transparent;
-}
-
-.trade-pnl-side {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  min-width: 0;
-}
-
-.trade-pnl-val {
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-  word-break: break-word;
-}
-
-.trade-pnl-bar.pnl-profit {
-  background: rgba(16, 185, 129, 0.1);
-  border-color: rgba(16, 185, 129, 0.2);
-}
-
-.trade-pnl-bar.pnl-profit .trade-pnl-val {
-  color: #34d399;
-}
-
-.trade-pnl-bar.pnl-loss {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.2);
-}
-
-.trade-pnl-bar.pnl-loss .trade-pnl-val {
-  color: #f87171;
-}
-
-.trade-pnl-bar.pnl-neutral {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.08);
-}
-
-.trade-pnl-bar.pnl-neutral .trade-pnl-val {
-  color: var(--text-primary);
 }
 
 /* 表格视图 */
@@ -3717,8 +3789,8 @@ const formatLikesCount = (count: number | string | undefined) => {
   }
   
   .trade-card-modern {
-    padding: 12px;
-    gap: 10px;
+    padding: 14px;
+    gap: 12px;
   }
 
   .trade-card-header {
@@ -3734,24 +3806,22 @@ const formatLikesCount = (count: number | string | undefined) => {
     height: 124px;
   }
 
-  .trade-pair {
+  .trade-prices-row {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .trade-price-arrow {
+    width: 24px;
+    height: 24px;
+  }
+
+  .trade-stat-row {
     padding: 10px 12px;
   }
 
-  .trade-pair-sep {
-    margin: 0 10px;
-  }
-
-  .trade-metric {
-    padding: 9px 10px;
-  }
-
-  .trade-metric-val {
-    font-size: 13px;
-  }
-
-  .trade-pnl-val {
-    font-size: 15px;
+  .trade-pnl-footer {
+    padding: 12px 14px;
   }
   
   .trades-mobile-symbol {
