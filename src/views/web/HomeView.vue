@@ -445,7 +445,7 @@
                   <div class="trade-price-block">
                     <span class="trade-block-label trade-block-label-entry">Entry</span>
                     <span class="trade-block-date">{{ formatUSDate(value.entry_date) }}</span>
-                    <span class="trade-block-price">{{ value.currency }}{{ formatCurrency(value.entry_price) }}</span>
+                    <span class="trade-block-price">{{ value.currency }}{{ formatStockPrice(value.entry_price) }}</span>
                   </div>
                   <div class="trade-price-arrow" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -455,12 +455,12 @@
                   <div class="trade-price-block" v-if="isActiveTrade(value)">
                     <span class="trade-block-label trade-block-label-current">Live Price</span>
                     <span class="trade-block-date">{{ formatUSDate(new Date().toISOString()) }}</span>
-                    <span class="trade-block-price trade-block-price-live">{{ value.currency }}{{ formatCurrency(getTradeMetrics(value).price) }}</span>
+                    <span class="trade-block-price trade-block-price-live">{{ value.currency }}{{ formatStockPrice(getTradeMetrics(value).price) }}</span>
                   </div>
                   <div class="trade-price-block" v-else>
                     <span class="trade-block-label trade-block-label-exit">Exit</span>
                     <span class="trade-block-date">{{ formatUSDate(value.exit_date) }}</span>
-                    <span class="trade-block-price">{{ value.currency }}{{ formatCurrency(value.exit_price) }}</span>
+                    <span class="trade-block-price">{{ value.currency }}{{ formatStockPrice(value.exit_price) }}</span>
                   </div>
                 </div>
 
@@ -471,11 +471,11 @@
                   </div>
                   <div class="trade-stat-row">
                     <span class="trade-stat-label">Entry Amount</span>
-                    <span class="trade-stat-value">{{ value.currency || '' }}{{ formatCurrency(getTradeMetrics(value).entryAmount) }}</span>
+                    <span class="trade-stat-value">{{ value.currency || '' }}{{ formatMoneyAmount(getTradeMetrics(value).entryAmount) }}</span>
                   </div>
                   <div class="trade-stat-row">
                     <span class="trade-stat-label">Market Value</span>
-                    <span class="trade-stat-value">{{ value.currency || '' }}{{ formatCurrency(getTradeMetrics(value).marketValue) }}</span>
+                    <span class="trade-stat-value">{{ value.currency || '' }}{{ formatMoneyAmount(getTradeMetrics(value).marketValue) }}</span>
                   </div>
                 </div>
 
@@ -490,7 +490,7 @@
                   <div class="trade-pnl-divider" aria-hidden="true"></div>
                   <div class="trade-pnl-item">
                     <span class="trade-pnl-label">P&L Amount</span>
-                    <span class="trade-pnl-number">{{ value.currency || '' }}{{ formatCurrency(getTradeMetrics(value).amount) }}</span>
+                    <span class="trade-pnl-number">{{ value.currency || '' }}{{ formatMoneyAmount(getTradeMetrics(value).amount) }}</span>
                   </div>
                 </div>
               </div>
@@ -520,7 +520,7 @@
               <div class="trades-mobile-row-bottom">
                 <span class="trades-mobile-date">{{ formatUSDate(value.entry_date) }}</span>
                 <span class="trades-mobile-price">
-                  {{ value.currency }}{{ formatCurrency(value.entry_price) }}
+                  {{ value.currency }}{{ formatStockPrice(value.entry_price) }}
                 </span>
               </div>
             </div>
@@ -560,15 +560,15 @@
                     </span>
                   </td>
                   <td>{{formatUSDate(value.entry_date)}}</td>
-                  <td>{{value.currency}}{{formatCurrency(value.entry_price)}}</td>
+                  <td>{{value.currency}}{{formatStockPrice(value.entry_price)}}</td>
                   <td v-if="trades.some(t => isActiveTrade(t))">
-                    <span v-if="isActiveTrade(value)">{{value.currency}}{{formatCurrency(getTradeMetrics(value).price)}}</span>
+                    <span v-if="isActiveTrade(value)">{{value.currency}}{{formatStockPrice(getTradeMetrics(value).price)}}</span>
                     <span v-else>-</span>
                   </td>
                   <td>{{value.exit_date ? formatUSDate(value.exit_date) : '-'}}</td>
                   <td>
                     <span v-if="isActiveTrade(value)">-</span>
-                    <span v-else>{{ value.currency }}{{ formatCurrency(value.exit_price) }}</span>
+                    <span v-else>{{ value.currency }}{{ formatStockPrice(value.exit_price) }}</span>
                   </td>
                   <td>
                     <span class="pnl-ratio" :class="Number(getTradeMetrics(value).ratio) > 0 ? 'profit' : Number(getTradeMetrics(value).ratio) < 0 ? 'loss' : ''">
@@ -577,7 +577,7 @@
                   </td>
                   <td>
                     <span class="pnl-amount" :class="Number(getTradeMetrics(value).ratio) > 0 ? 'profit' : Number(getTradeMetrics(value).ratio) < 0 ? 'loss' : ''">
-                      {{value.currency || ''}}{{formatCurrency(getTradeMetrics(value).amount)}}
+                      {{value.currency || ''}}{{formatMoneyAmount(getTradeMetrics(value).amount)}}
                     </span>
                   </td>
                   <td>
@@ -861,7 +861,7 @@ import {
   formatPositionDisplay,
 } from '@/utils/parseTradingFocus';
 import { formatUSDate, formatUSTime } from '@/utils/dateFormat';
-import { formatQuantity, parseShareSize } from '@/utils/formatNumber';
+import { formatQuantity, formatStockPrice, formatMoneyAmount, parseShareSize } from '@/utils/formatNumber';
 const trader_profiles=ref({});
 const strategy_info=ref({
     "updated_at": "",
@@ -1513,18 +1513,7 @@ const getPnlClass = (ratio: number | string) => {
   return 'pnl-neutral';
 };
 
-const formatCurrency = (amount: number | string) => {
-  if (!amount && amount !== 0) return '0';
-  
-  // 转换为数字
-  const num = typeof amount === 'string' ? parseFloat(amount) : amount;
-  
-  // 添加千位分隔符
-  return num.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-};
+const formatCurrency = formatMoneyAmount;
 
 // 格式化点赞数
 const formatLikesCount = (count: number | string | undefined) => {
