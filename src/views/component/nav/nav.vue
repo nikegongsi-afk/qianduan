@@ -251,18 +251,21 @@ onUnmounted(() => {
 }
 
 .logo-icon {
-  width: 40px;
-  height: 40px;
+  width: 52px;
+  height: 52px;
   flex-shrink: 0;
-  border-radius: 10px;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo-img {
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover;
+  object-fit: contain;
+  transform: scale(1.12);
+  filter: drop-shadow(0 0 6px rgba(33, 96, 230, 0.35));
 }
 
 .logo-text {
@@ -694,9 +697,8 @@ onUnmounted(() => {
   }
   
   .logo-icon {
-    width: 36px;
-    height: 36px;
-    padding: 6px;
+    width: 44px;
+    height: 44px;
   }
   
   .logo-text {
@@ -750,8 +752,8 @@ onUnmounted(() => {
   }
   
   .logo-icon {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
   }
   
   .mobile-menu-btn {
