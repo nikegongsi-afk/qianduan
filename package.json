@@ -7,7 +7,9 @@
     "build:check": "vue-tsc --noEmit && vite build",
     "build:prod": "vue-tsc --noEmit && vite build --mode production",
     "serve": "vite preview",
-    "deploy": "npm run build && wrangler deploy",
+    "deploy": "npm run deploy:qianduan",
+    "deploy:qianduan": "cp wrangler.qianduan.toml wrangler.toml && npm run build && wrangler deploy",
+    "deploy:allen": "cp wrangler.allen-klee.toml wrangler.toml && npm run build && wrangler deploy",
     "deploy:preview": "npm run build && wrangler dev"
   },
   "dependencies": {
