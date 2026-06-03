@@ -511,10 +511,10 @@
                   {{ (value.trade_market || '').toUpperCase() }}
                 </span>
                 <span
-                  class="status-badge trades-mobile-status"
-                  :class="getStatusClass(value.status, getTradeMetrics(value).ratio)"
+                  class="trades-mobile-status"
+                  :class="getMobileStatusClass(value)"
                 >
-                  {{ getStatusText(value.status, getTradeMetrics(value).ratio) }}
+                  {{ getMobileStatusText(value) }}
                 </span>
               </div>
               <div class="trades-mobile-row-bottom">
@@ -1473,6 +1473,18 @@ const getStatusText = (status: string, ratio: number) => {
       return 'Stop Loss';
     }
   }
+};
+
+const getMobileStatusClass = (trade: any) => {
+  if (isActiveTrade(trade)) return 'trades-mobile-status--active';
+  const ratio = Number(getTradeMetrics(trade).ratio) || 0;
+  return ratio > 0 ? 'trades-mobile-status--profit' : 'trades-mobile-status--loss';
+};
+
+const getMobileStatusText = (trade: any) => {
+  if (isActiveTrade(trade)) return 'Active';
+  const ratio = Number(getTradeMetrics(trade).ratio) || 0;
+  return ratio > 0 ? 'Take Profit' : 'Stop Loss';
 };
 
 // 格式化货币金额，添加千位分隔符
@@ -2464,6 +2476,15 @@ const formatLikesCount = (count: number | string | undefined) => {
   background: var(--color-danger);
 }
 
+.trade-card-modern .status-indicator {
+  border: none;
+  box-shadow: none;
+}
+
+.trade-card-modern .status-indicator .status-label {
+  white-space: nowrap;
+}
+
 .trade-image-wrapper {
   position: relative;
   width: 100%;
@@ -2790,26 +2811,32 @@ const formatLikesCount = (count: number | string | undefined) => {
   color: var(--color-primary);
 }
 
-.status-badge {
+.trades-table .status-badge {
+  display: inline-block;
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  border: none;
+  box-shadow: none;
 }
 
-.status-badge.status-active {
+.trades-table .status-badge.status-active,
+.trades-table .status-badge.status-take-profit {
   background: rgba(16, 185, 129, 0.1);
   color: var(--color-success);
 }
 
-.status-badge.status-take-profit {
-  background: rgba(16, 185, 129, 0.1);
-  color: var(--color-success);
-}
-
-.status-badge.status-stop-loss {
+.trades-table .status-badge.status-stop-loss {
   background: rgba(239, 68, 68, 0.1);
   color: var(--color-danger);
+}
+
+.trades-table .status-badge.status-default {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
 }
 
 .pnl-ratio,
@@ -2902,11 +2929,36 @@ const formatLikesCount = (count: number | string | undefined) => {
 
 .trades-mobile-status {
   flex-shrink: 0;
-  padding: 3px 8px;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
   font-size: 10px;
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.15;
   white-space: nowrap;
+  border: none;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.trades-mobile-status--active {
+  background: rgba(16, 185, 129, 0.14);
+  color: #34d399;
+}
+
+.trades-mobile-status--profit {
+  background: rgba(16, 185, 129, 0.14);
+  color: #34d399;
+}
+
+.trades-mobile-status--loss {
+  background: rgba(239, 68, 68, 0.14);
+  color: #f87171;
 }
 
 .trades-mobile-row-bottom {
@@ -3837,7 +3889,7 @@ const formatLikesCount = (count: number | string | undefined) => {
 
   .trades-mobile-status {
     font-size: 9px;
-    padding: 2px 7px;
+    padding: 3px 8px;
   }
 
   .trades-mobile-date {
@@ -4030,60 +4082,50 @@ body {
   font-weight: 600;
 }
 
-/* 简洁的Active状态样式 */
-.status-active {
+/* 旧版增强徽章（仅 .status-badge-enhanced，勿影响表格/卡片） */
+.status-badge-enhanced.status-active {
   background: transparent;
   border-color: #28a745;
   color: #28a745;
   box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
 }
 
-/* 止盈状态样式 */
-.status-take-profit {
+.status-badge-enhanced.status-take-profit {
   background: transparent;
   border-color: #01b622;
   color: #01b622;
   box-shadow: 0 2px 8px rgba(1, 182, 34, 0.2);
 }
 
-/* 止损状态样式 */
-.status-stop-loss {
+.status-badge-enhanced.status-stop-loss {
   background: transparent;
   border-color: #e74c3c;
   color: #e74c3c;
   box-shadow: 0 2px 8px rgba(231, 76, 60, 0.2);
 }
 
-.status-closed {
+.status-badge-enhanced.status-closed {
   background: linear-gradient(135deg, #888888 0%, #555555 100%);
   border-color: #888888;
   color: white;
 }
 
-.status-pending {
+.status-badge-enhanced.status-pending {
   background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
   border-color: #FFD700;
   color: #000;
 }
 
-.status-cancelled {
+.status-badge-enhanced.status-cancelled {
   background: linear-gradient(135deg, #FF4444 0%, #CC0000 100%);
   border-color: #FF4444;
   color: white;
 }
 
-.status-default {
+.status-badge-enhanced.status-default {
   background: linear-gradient(135deg, #666666 0%, #444444 100%);
   border-color: #666666;
   color: white;
-}
-
-.status-badge {
-  padding: 0.4rem 0.8rem;
-  border-radius: 15px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  border: 1px solid;
 }
 
 .secondary-info {
