@@ -940,12 +940,12 @@ onMounted(()=>{
  gettraderprofiles()
  get_membership_levels_list()
  
- // Set timer to update stock prices every 30 seconds
+ // Set timer to update stock prices every 10 seconds
  setInterval(() => {
    if (Vipdata.value && (Vipdata.value.tradelist || Vipdata.value.user_trade_list)) {
      updateStockPrices();
    }
- }, 30000);
+ }, 10000);
 })
 const gettraderprofiles= async()=>{
   try {
@@ -1089,7 +1089,13 @@ const updateStockPrices = async () => {
         console.log('Stock price API response:', priceRes);
         
         if (priceRes && priceRes.success && priceRes.data) {
-          const priceMap = priceRes.data;
+          const priceMap = Array.isArray(priceRes.data)
+            ? Object.fromEntries(
+                priceRes.data
+                  .filter((item: { symbol?: string; price?: number | null }) => item?.symbol && item.price != null)
+                  .map((item: { symbol: string; price: number }) => [item.symbol, item.price])
+              )
+            : priceRes.data;
           console.log('Price map received:', priceMap);
           
           // Update prices in VIP trading records

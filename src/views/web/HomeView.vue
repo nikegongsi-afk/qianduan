@@ -454,7 +454,7 @@
                   </div>
                   <div class="trade-price-block" v-if="isActiveTrade(value)">
                     <span class="trade-block-label trade-block-label-current">Live Price</span>
-                    <span class="trade-block-date">{{ formatUSDate(new Date().toISOString()) }}</span>
+                    <span class="trade-block-date">{{ formatUSDate(livePriceUpdatedAt) }}</span>
                     <span class="trade-block-price trade-block-price-live">{{ value.currency }}{{ formatStockPrice(getTradeMetrics(value).price) }}</span>
                   </div>
                   <div class="trade-price-block" v-else>
@@ -852,7 +852,7 @@ import PartnerOrganizations from '@/components/PartnerOrganizations.vue';
 import moment from 'moment';
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { Modal } from 'bootstrap';
-import{getIndexData,get_whatsapp_link,getannouncement,likeTrader} from '../../api/module/web/index'
+import{getIndexData,getStockPrices,get_whatsapp_link,getannouncement,likeTrader} from '../../api/module/web/index'
 import { useUserStore } from '@/store';
 import { layer } from '@layui/layui-vue';
 import {
@@ -1068,7 +1068,6 @@ onMounted(() => {
   {
     console.log(error)
   }
-  getindexdata()
   getannouncementdataData()
 
   
@@ -1084,17 +1083,35 @@ onMounted(() => {
 
   startStrategyTabRotation();
 
+  getindexdata().then(() => updateActiveTradePrices());
+  priceRefreshTimer = window.setInterval(() => {
+    updateActiveTradePrices();
+  }, TRADE_PRICE_REFRESH_MS);
+
   tradeRefreshTimer = window.setInterval(() => {
     if (trades.value.some((item: any) => isActiveTrade(item))) {
-      getindexdata();
+      getindexdata().then(() => updateActiveTradePrices());
     }
-  }, 60000);
+  }, TRADE_FULL_REFRESH_MS);
+
+  document.addEventListener('visibilitychange', onTradePriceVisibilityChange);
 });
+
+const onTradePriceVisibilityChange = () => {
+  if (document.visibilityState === 'visible') {
+    updateActiveTradePrices();
+  }
+};
 
 // 清理事件监听
 onUnmounted(() => {
   window.removeEventListener('resize', checkMobile);
+  document.removeEventListener('visibilitychange', onTradePriceVisibilityChange);
   stopStrategyTabRotation();
+  if (priceRefreshTimer) {
+    window.clearInterval(priceRefreshTimer);
+    priceRefreshTimer = null;
+  }
   if (tradeRefreshTimer) {
     window.clearInterval(tradeRefreshTimer);
     tradeRefreshTimer = null;
@@ -1490,6 +1507,57 @@ const getMobileStatusText = (trade: any) => {
 // 格式化货币金额，添加千位分隔符
 const isActiveTrade = (trade: any) =>
   trade?.status === 'Active' || (!trade?.exit_date && !trade?.exit_price);
+
+const applyLivePriceToTrade = (trade: any, price: number) => {
+  const entryPrice = Number(trade?.entry_price) || 0;
+  const size = parseShareSize(trade?.size);
+  const direction = Number(trade?.direction) || 1;
+  trade.current_price = price;
+  trade.price_is_live = true;
+  trade.Market_Value = (price * size).toFixed(2);
+  trade.Ratio =
+    entryPrice > 0
+      ? (((price - entryPrice) / entryPrice) * 100).toFixed(2)
+      : '0.00';
+  trade.Amount = ((price - entryPrice) * size * direction).toFixed(2);
+};
+
+const updateActiveTradePrices = async () => {
+  if (priceRefreshInFlight) return;
+  const activeTrades = trades.value.filter((t: any) => isActiveTrade(t));
+  if (!activeTrades.length) return;
+
+  const quotes = activeTrades.map((t: any) => ({
+    symbol: t.symbol,
+    trade_market: t.trade_market || 'US',
+  }));
+
+  priceRefreshInFlight = true;
+  try {
+    const res = await getStockPrices(quotes);
+    if (!res?.success || !res.data) return;
+
+    const priceMap = res.data as Record<string, number>;
+    trades.value = trades.value.map((trade: any) => {
+      if (!isActiveTrade(trade)) return trade;
+      const nextPrice = priceMap[trade.symbol];
+      if (nextPrice == null || !(Number(nextPrice) > 0)) return trade;
+      const next = { ...trade };
+      applyLivePriceToTrade(next, Number(nextPrice));
+      return next;
+    });
+
+    if (res.updated_at) {
+      livePriceUpdatedAt.value = res.updated_at;
+    } else {
+      livePriceUpdatedAt.value = new Date().toISOString();
+    }
+  } catch (err) {
+    console.warn('Failed to refresh active trade prices:', err);
+  } finally {
+    priceRefreshInFlight = false;
+  }
+};
 
 const getTradeMetrics = (trade: any) => {
   const entryPrice = Number(trade?.entry_price) || 0;

@@ -16,9 +16,41 @@ interface Env {
 }
 
 const DEFAULT_API_URL = "https://houduan-api.onrender.com";
-const DEFAULT_TRADER_UUID = "c5e01236-d681-4343-8386-f9e17748f81f";
+const THOMAS_FORTE_TRADER_UUID = "c5e01236-d681-4343-8386-f9e17748f81f";
+const ALLEN_KLEE_TRADER_UUID = "ef59ab89-c338-4b64-a988-9a19446df14b";
+const DEFAULT_TRADER_UUID = THOMAS_FORTE_TRADER_UUID;
 const DEFAULT_GOOGLE_CLIENT_ID =
   "810723432233-mpgi15h8fvupa2ifqtlmpv5eiih7bvgq.apps.googleusercontent.com";
+
+/** 按访问域名选择交易员，避免多域名绑错 Worker 时串台 */
+const TRADER_UUID_BY_HOST: Record<string, string> = {
+  "stevencress.com": THOMAS_FORTE_TRADER_UUID,
+  "www.stevencress.com": THOMAS_FORTE_TRADER_UUID,
+  "thomas-forte.com": THOMAS_FORTE_TRADER_UUID,
+  "www.thomas-forte.com": THOMAS_FORTE_TRADER_UUID,
+  "allenklee.com": ALLEN_KLEE_TRADER_UUID,
+  "www.allenklee.com": ALLEN_KLEE_TRADER_UUID,
+};
+
+const resolveEnvForHost = (hostname: string, env: Env): Env => {
+  const host = hostname.toLowerCase();
+  const traderUuid =
+    TRADER_UUID_BY_HOST[host] ||
+    env.VITE_Web_Trader_UUID ||
+    DEFAULT_TRADER_UUID;
+  return {
+    ...env,
+    VITE_API_URL: env.VITE_API_URL || DEFAULT_API_URL,
+    VITE_Web_Trader_UUID: traderUuid,
+    VITE_GOOGLE_CLIENT_ID: env.VITE_GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID,
+  };
+};
+
+const redirectWwwToApex = (url: URL, apexHost: string) => {
+  url.hostname = apexHost;
+  url.protocol = "https:";
+  return Response.redirect(url.toString(), 301);
+};
 
 const shouldTrackPath = (pathname: string) => {
   if (pathname.startsWith("/assets/")) return false;
@@ -89,12 +121,16 @@ const injectHtmlEnv = (html: string, env: Env) =>
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+    const runtimeEnv = resolveEnvForHost(url.hostname, env);
 
-    // www 统一跳转到主域名（需先在 Cloudflare DNS 添加 www CNAME 记录）
     if (url.hostname === "www.stevencress.com") {
-      url.hostname = "stevencress.com";
-      url.protocol = "https:";
-      return Response.redirect(url.toString(), 301);
+      return redirectWwwToApex(url, "stevencress.com");
+    }
+    if (url.hostname === "www.thomas-forte.com") {
+      return redirectWwwToApex(url, "thomas-forte.com");
+    }
+    if (url.hostname === "www.allenklee.com") {
+      return redirectWwwToApex(url, "allenklee.com");
     }
 
     if (url.pathname.startsWith("/api/")) {
@@ -114,8 +150,8 @@ export default {
           response.status === 200 &&
           response.headers.get("content-type")?.includes("text/html")
         ) {
-          trackVisit(request, env, ctx, url);
-          const html = injectHtmlEnv(await response.text(), env);
+          trackVisit(request, runtimeEnv, ctx, url);
+          const html = injectHtmlEnv(await response.text(), runtimeEnv);
           const newHeaders = new Headers(response.headers);
           newHeaders.set("Content-Type", "text/html; charset=utf-8");
           return new Response(html, { headers: newHeaders });
@@ -126,8 +162,8 @@ export default {
           const indexResponse = await env.ASSETS.fetch(indexRequest);
 
           if (indexResponse.status === 200) {
-            trackVisit(request, env, ctx, url);
-            const html = injectHtmlEnv(await indexResponse.text(), env);
+            trackVisit(request, runtimeEnv, ctx, url);
+            const html = injectHtmlEnv(await indexResponse.text(), runtimeEnv);
             const newHeaders = new Headers(indexResponse.headers);
             newHeaders.set("Content-Type", "text/html; charset=utf-8");
             return new Response(html, { headers: newHeaders });

@@ -15,6 +15,13 @@ export const get_whatsapp_link = function() {
 export const getIndexData = function() {
     return Http.get('/web/index')
 }
+
+// 批量获取持仓实时价格（symbol + trade_market）
+export const getStockPrices = function(
+  quotes: Array<{ symbol: string; trade_market?: string }>
+) {
+    return Http.post('/web/stock-prices', { quotes })
+}
 // 获取首页公告数据
 export const getannouncement = function() {
     return Http.get('/web/announcement')
