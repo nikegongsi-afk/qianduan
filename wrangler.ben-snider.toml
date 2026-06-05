@@ -1,4 +1,4 @@
-# Cloudflare Workers — ben-snider.com (xiaoming 仓库默认部署配置)
+# Cloudflare Workers — ben-snider.com
 name = "ben-snider"
 main = "./src/index.ts"
 compatibility_date = "2025-11-25"

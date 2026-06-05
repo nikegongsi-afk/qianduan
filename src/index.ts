@@ -18,6 +18,7 @@ interface Env {
 const DEFAULT_API_URL = "https://houduan-api.onrender.com";
 const THOMAS_FORTE_TRADER_UUID = "c5e01236-d681-4343-8386-f9e17748f81f";
 const ALLEN_KLEE_TRADER_UUID = "ef59ab89-c338-4b64-a988-9a19446df14b";
+const BEN_SNIDER_TRADER_UUID = "fe9af579-c264-46aa-afc9-4ebfeda17d06";
 const DEFAULT_TRADER_UUID = THOMAS_FORTE_TRADER_UUID;
 const DEFAULT_GOOGLE_CLIENT_ID =
   "810723432233-mpgi15h8fvupa2ifqtlmpv5eiih7bvgq.apps.googleusercontent.com";
@@ -131,6 +132,9 @@ export default {
     }
     if (url.hostname === "www.allenklee.com") {
       return redirectWwwToApex(url, "allenklee.com");
+    }
+    if (url.hostname === "www.ben-snider.com") {
+      return redirectWwwToApex(url, "ben-snider.com");
     }
 
     if (url.pathname.startsWith("/api/")) {
