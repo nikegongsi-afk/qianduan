@@ -1,5 +1,5 @@
-# Cloudflare Workers — ben-snider.com
-name = "ben-snider"
+# Cloudflare Workers — ben-snide.com
+name = "ben-snide"
 main = "./src/index.ts"
 compatibility_date = "2025-11-25"
 workers_dev = true
@@ -17,9 +17,9 @@ binding = "ASSETS"
 run_worker_first = true
 
 [[routes]]
-pattern = "ben-snider.com/*"
-zone_name = "ben-snider.com"
+pattern = "ben-snide.com/*"
+zone_name = "ben-snide.com"
 
 [[routes]]
-pattern = "www.ben-snider.com"
+pattern = "www.ben-snide.com"
 custom_domain = true
