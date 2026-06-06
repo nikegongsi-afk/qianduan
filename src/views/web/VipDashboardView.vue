@@ -124,7 +124,7 @@
               <td>{{ trade.exit_price ? formatPriceRight(trade.exit_price, trade.currency) : '-' }}</td>
               <td>{{ trade.size }}</td>
               <td class="pnl-cell">
-                <span class="trade-profit-table" >{{ formatCurrency(trade.profitAmount) }}</span>
+                <span class="trade-profit-table" >{{ formatCurrency(trade.profitAmount) }}$</span>
               </td>
               <td class="roi-cell">
                 <span class="trade-profit-table" >
@@ -341,12 +341,12 @@
               </td>
               <td style="text-align:right;font-weight:900;">
                 <span style="font-size:1.12rem;" :style="{color: parseFloat(user.monthly_profit) > 0 ? '#00ffae' : parseFloat(user.totalProfit) < 0 ? '#ff4d4f' : '#b0c4e6'}">
-                  {{ formatCurrency(user.utotle_profit) }}
+                  {{ formatCurrency(user.utotle_profit) }}$
                 </span>
               </td>
               <td style="text-align:right;font-weight:900;">
                 <span style="font-size:1.12rem;" :style="{color: parseFloat(user.profitRate) > 0 ? '#52c41a' : parseFloat(user.profitRate) < 0 ? '#ff4d4f' : '#b0c4e6'}">
-                  {{ formatCurrency(user.umonth_profit) }}
+                  {{ formatCurrency(user.umonth_profit) }}$
                 </span>
               </td>
             </tr>
@@ -373,8 +373,8 @@
             <span class="rank-level" :class="user.membership_level" style="font-size:0.95rem;padding:2px 10px;border-radius:8px;background:#1a2236;margin-left:4px;min-width:80px;text-align:center;display:inline-block;">{{ user.membership_level }}</span>
           </div>
           <div class="rank-row-bottom" style="display:flex;justify-content:space-between;font-size:1.05em;margin-top:2px;">
-            <span class="rank-amount" style="font-weight:900;font-size:1.08rem;" :style="{color: parseFloat(user.utotle_profit) > 0 ? '#00ffae' : parseFloat(user.utotle_profit) < 0 ? '#ff4d4f' : '#b0c4e6'}">{{ formatCurrency(user.utotle_profit) }}</span>
-            <span class="rank-rate" style="font-weight:900;font-size:1.08rem;" :style="{color: parseFloat(user.umonth_profit) > 0 ? '#52c41a' : parseFloat(user.umonth_profit) < 0 ? '#ff4d4f' : '#b0c4e6'}">{{ formatCurrency(user.umonth_profit) }}</span>
+            <span class="rank-amount" style="font-weight:900;font-size:1.08rem;" :style="{color: parseFloat(user.utotle_profit) > 0 ? '#00ffae' : parseFloat(user.utotle_profit) < 0 ? '#ff4d4f' : '#b0c4e6'}">{{ formatCurrency(user.utotle_profit) }}$</span>
+            <span class="rank-rate" style="font-weight:900;font-size:1.08rem;" :style="{color: parseFloat(user.umonth_profit) > 0 ? '#52c41a' : parseFloat(user.umonth_profit) < 0 ? '#ff4d4f' : '#b0c4e6'}">{{ formatCurrency(user.umonth_profit) }}$</span>
           </div>
         </div>
       </div>

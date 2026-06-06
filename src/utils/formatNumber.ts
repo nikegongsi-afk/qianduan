@@ -64,6 +64,15 @@ export function formatPriceRight(value: number | string, currency?: string | nul
   return `${formatStockPrice(value)}${currencySymbol(currency)}`;
 }
 
+/** Market cap with $ on the right, e.g. 1.2B$ */
+export function formatMarketCapRight(cap: number): string {
+  if (!cap) return '0$';
+  if (cap > 1e12) return `${(cap / 1e12).toFixed(1)}T$`;
+  if (cap > 1e9) return `${(cap / 1e9).toFixed(1)}B$`;
+  if (cap > 1e6) return `${(cap / 1e6).toFixed(1)}M$`;
+  return `${Number(cap).toFixed(0)}$`;
+}
+
 /** Format dollar totals (amounts, P&L) with 2 decimal places. */
 export function formatMoneyAmount(value: number | string): string {
   if (value !== 0 && !value) return '0.00';

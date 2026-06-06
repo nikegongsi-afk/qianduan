@@ -29,9 +29,9 @@
         <div class="section-label">Total Profit</div>
         <div class="section-value">
             <p style="margin-bottom: 0.5rem; text-align: center; display: flex; justify-content: center; gap: 2rem;font-size: 1rem;">
-                            <span>🥇 $100,000</span>
-                            <span>🥈 $80,000</span>
-                            <span>🥉 $50,000</span>
+                            <span>🥇 100,000$</span>
+                            <span>🥈 80,000$</span>
+                            <span>🥉 50,000$</span>
                         </p>
         </div>
        
@@ -41,9 +41,9 @@
         <div class="section-label">VIP Traders</div>
         <div class="section-value">
             <p style="margin-bottom: 0.5rem; text-align: center; display: flex; justify-content: center; gap: 2rem; font-size: 1.2rem;">
-                            <span>🥇 $50,000</span>
-                            <span>🥈 $30,000</span>
-                            <span>🥉 $10,000</span>
+                            <span>🥇 50,000$</span>
+                            <span>🥈 30,000$</span>
+                            <span>🥉 10,000$</span>
                         </p>
         </div>
        
@@ -53,9 +53,9 @@
         <div class="section-label">Total Likes</div>
         <div class="section-value">
             <p style="margin-bottom: 0.5rem; text-align: center; display: flex; justify-content: center; gap: 2rem;font-size: 1.2rem;">
-                            <span>🥇 $10,000</span>
-                            <span>🥈 $8,000</span>
-                            <span>🥉 $5,000</span>
+                            <span>🥇 10,000$</span>
+                            <span>🥈 8,000$</span>
+                            <span>🥉 5,000$</span>
                         </p>
         </div>
      

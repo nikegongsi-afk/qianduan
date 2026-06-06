@@ -140,6 +140,7 @@ import navcomponent from '../component/nav/nav.vue'
 import { useUserStore } from '@/store';
 import router from '@/router';
 import { formatUSDate } from '@/utils/dateFormat';
+import { formatMarketCapRight } from '@/utils/formatNumber';
 export default {
   name: 'AIHistoryView',
   components: {
@@ -279,12 +280,7 @@ export default {
       const currPrice = parseFloat(item.currprice || 0);
       return currentPrice > 0 ? ((currPrice - currentPrice) / currentPrice) * 100 : 0;
     },
-    formatMarketCap(cap) {
-      if (cap > 1e12) return `$${(cap / 1e12).toFixed(1)}T`;
-      if (cap > 1e9) return `$${(cap / 1e9).toFixed(1)}B`;
-      if (cap > 1e6) return `$${(cap / 1e6).toFixed(1)}M`;
-      return `$${parseFloat(cap).toFixed(0)}`;
-    },
+    formatMarketCap: formatMarketCapRight,
     getScoreColor(score) {
       if (score >= 80) return 'success';
       if (score >= 60) return 'warning';

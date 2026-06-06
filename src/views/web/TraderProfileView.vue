@@ -76,7 +76,7 @@
                 <span>Monthly P&L</span>
               </div>
               <div class="performance-value">
-                +$12,500.00
+                +12,500.00$
               </div>
             </div>
             <div class="performance-card">
@@ -85,7 +85,7 @@
                 <span>Total P&L</span>
               </div>
               <div class="performance-value">
-                +$89,320.50
+                +89,320.50$
               </div>
             </div>
           </div>
@@ -175,7 +175,7 @@
               </div>
               <div class="main-stat-item">
                 <div class="main-stat-label">P&L Amount</div>
-                <div class="main-stat-value ">+$525.00</div>
+                <div class="main-stat-value ">+525.00$</div>
               </div>
             </div>
           </div>
@@ -228,7 +228,7 @@
               </div>
               <div class="main-stat-item">
                 <div class="main-stat-label">P&L Amount</div>
-                <div class="main-stat-value ">+$412.50</div>
+                <div class="main-stat-value ">+412.50$</div>
               </div>
             </div>
           </div>
@@ -282,7 +282,7 @@
               </div>
               <div class="main-stat-item">
                 <div class="main-stat-label">P&L Amount</div>
-                <div class="main-stat-value">+$2,445.00</div>
+                <div class="main-stat-value">+2,445.00$</div>
               </div>
             </div>
           </div>

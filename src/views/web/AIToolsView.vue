@@ -465,6 +465,7 @@ import PartnerOrganizations from '@/components/PartnerOrganizations.vue';
 import { ref, onMounted } from 'vue';
 import { getStockRecommendations, getPortfolioDiagnosis } from '../../api/module/web/ai';
 import { useUserStore } from '@/store';
+import { formatMarketCapRight } from '@/utils/formatNumber';
 
 const userStore = useUserStore();
 // Mock data for trader info
@@ -512,13 +513,7 @@ function formatPercent(percent: number) {
   return typeof percent === 'number' ? percent.toFixed(2) : '0.00';
 }
 
-function formatMarketCap(cap: number) {
-  if (!cap) return '$0';
-  if (cap > 1e12) return `$${(cap / 1e12).toFixed(1)}T`;
-  if (cap > 1e9) return `$${(cap / 1e9).toFixed(1)}B`;
-  if (cap > 1e6) return `$${(cap / 1e6).toFixed(1)}M`;
-  return `$${cap.toFixed(0)}`;
-}
+const formatMarketCap = formatMarketCapRight;
 
 function getScoreColor(score: number) {
   if (score >= 80) return 'success';
