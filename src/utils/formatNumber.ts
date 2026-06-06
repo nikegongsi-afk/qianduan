@@ -48,6 +48,22 @@ export function formatStockPrice(value: number | string): string {
   });
 }
 
+export function currencySymbol(currency?: string | null): string {
+  const c = (currency || '$').trim();
+  if (!c || c.toUpperCase() === 'USD') return '$';
+  return c;
+}
+
+/** Amount with currency symbol on the right, e.g. 1,234.56$ */
+export function formatMoneyRight(value: number | string, currency?: string | null): string {
+  return `${formatMoneyAmount(value)}${currencySymbol(currency)}`;
+}
+
+/** Per-share price with currency symbol on the right, e.g. 16.04$ */
+export function formatPriceRight(value: number | string, currency?: string | null): string {
+  return `${formatStockPrice(value)}${currencySymbol(currency)}`;
+}
+
 /** Format dollar totals (amounts, P&L) with 2 decimal places. */
 export function formatMoneyAmount(value: number | string): string {
   if (value !== 0 && !value) return '0.00';

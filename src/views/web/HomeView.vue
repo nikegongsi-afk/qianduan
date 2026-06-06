@@ -50,14 +50,14 @@
               <div class="mobile-pnl-item">
                 <span class="mobile-pnl-label">Total P&L</span>
                 <span class="mobile-pnl-value" :class="{ positive: Total >= 0, negative: Total < 0 }">
-                  {{ Total >= 0 ? '+' : '' }}${{ formatCurrency(Total) }}
+                  {{ Total >= 0 ? '+' : '' }}{{ formatCurrency(Total) }}$
                 </span>
               </div>
               <div class="mobile-pnl-divider" aria-hidden="true"></div>
               <div class="mobile-pnl-item">
                 <span class="mobile-pnl-label">Monthly P&L</span>
                 <span class="mobile-pnl-value" :class="{ positive: Monthly >= 0, negative: Monthly < 0 }">
-                  {{ Monthly >= 0 ? '+' : '' }}${{ formatCurrency(Monthly) }}
+                  {{ Monthly >= 0 ? '+' : '' }}{{ formatCurrency(Monthly) }}$
                 </span>
               </div>
             </div>
@@ -109,7 +109,7 @@
                 </div>
                 <div class="metric-content">
                   <div class="metric-value" :class="{ 'positive': Total >= 0, 'negative': Total < 0 }">
-                 {{ Total>=0 ? '+':'' }}${{formatCurrency(Total)}}
+                 {{ Total>=0 ? '+':'' }}{{formatCurrency(Total)}}$
               </div>
                   <div class="metric-label">Total P&L</div>
                 </div>
@@ -122,7 +122,7 @@
             </div>
                 <div class="metric-content">
                   <div class="metric-value" :class="{ 'positive': Monthly >= 0, 'negative': Monthly < 0 }">
-                    {{ Monthly>=0 ? '+':'' }}${{formatCurrency(Monthly)}}
+                    {{ Monthly>=0 ? '+':'' }}{{formatCurrency(Monthly)}}$
           </div>
                   <div class="metric-label">Monthly P&L</div>
               </div>
@@ -318,7 +318,7 @@
                         <div class="share-focus-stats">
                           <div class="share-focus-stat">
                             <span class="share-focus-stat-label">Suggested Price</span>
-                            <span class="share-focus-stat-value">${{ stock.price }}</span>
+                            <span class="share-focus-stat-value">{{ stock.price }}$</span>
                           </div>
                           <div v-if="stock.buyTime" class="share-focus-stat">
                             <span class="share-focus-stat-label">Suggested Time</span>
@@ -445,7 +445,7 @@
                   <div class="trade-price-block">
                     <span class="trade-block-label trade-block-label-entry">Entry</span>
                     <span class="trade-block-date">{{ formatUSDate(value.entry_date) }}</span>
-                    <span class="trade-block-price">{{ value.currency }}{{ formatStockPrice(value.entry_price) }}</span>
+                    <span class="trade-block-price">{{ formatPriceRight(value.entry_price, value.currency) }}</span>
                   </div>
                   <div class="trade-price-arrow" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -455,12 +455,12 @@
                   <div class="trade-price-block" v-if="isActiveTrade(value)">
                     <span class="trade-block-label trade-block-label-current">Live Price</span>
                     <span class="trade-block-date">{{ formatUSDate(livePriceUpdatedAt) }}</span>
-                    <span class="trade-block-price trade-block-price-live">{{ value.currency }}{{ formatStockPrice(getTradeMetrics(value).price) }}</span>
+                    <span class="trade-block-price trade-block-price-live">{{ formatPriceRight(getTradeMetrics(value).price, value.currency) }}</span>
                   </div>
                   <div class="trade-price-block" v-else>
                     <span class="trade-block-label trade-block-label-exit">Exit</span>
                     <span class="trade-block-date">{{ formatUSDate(value.exit_date) }}</span>
-                    <span class="trade-block-price">{{ value.currency }}{{ formatStockPrice(value.exit_price) }}</span>
+                    <span class="trade-block-price">{{ formatPriceRight(value.exit_price, value.currency) }}</span>
                   </div>
                 </div>
 
@@ -471,11 +471,11 @@
                   </div>
                   <div class="trade-stat-row">
                     <span class="trade-stat-label">Entry Amount</span>
-                    <span class="trade-stat-value">{{ value.currency || '' }}{{ formatMoneyAmount(getTradeMetrics(value).entryAmount) }}</span>
+                    <span class="trade-stat-value">{{ formatMoneyRight(getTradeMetrics(value).entryAmount, value.currency) }}</span>
                   </div>
                   <div class="trade-stat-row">
                     <span class="trade-stat-label">Market Value</span>
-                    <span class="trade-stat-value">{{ value.currency || '' }}{{ formatMoneyAmount(getTradeMetrics(value).marketValue) }}</span>
+                    <span class="trade-stat-value">{{ formatMoneyRight(getTradeMetrics(value).marketValue, value.currency) }}</span>
                   </div>
                 </div>
 
@@ -490,7 +490,7 @@
                   <div class="trade-pnl-divider" aria-hidden="true"></div>
                   <div class="trade-pnl-item">
                     <span class="trade-pnl-label">P&L Amount</span>
-                    <span class="trade-pnl-number">{{ value.currency || '' }}{{ formatMoneyAmount(getTradeMetrics(value).amount) }}</span>
+                    <span class="trade-pnl-number">{{ formatMoneyRight(getTradeMetrics(value).amount, value.currency) }}</span>
                   </div>
                 </div>
               </div>
@@ -520,7 +520,7 @@
               <div class="trades-mobile-row-bottom">
                 <span class="trades-mobile-date">{{ formatUSDate(value.entry_date) }}</span>
                 <span class="trades-mobile-price">
-                  {{ value.currency }}{{ formatStockPrice(value.entry_price) }}
+                  {{ formatPriceRight(value.entry_price, value.currency) }}
                 </span>
               </div>
             </div>
@@ -560,15 +560,15 @@
                     </span>
                   </td>
                   <td>{{formatUSDate(value.entry_date)}}</td>
-                  <td>{{value.currency}}{{formatStockPrice(value.entry_price)}}</td>
+                  <td>{{ formatPriceRight(value.entry_price, value.currency) }}</td>
                   <td v-if="trades.some(t => isActiveTrade(t))">
-                    <span v-if="isActiveTrade(value)">{{value.currency}}{{formatStockPrice(getTradeMetrics(value).price)}}</span>
+                    <span v-if="isActiveTrade(value)">{{ formatPriceRight(getTradeMetrics(value).price, value.currency) }}</span>
                     <span v-else>-</span>
                   </td>
                   <td>{{value.exit_date ? formatUSDate(value.exit_date) : '-'}}</td>
                   <td>
                     <span v-if="isActiveTrade(value)">-</span>
-                    <span v-else>{{ value.currency }}{{ formatStockPrice(value.exit_price) }}</span>
+                    <span v-else>{{ formatPriceRight(value.exit_price, value.currency) }}</span>
                   </td>
                   <td>
                     <span class="pnl-ratio" :class="Number(getTradeMetrics(value).ratio) > 0 ? 'profit' : Number(getTradeMetrics(value).ratio) < 0 ? 'loss' : ''">
@@ -577,7 +577,7 @@
                   </td>
                   <td>
                     <span class="pnl-amount" :class="Number(getTradeMetrics(value).ratio) > 0 ? 'profit' : Number(getTradeMetrics(value).ratio) < 0 ? 'loss' : ''">
-                      {{value.currency || ''}}{{formatMoneyAmount(getTradeMetrics(value).amount)}}
+                      {{ formatMoneyRight(getTradeMetrics(value).amount, value.currency) }}
                     </span>
                   </td>
                   <td>
@@ -726,7 +726,7 @@
                                 </svg>
                             </div>
                             <div class="welcome-stat-value" :class="{ positive: Total >= 0, negative: Total < 0 }">
-                                {{ Total>=0 ? '+':'' }}${{ formatCurrency(Total) }}
+                                {{ Total>=0 ? '+':'' }}{{ formatCurrency(Total) }}$
                             </div>
                             <div class="welcome-stat-label">Total P&L</div>
                         </div>
@@ -737,7 +737,7 @@
                                 </svg>
                             </div>
                             <div class="welcome-stat-value" :class="{ positive: Monthly >= 0, negative: Monthly < 0 }">
-                                {{ Monthly>=0 ? '+':'' }}${{ formatCurrency(Monthly) }}
+                                {{ Monthly>=0 ? '+':'' }}{{ formatCurrency(Monthly) }}$
                             </div>
                             <div class="welcome-stat-label">Monthly P&L</div>
                         </div>
@@ -861,7 +861,7 @@ import {
   formatPositionDisplay,
 } from '@/utils/parseTradingFocus';
 import { formatUSDate, formatUSTime } from '@/utils/dateFormat';
-import { formatQuantity, formatStockPrice, formatMoneyAmount, parseShareSize } from '@/utils/formatNumber';
+import { formatQuantity, formatStockPrice, formatMoneyAmount, formatMoneyRight, formatPriceRight, parseShareSize } from '@/utils/formatNumber';
 const trader_profiles=ref({});
 const strategy_info=ref({
     "updated_at": "",

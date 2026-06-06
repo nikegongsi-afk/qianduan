@@ -143,7 +143,7 @@
                 <div class="stock-header">
                   <div class="stock-symbol">{{ stock.symbol }}</div>
                   <div class="stock-price-info">
-                    <span class="current-price">${{ formatPrice(stock.currentPrice) }}</span>
+                    <span class="current-price">{{ formatPrice(stock.currentPrice) }}$</span>
                     <span class="price-change" :class="{ positive: stock.week52Change && stock.week52Change.includes('+'), negative: stock.week52Change && stock.week52Change.includes('-') }">
                       {{ stock.week52Change || 'N/A' }}
                     </span>
@@ -227,11 +227,11 @@
                     </div>
                     <div class="advice-item">
                       <span class="advice-label">Target Price:</span>
-                      <span class="advice-value">${{ stock.investmentAdvice.targetPrice }}</span>
+                      <span class="advice-value">{{ stock.investmentAdvice.targetPrice }}$</span>
                     </div>
                     <div class="advice-item">
                       <span class="advice-label">Stop Loss:</span>
-                      <span class="advice-value">${{ stock.investmentAdvice.stopLoss }}</span>
+                      <span class="advice-value">{{ stock.investmentAdvice.stopLoss }}$</span>
                     </div>
                     <div class="advice-item">
                       <span class="advice-label">Position:</span>
@@ -373,16 +373,16 @@
                       <div class="col-md-6">
                         <div class="metric-card">
                           <div class="metric-label">Purchase Price</div>
-                          <div class="metric-value">$
-                            {{ formatPrice(stockDiagnosis.portfolioPerformance.purchasePrice) }}
+                          <div class="metric-value">
+                            {{ formatPrice(stockDiagnosis.portfolioPerformance.purchasePrice) }}$
                           </div>
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="metric-card">
                           <div class="metric-label">Current Price</div>
-                          <div class="metric-value">$
-                            {{ formatPrice(stockDiagnosis.portfolioPerformance.currentPrice) }}
+                          <div class="metric-value">
+                            {{ formatPrice(stockDiagnosis.portfolioPerformance.currentPrice) }}$
                           </div>
                         </div>
                       </div>

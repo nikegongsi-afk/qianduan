@@ -117,11 +117,11 @@
               <td class="symbol-cell">{{ trade.trade_market }}</td>
               <td class="symbol-cell"><span class="trade-type-table">{{ trade.direction==1?'Long':'Short' }}</span></td>
               <td class="symbol-cell">{{ trade.symbol }}</td>
-              <td>${{ formatCurrency(trade.entry_price) }}</td>
+              <td>{{ formatPriceRight(trade.entry_price, trade.currency) }}</td>
               <td class="current-price" :data-symbol="trade.symbol">
-                ${{ trade.current_price ? formatCurrency(trade.current_price) : '-' }}
+                {{ trade.current_price ? formatPriceRight(trade.current_price, trade.currency) : '-' }}
               </td>
-              <td>${{ trade.exit_price ? formatCurrency(trade.exit_price) : '-' }}</td>
+              <td>{{ trade.exit_price ? formatPriceRight(trade.exit_price, trade.currency) : '-' }}</td>
               <td>{{ trade.size }}</td>
               <td class="pnl-cell">
                 <span class="trade-profit-table" >{{ formatCurrency(trade.profitAmount) }}</span>
@@ -150,10 +150,10 @@
           </div>
           <div class="trade-card-body">
             <div class="trade-info-group">
-              <div><span class="label">Entry:</span> $<b>{{ formatCurrency(t.entry_price) }}</b></div>
+              <div><span class="label">Entry:</span> <b>{{ formatPriceRight(t.entry_price, t.currency) }}</b></div>
            
-              <div v-if="t.exit_price"><span class="label">Exit:</span> $<b>{{ formatCurrency(t.exit_price) }}</b></div>
-              <div v-else><span class="label" >Current:</span> $<b>{{ t.current_price ? formatCurrency(t.current_price) : 'Loading...' }}</b></div>
+              <div v-if="t.exit_price"><span class="label">Exit:</span> <b>{{ formatPriceRight(t.exit_price, t.currency) }}</b></div>
+              <div v-else><span class="label" >Current:</span> <b>{{ t.current_price ? formatPriceRight(t.current_price, t.currency) : 'Loading...' }}</b></div>
                <div><span class="label">Qty:</span> <b>{{ t.quantity || t.size }}</b></div>
             </div>
           
@@ -161,10 +161,10 @@
               <div>
                 <span class="label">P&L:</span>
                 <span class="trade-profit-table" v-if="t.exit_price" :class="getProfitColor(((t.exit_price-t.entry_price)*(t.quantity||t.size)*t.direction))">
-                  {{ t.currency }}{{ formatCurrency(((t.exit_price-t.entry_price)*(t.quantity||t.size)*t.direction)) }}
+                  {{ formatMoneyRight(((t.exit_price-t.entry_price)*(t.quantity||t.size)*t.direction), t.currency) }}
                 </span>
                  <span class="trade-profit-table" v-else :class="getProfitColor(t.current_price ? ((t.current_price-t.entry_price)*(t.quantity||t.size)*t.direction) : 0)">
-                  {{ t.currency }}{{ t.current_price ? formatCurrency(((t.current_price-t.entry_price)*(t.quantity||t.size)*t.direction)) : 'Loading...' }}
+                  {{ t.current_price ? formatMoneyRight(((t.current_price-t.entry_price)*(t.quantity||t.size)*t.direction), t.currency) : 'Loading...' }}
                 </span>
               </div>
               <div>
@@ -193,18 +193,18 @@
         <div class="flex-row mb-24">
             <div class="card" style="flex:1;min-width:220px;">
                 <div class="glass-stat-label">Total Assets</div>
-                <div class="glass-stat-value gold-number">$ {{ formatCurrency(user_info.initial_asset+user_info.utotle_profit+user_info.now_amount-user_info.hold_amount) }}</div>
+                <div class="glass-stat-value gold-number">{{ formatCurrency(user_info.initial_asset+user_info.utotle_profit+user_info.now_amount-user_info.hold_amount) }}$</div>
                 <div class="progress-bar" style="width:85%"></div>
                
             </div>
             <div class="card" style="flex:1;min-width:220px;">
                 <div class="glass-stat-label">Total Market Value</div>
-                <div class="glass-stat-value" style="color:#00ffae;">${{ formatCurrency(user_info.now_amount) }}</div>
+                <div class="glass-stat-value" style="color:#00ffae;">{{ formatCurrency(user_info.now_amount) }}$</div>
                 <div class="progress-bar" style="width:65%;background:#00ffae;"></div>
             </div>
             <div class="card" style="flex:1;min-width:220px;">
                 <div class="glass-stat-label">Available Funds</div>
-                <div class="glass-stat-value" style="color:#faad14;">${{ formatCurrency(user_info.initial_asset+user_info.utotle_profit-user_info.hold_amount) }}</div>
+                <div class="glass-stat-value" style="color:#faad14;">{{ formatCurrency(user_info.initial_asset+user_info.utotle_profit-user_info.hold_amount) }}$</div>
                 <div class="progress-bar" style="width:50%;background:#faad14;"></div>
             </div>
         </div>
@@ -223,7 +223,7 @@
               </div>
               <div class="trade-card-body">
                 <div class="trade-info-group">
-                  <div><span class="label">Entry:</span> <b>{{ t.currency }}{{ formatCurrency(t.entry_price) }}</b></div>
+                  <div><span class="label">Entry:</span> <b>{{ formatPriceRight(t.entry_price, t.currency) }}</b></div>
                   
                   <div v-if="t.exit_date"><span class="label">Exit Date:</span> <b>{{ formatUSDate(t.exit_date) }}</b></div>
                   <div v-else><span class="label">Entry Date:</span> <b>{{ formatUSDate(t.entry_date) }}</b></div>
@@ -233,10 +233,10 @@
                    <div>
                     <span class="label">P&L:</span>
                     <span class="trade-profit-table" v-if="t.exit_price" :class="getProfitColor(((t.exit_price-t.entry_price)*(t.size||t.quantity)*t.direction))">
-                      {{ t.currency }}{{ formatCurrency(((t.exit_price-t.entry_price)*(t.size||t.quantity)*t.direction)) }}
+                      {{ formatMoneyRight(((t.exit_price-t.entry_price)*(t.size||t.quantity)*t.direction), t.currency) }}
                     </span>
                     <span class="trade-profit-table" v-else :class="getProfitColor(t.current_price ? ((t.current_price-t.entry_price)*(t.size||t.quantity)*t.direction) : 0)">
-                      {{ t.currency }}{{ t.current_price ? formatCurrency(((t.current_price-t.entry_price)*(t.size||t.quantity)*t.direction)) : 'Loading...' }}
+                      {{ t.current_price ? formatMoneyRight(((t.current_price-t.entry_price)*(t.size||t.quantity)*t.direction), t.currency) : 'Loading...' }}
                     </span>
                   </div>
                   <div>
@@ -248,8 +248,8 @@
                       {{ t.current_price ? ((t.current_price-t.entry_price)/t.entry_price*t.direction*100).toFixed(2) + '%' : 'Loading...' }}
                     </span>
                   </div>
-                   <div v-if="t.exit_price"><span class="label">Exit:</span> <b>{{ t.currency }}{{ formatCurrency(t.exit_price) }}</b></div>
-                   <div v-else><span class="label">Current:</span> <b>{{ t.currency }}{{ t.current_price ? formatCurrency(t.current_price) : 'Loading...' }}</b></div>
+                   <div v-if="t.exit_price"><span class="label">Exit:</span> <b>{{ formatPriceRight(t.exit_price, t.currency) }}</b></div>
+                   <div v-else><span class="label">Current:</span> <b>{{ t.current_price ? formatPriceRight(t.current_price, t.currency) : 'Loading...' }}</b></div>
                 </div>
                 <!-- Close Trade Button - Only show when exit price is empty, positioned on the right -->
                 <div v-if="!t.exit_price" class="trade-close-btn-container" style="display:flex;justify-content:flex-end;margin-top:2px;">
@@ -738,14 +738,14 @@
                 <span style="font-size:1.12rem;" :style="{
                   color: parseFloat(user.utotle_profit) > 0 ? '#00ffae' : parseFloat(user.utotle_profit) < 0 ? '#ff4d4f' : '#b0c4e6'
                 }">
-                  ${{ formatCurrency(user.utotle_profit) }}
+                  {{ formatCurrency(user.utotle_profit) }}$
                 </span>
               </td>
               <td style="text-align:right;font-weight:900;">
                 <span style="font-size:1.12rem;" :style="{
                   color: parseFloat(user.umonth_profit) > 0 ? '#52c41a' : parseFloat(user.umonth_profit) < 0 ? '#ff4d4f' : '#b0c4e6'
                 }">
-                  ${{ formatCurrency(user.umonth_profit) }}
+                  {{ formatCurrency(user.umonth_profit) }}$
                 </span>
               </td>
             </tr>
@@ -767,6 +767,7 @@ import{ gettrader_profiles} from '../../api/module/web/index'
 import { uploadImage } from '../../api/module/commone'
 import { useUserStore } from '@/store';
 import { formatUSDate } from '@/utils/dateFormat';
+import { formatMoneyRight, formatPriceRight } from '@/utils/formatNumber';
 const router = useRouter();
 const userStore = useUserStore()
 // Video modal state

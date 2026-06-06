@@ -102,7 +102,7 @@
           </div>
         </div>
         <div class="podium-profit">
-          <span class="podium-profit-amount">${{ traders[1].total_profit.toLocaleString() }}</span>
+          <span class="podium-profit-amount">{{ traders[1].total_profit.toLocaleString() }}$</span>
           <div class="podium-profit-bar">
             <div class="podium-profit-fill" style="width: 100%"></div>
           </div>
@@ -140,7 +140,7 @@
           </div>
         </div>
         <div class="podium-profit">
-          <span class="podium-profit-amount">${{ traders[0].total_profit.toLocaleString() }}</span>
+          <span class="podium-profit-amount">{{ traders[0].total_profit.toLocaleString() }}$</span>
           <div class="podium-profit-bar">
             <div class="podium-profit-fill" style="width: 100%"></div>
           </div>
@@ -178,7 +178,7 @@
           </div>
         </div>
         <div class="podium-profit">
-          <span class="podium-profit-amount">${{ traders[2].total_profit.toLocaleString() }}</span>
+          <span class="podium-profit-amount">{{ traders[2].total_profit.toLocaleString() }}$</span>
           <div class="podium-profit-bar">
             <div class="podium-profit-fill" style="width: 100%"></div>
           </div>
@@ -219,7 +219,7 @@
           </div>
         </div>
         <div class="podium-profit">
-          <span class="podium-profit-amount">${{ traders[0].total_profit.toLocaleString() }}</span>
+          <span class="podium-profit-amount">{{ traders[0].total_profit.toLocaleString() }}$</span>
           <div class="podium-profit-bar">
             <div class="podium-profit-fill" style="width: 100%"></div>
           </div>
@@ -257,7 +257,7 @@
           </div>
         </div>
         <div class="podium-profit">
-          <span class="podium-profit-amount">${{ traders[1].total_profit.toLocaleString() }}</span>
+          <span class="podium-profit-amount">{{ traders[1].total_profit.toLocaleString() }}$</span>
           <div class="podium-profit-bar">
             <div class="podium-profit-fill" style="width: 100%"></div>
           </div>
@@ -297,7 +297,7 @@
           </div>
         </div>
         <div class="podium-profit">
-          <span class="podium-profit-amount">${{ traders[2].total_profit.toLocaleString() }}</span>
+          <span class="podium-profit-amount">{{ traders[2].total_profit.toLocaleString() }}$</span>
           <div class="podium-profit-bar">
             <div class="podium-profit-fill" style="width: 100%"></div>
           </div>
@@ -357,7 +357,7 @@
         </div>
         <div class="list-profit ms-auto">
           <span class="list-social-label">Monthly Profit</span>
-          ${{ trader.total_profit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}
+          {{ trader.total_profit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}$
         </div>
       </div>
     </div>
@@ -545,7 +545,7 @@ function updateCarouselData() {
     statsEl.innerHTML = `
       <div class="carousel-stat">
         <i class="bi bi-currency-dollar stat-icon" style="color:#2ecc71;"></i>
-        <span class="stat-value">$${selectedTrader.total_profit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+        <span class="stat-value">${selectedTrader.total_profit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}$</span>
         <span class="stat-label">Monthly Profit</span>
       </div>
       <div class="carousel-stat">

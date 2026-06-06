@@ -148,11 +148,11 @@
               </div>
               <div class="secondary-info-item">
                 <span class="secondary-info-label">Entry Price</span>
-                <span class="secondary-info-value">$187.50</span>
+                <span class="secondary-info-value">187.50$</span>
               </div>
               <div class="secondary-info-item">
                 <span class="secondary-info-label">Current Price</span>
-                <span class="secondary-info-value">$192.75</span>
+                <span class="secondary-info-value">192.75$</span>
               </div>
               <div class="secondary-info-item">
                 <span class="secondary-info-label">Quantity</span>
@@ -163,11 +163,11 @@
             <div class="main-stats">
               <div class="main-stat-item">
                 <div class="main-stat-label">Entry Amount</div>
-                <div class="main-stat-value">$18,750.00</div>
+                <div class="main-stat-value">18,750.00$</div>
               </div>
               <div class="main-stat-item">
                 <div class="main-stat-label">Market Value</div>
-                <div class="main-stat-value">$19,275.00</div>
+                <div class="main-stat-value">19,275.00$</div>
               </div>
               <div class="main-stat-item">
                 <div class="main-stat-label">P&L Ratio</div>
@@ -201,11 +201,11 @@
               </div>
               <div class="secondary-info-item">
                 <span class="secondary-info-label">Entry Price</span>
-                <span class="secondary-info-value">$374.20</span>
+                <span class="secondary-info-value">374.20$</span>
               </div>
               <div class="secondary-info-item">
                 <span class="secondary-info-label">Current Price</span>
-                <span class="secondary-info-value">$382.45</span>
+                <span class="secondary-info-value">382.45$</span>
               </div>
               <div class="secondary-info-item">
                 <span class="secondary-info-label">Quantity</span>
@@ -216,11 +216,11 @@
             <div class="main-stats">
               <div class="main-stat-item">
                 <div class="main-stat-label">Entry Amount</div>
-                <div class="main-stat-value">$18,710.00</div>
+                <div class="main-stat-value">18,710.00$</div>
               </div>
               <div class="main-stat-item">
                 <div class="main-stat-label">Market Value</div>
-                <div class="main-stat-value">$19,122.50</div>
+                <div class="main-stat-value">19,122.50$</div>
               </div>
               <div class="main-stat-item">
                 <div class="main-stat-label">P&L Ratio</div>
@@ -255,11 +255,11 @@
               </div>
               <div class="secondary-info-item">
                 <span class="secondary-info-label">Entry Price</span>
-                <span class="secondary-info-value">$210.30</span>
+                <span class="secondary-info-value">210.30$</span>
               </div>
               <div class="secondary-info-item">
                 <span class="secondary-info-label">Exit Price</span>
-                <span class="secondary-info-value">$234.75</span>
+                <span class="secondary-info-value">234.75$</span>
               </div>
               <div class="secondary-info-item">
                 <span class="secondary-info-label">Exit Date</span>
@@ -270,11 +270,11 @@
             <div class="main-stats">
               <div class="main-stat-item">
                 <div class="main-stat-label">Entry Amount</div>
-                <div class="main-stat-value">$21,030.00</div>
+                <div class="main-stat-value">21,030.00$</div>
               </div>
               <div class="main-stat-item">
                 <div class="main-stat-label">Market Value</div>
-                <div class="main-stat-value">$23,475.00</div>
+                <div class="main-stat-value">23,475.00$</div>
               </div>
               <div class="main-stat-item">
                 <div class="main-stat-label">P&L Ratio</div>
