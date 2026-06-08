@@ -44,12 +44,11 @@ export default [
   {
     path: '/AITools',
     component: () => import('../../views/web/AIToolsView.vue'),
-    meta: { title: 'AI tools', requireAuth: false },
+    meta: { title: 'Trading Quiz', requireAuth: false },
   },
   {
     path: '/ai-history',
-    component: () => import('../../views/web/AIHistoryView.vue'),
-    meta: { title: 'AI history', requireAuth: false },
+    redirect: '/AITools',
   },
   {
     path: '/adminmain',

@@ -29,3 +29,8 @@ export const deleteQuestion = function(id: number) {
 export const toggleQuestionStatus = function(id: number) {
     return Http.put(`/question-bank/toggle/${id}`)
 };
+
+// 批量导入题目
+export const batchImportQuestions = function(questions: any[]) {
+    return Http.post('/question-bank/batch-import', { questions })
+};

@@ -8,9 +8,9 @@
           Expert Trader Profile
         </a>
         <div class="navbar-nav ms-auto">
-          <a class="nav-link" href="#" style="color: #ffd700; font-weight: 600;">
-            <i class="bi bi-robot me-1"></i>
-            AI Tools
+          <a class="nav-link" href="/AITools" style="color: #ffd700; font-weight: 600;">
+            <i class="bi bi-patch-question me-1"></i>
+            Trading Quiz
           </a>
           <a class="nav-link" href="/vip" style="color: #ffd700; font-weight: 600;">
             <i class="bi bi-crown me-1"></i>

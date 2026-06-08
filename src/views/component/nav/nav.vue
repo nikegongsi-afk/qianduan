@@ -26,8 +26,8 @@
           <span class="nav-label">Docs</span>
         </a>
         <a href="/AITools" class="nav-item">
-          <span class="nav-icon">🤖</span>
-          <span class="nav-label">AI Tools</span>
+          <span class="nav-icon">📝</span>
+          <span class="nav-label">Quiz</span>
         </a>
         <a href="/vip" class="nav-item nav-item-vip">
           <span class="nav-icon">💎</span>
@@ -88,8 +88,8 @@
               <span>Documents</span>
             </a>
             <a href="/AITools" class="mobile-nav-item" @click="closeMobileMenu">
-              <span class="nav-icon">🤖</span>
-              <span>AI Tools</span>
+              <span class="nav-icon">📝</span>
+              <span>Trading Quiz</span>
             </a>
             <a href="/vip" class="mobile-nav-item mobile-nav-item-vip" @click="closeMobileMenu">
               <span class="nav-icon">💎</span>
