@@ -3,6 +3,7 @@ import Http from '../http';
 export interface PageVisit {
   id: number;
   trader_uuid?: string;
+  trader_name?: string;
   ip_address?: string;
   country?: string;
   country_zh?: string;
@@ -35,6 +36,10 @@ export interface VisitMapSummary {
   uniqueCountries: number;
   cities: VisitMapCity[];
   recent: PageVisit[];
+  filteredBotCount?: number;
+  statsStartAt?: string | null;
+  isSuperAdmin?: boolean;
+  traderUuid?: string | null;
 }
 
 export const getVisitMapSummary = (days = 7) =>

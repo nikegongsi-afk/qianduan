@@ -55,50 +55,75 @@ const redirectWwwToApex = (url: URL, apexHost: string) => {
   return Response.redirect(url.toString(), 301);
 };
 
-const shouldTrackPath = (pathname: string) => {
-  if (pathname.startsWith("/assets/")) return false;
-  if (pathname.startsWith("/system")) return false;
-  if (pathname === "/login") return false;
-  return true;
+const BOT_UA_PATTERN =
+  /\bbot\b|crawl|spider|scanner|Go-http-client|curl\/|wget\/|python-requests|headless|TLM-Audit|ahrefs|semrush|petalbot|bytespider|Googlebot|Baiduspider|YandexBot|GPTBot|zgrab|masscan|nmap|CensysInspect/i;
+
+const isBotRequest = (request: Request) => {
+  const ua = (request.headers.get("User-Agent") || "").trim();
+  if (!ua || ua.length < 12 || ua === "Mozilla/5.0") return true;
+  return BOT_UA_PATTERN.test(ua);
 };
 
-const trackVisit = (
+/** 浏览器端真实访问信标：附带 Cloudflare 地理位置后转发后端 */
+const handleVisitBeacon = async (
   request: Request,
   env: Env,
-  ctx: ExecutionContext,
   url: URL
-) => {
-  if (!shouldTrackPath(url.pathname)) return;
+): Promise<Response> => {
+  if (request.method !== "POST") {
+    return new Response("Method Not Allowed", { status: 405 });
+  }
+  if (isBotRequest(request)) {
+    return Response.json({ success: true, skipped: true, reason: "bot_filtered" });
+  }
 
+  let body: Record<string, unknown> = {};
+  try {
+    body = (await request.json()) as Record<string, unknown>;
+  } catch {
+    return Response.json({ success: false, message: "Invalid JSON" }, { status: 400 });
+  }
+
+  if (body.client_verified !== true) {
+    return Response.json({ success: true, skipped: true, reason: "not_client_verified" });
+  }
+
+  const runtimeEnv = resolveEnvForHost(url.hostname, env);
+  const apiUrl = runtimeEnv.VITE_API_URL || DEFAULT_API_URL;
+  const traderUuid = runtimeEnv.VITE_Web_Trader_UUID || DEFAULT_TRADER_UUID;
   const cf = (request as Request & { cf?: CfProperties }).cf;
-  const apiUrl = env.VITE_API_URL || DEFAULT_API_URL;
-  const traderUuid = env.VITE_Web_Trader_UUID || DEFAULT_TRADER_UUID;
-  const path = url.pathname || "/";
 
   const payload = {
+    ...body,
+    client_verified: true,
     ip_address: request.headers.get("CF-Connecting-IP") || "",
     country: cf?.country || "",
     city: cf?.city || "",
     region: cf?.region || "",
     latitude: cf?.latitude ?? null,
     longitude: cf?.longitude ?? null,
-    path,
     visit_host: url.host,
-    visit_url: `${url.origin}${path}`,
-    user_agent: request.headers.get("User-Agent") || "",
     trader_uuid: traderUuid,
   };
 
-  ctx.waitUntil(
-    fetch(`${apiUrl}/api/web/track-visit`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Web-Trader-UUID": traderUuid,
-      },
-      body: JSON.stringify(payload),
-    }).catch(() => undefined)
-  );
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    "Web-Trader-UUID": traderUuid,
+  };
+  const sessionToken = request.headers.get("session-token");
+  if (sessionToken) headers["session-token"] = sessionToken;
+
+  const upstream = await fetch(`${apiUrl}/api/web/track-visit`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(payload),
+  });
+
+  const text = await upstream.text();
+  return new Response(text, {
+    status: upstream.status,
+    headers: { "Content-Type": "application/json" },
+  });
 };
 
 const buildEnvScript = (env: Env) => `
@@ -122,7 +147,7 @@ const injectHtmlEnv = (html: string, env: Env) =>
   html.replace("</head>", `${buildEnvScript(env)}</head>`);
 
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     const runtimeEnv = resolveEnvForHost(url.hostname, env);
 
@@ -137,6 +162,10 @@ export default {
     }
     if (url.hostname === "www.ben-snide.com") {
       return redirectWwwToApex(url, "ben-snide.com");
+    }
+
+    if (url.pathname === "/api/visit-beacon") {
+      return handleVisitBeacon(request, env, url);
     }
 
     if (url.pathname.startsWith("/api/")) {
@@ -156,7 +185,6 @@ export default {
           response.status === 200 &&
           response.headers.get("content-type")?.includes("text/html")
         ) {
-          trackVisit(request, runtimeEnv, ctx, url);
           const html = injectHtmlEnv(await response.text(), runtimeEnv);
           const newHeaders = new Headers(response.headers);
           newHeaders.set("Content-Type", "text/html; charset=utf-8");
@@ -168,7 +196,6 @@ export default {
           const indexResponse = await env.ASSETS.fetch(indexRequest);
 
           if (indexResponse.status === 200) {
-            trackVisit(request, runtimeEnv, ctx, url);
             const html = injectHtmlEnv(await indexResponse.text(), runtimeEnv);
             const newHeaders = new Headers(indexResponse.headers);
             newHeaders.set("Content-Type", "text/html; charset=utf-8");

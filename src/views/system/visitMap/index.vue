@@ -1,5 +1,13 @@
 <template>
   <lay-container :fluid="true" class="visit-map-page">
+    <div class="scope-hint">
+      <template v-if="!isSuperAdmin">
+        当前仅显示访问<strong>本交易员网站</strong>的 IP（按登录账号绑定的交易员过滤）。
+      </template>
+      仅统计<strong>浏览器加载页面后主动上报</strong>的真实用户访问，爬虫和扫描器不会计入。
+      <span v-if="summary.statsStartAt">（统计自 {{ formatTime(summary.statsStartAt) }} 起）</span>
+      <span v-if="summary.filteredBotCount">（本周期另排除 {{ summary.filteredBotCount }} 条异常记录）</span>
+    </div>
     <lay-row :space="10">
       <lay-col :md="6" :sm="12" :xs="24">
         <lay-card class="stat-card">
@@ -64,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive, ref, nextTick } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref, nextTick } from 'vue';
 import { layer } from '@layui/layui-vue';
 import * as echarts from 'echarts';
 import {
@@ -73,6 +81,14 @@ import {
   type PageVisit,
   type VisitMapSummary,
 } from '../../../api/module/pageVisits';
+import { useUserStore } from '../../../store/user';
+
+const userStore = useUserStore();
+const isSuperAdmin = computed(
+  () =>
+    summary.value.isSuperAdmin === true ||
+    userStore.userInfo?.role === 'superadmin'
+);
 
 const loading = ref(false);
 const selectedDays = ref(7);
@@ -90,14 +106,30 @@ let worldMapRegistered = false;
 
 const page = reactive({ current: 1, limit: 10, total: 0 });
 
-const columns = ref([
+const formatTime = (value?: string | null) => {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString('zh-CN', { hour12: false });
+};
+
+const baseColumns = [
   { title: 'IP 地址', width: '130px', key: 'ip_address' },
   { title: '用户', width: '120px', key: 'visitor_label' },
   { title: '国家', width: '80px', key: 'country' },
   { title: '城市', width: '110px', key: 'city' },
   { title: '访问域名', width: '220px', key: 'visit_url' },
   { title: '最近访问', width: '180px', key: 'visited_at' },
-]);
+];
+
+const columns = computed(() => {
+  if (!isSuperAdmin.value) return baseColumns;
+  return [
+    baseColumns[0],
+    { title: '访问交易员', width: '140px', key: 'trader_name' },
+    ...baseColumns.slice(1),
+  ];
+});
 
 const ensureWorldMap = async () => {
   if (worldMapRegistered) return;
@@ -234,6 +266,16 @@ onUnmounted(() => {
 <style scoped>
 .visit-map-page {
   padding-bottom: 16px;
+}
+
+.scope-hint {
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  color: #1e40af;
+  font-size: 13px;
 }
 
 .stat-card {
