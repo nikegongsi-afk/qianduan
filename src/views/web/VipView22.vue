@@ -84,7 +84,7 @@
                     </div>
                   </div>
                   <div class="progress-labels d-flex justify-content-between">
-                    <span style="font-size: 14px;">{{ formatNumber(dynamicTotalAsset) }}$ / {{ formatNumber(nowLevelInfo.nextmoney) }}$</span>
+                    <span style="font-size: 14px;">{{ formatMoneyRight(dynamicTotalAsset) }} / {{ formatMoneyRight(nowLevelInfo.nextmoney) }}</span>
                     <span class="text-gold">Next Level: {{ nowLevelInfo.nextname }}</span>
                     
                   </div>
@@ -110,7 +110,7 @@
             <span v-if="nowLevelInfo.currlevelname === level.name" class="vip-badge">Current Selection</span>
             <i class="bi bi-star-fill card-icon"></i>
             <h3 class="h3Height">{{ level.name }}</h3>
-            <div class="card-requirement">>={{ formatNumber(level.min_trading_volume) }}$</div>
+            <div class="card-requirement">>= {{ formatMoneyRight(level.min_trading_volume) }}</div>
             <ul class="feature-list">
               <li v-for="(benefit, i) in level.benefits" :key="i">
                 <i class="bi bi-check-circle-fill"></i> {{ benefit }}
@@ -244,6 +244,7 @@ import { useRouter } from 'vue-router';
 import navcomponent from '../component/nav/nav.vue'
 import{ get_userinfo,get_membership_levels,updateUserLevel } from '../../api/module/web/vip'
 import { useUserStore } from '@/store';
+import { formatMoneyRight } from '@/utils/formatNumber';
 const userStore = useUserStore()
 const router = useRouter();
 const userinfo=ref({})

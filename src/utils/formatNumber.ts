@@ -54,23 +54,34 @@ export function currencySymbol(currency?: string | null): string {
   return c;
 }
 
-/** Amount with currency symbol on the right, e.g. 1,234.56$ */
+/** Amount with currency symbol before the number, e.g. $1,234.56 */
 export function formatMoneyRight(value: number | string, currency?: string | null): string {
-  return `${formatMoneyAmount(value)}${currencySymbol(currency)}`;
+  return `${currencySymbol(currency)}${formatMoneyAmount(value)}`;
 }
 
-/** Per-share price with currency symbol on the right, e.g. 16.04$ */
+/** Per-share price with currency symbol before the number, e.g. $16.04 */
 export function formatPriceRight(value: number | string, currency?: string | null): string {
-  return `${formatStockPrice(value)}${currencySymbol(currency)}`;
+  return `${currencySymbol(currency)}${formatStockPrice(value)}`;
 }
 
-/** Market cap with $ on the right, e.g. 1.2B$ */
+/** Signed P&L: +$1,234.56 / -$1,234.56 */
+export function formatMoneySigned(value: number | string, currency?: string | null): string {
+  const num = typeof value === 'string' ? parseFloat(value) : value;
+  const sym = currencySymbol(currency);
+  if (!Number.isFinite(num)) return `${sym}0.00`;
+  const formatted = formatMoneyAmount(Math.abs(num));
+  if (num > 0) return `+${sym}${formatted}`;
+  if (num < 0) return `-${sym}${formatted}`;
+  return `${sym}${formatted}`;
+}
+
+/** Market cap with $ before the value, e.g. $1.2B */
 export function formatMarketCapRight(cap: number): string {
-  if (!cap) return '0$';
-  if (cap > 1e12) return `${(cap / 1e12).toFixed(1)}T$`;
-  if (cap > 1e9) return `${(cap / 1e9).toFixed(1)}B$`;
-  if (cap > 1e6) return `${(cap / 1e6).toFixed(1)}M$`;
-  return `${Number(cap).toFixed(0)}$`;
+  if (!cap) return '$0';
+  if (cap > 1e12) return `$${(cap / 1e12).toFixed(1)}T`;
+  if (cap > 1e9) return `$${(cap / 1e9).toFixed(1)}B`;
+  if (cap > 1e6) return `$${(cap / 1e6).toFixed(1)}M`;
+  return `$${Number(cap).toFixed(0)}`;
 }
 
 /** Format dollar totals (amounts, P&L) with 2 decimal places. */

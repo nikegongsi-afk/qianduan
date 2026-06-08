@@ -90,7 +90,7 @@
                     </div>
                   </div>
                   <div class="progress-labels d-flex justify-content-between">
-                    <span>{{ formatNumber(dynamicTotalAsset) }}$ / {{ formatNumber(nowLevelInfo.nextmoney) }}$</span>
+                    <span>{{ formatMoneyRight(dynamicTotalAsset) }} / {{ formatMoneyRight(nowLevelInfo.nextmoney) }}</span>
                     <span class="next-level-text">Next Level: {{ nowLevelInfo.nextname }}</span>
                   </div>
                 </div>
@@ -115,7 +115,7 @@
             <span v-if="nowLevelInfo.currlevelname === level.name" class="vip-badge">Current Selection</span>
             <i class="bi bi-star-fill card-icon"></i>
             <h3 class="h3Height">{{ level.name }}</h3>
-            <div class="card-requirement">>={{ formatNumber(level.min_trading_volume) }}$</div>
+            <div class="card-requirement">>= {{ formatMoneyRight(level.min_trading_volume) }}</div>
             <ul class="feature-list">              <li v-for="(benefit, i) in level.benefits" :key="i">
                 <i class="bi bi-check-circle-fill"></i> {{ benefit }}
               </li>
@@ -177,7 +177,7 @@
                     <tbody>
                       <tr v-for="(level, index) in vipList" :key="index">
                         <td><span class="badge bg-warning">{{level.name}}</span></td>
-                        <td>>={{ formatNumber(level.min_trading_volume) }}$</td>
+                        <td>>= {{ formatMoneyRight(level.min_trading_volume) }}</td>
                         <td><span class="text-success">{{level.monthly_profit_ratio}}%</span></td>
                         <td><span class="text-info">{{level.commission_ratio}}%</span></td>
                       </tr>
@@ -201,7 +201,7 @@
                     <tbody>
                       <tr v-for="(level, index) in vipList" :key="index">
                         <td><span class="badge bg-warning">{{level.name}}</span></td>
-                        <td>>={{ formatNumber(level.min_trading_volume) }}$</td>
+                        <td>>= {{ formatMoneyRight(level.min_trading_volume) }}</td>
                         <td><span class="text-danger">{{level.risk_ratio}}%</span></td>
                         <td><span class="text-success">{{level.compensation_ratio}}%</span></td>
                       </tr>
@@ -504,6 +504,7 @@ import{ get_userinfo,get_membership_levels,updateUserLevel, get_random_questions
 import { get_whatsapp_link,gettrader_profiles } from '../../api/module/web/index'
 import { uploadImage } from '../../api/module/commone'
 import { useUserStore } from '@/store';
+import { formatMoneyRight } from '@/utils/formatNumber';
 const userStore = useUserStore()
 const router = useRouter();
 

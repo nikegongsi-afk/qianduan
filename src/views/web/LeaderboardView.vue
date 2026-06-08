@@ -29,9 +29,9 @@
         <div class="section-label">Total Profit</div>
         <div class="section-value">
             <p style="margin-bottom: 0.5rem; text-align: center; display: flex; justify-content: center; gap: 2rem;font-size: 1rem;">
-                            <span>🥇 100,000$</span>
-                            <span>🥈 80,000$</span>
-                            <span>🥉 50,000$</span>
+                            <span>🥇 $100,000</span>
+                            <span>🥈 $80,000</span>
+                            <span>🥉 $50,000</span>
                         </p>
         </div>
        
@@ -41,9 +41,9 @@
         <div class="section-label">VIP Traders</div>
         <div class="section-value">
             <p style="margin-bottom: 0.5rem; text-align: center; display: flex; justify-content: center; gap: 2rem; font-size: 1.2rem;">
-                            <span>🥇 50,000$</span>
-                            <span>🥈 30,000$</span>
-                            <span>🥉 10,000$</span>
+                            <span>🥇 $50,000</span>
+                            <span>🥈 $30,000</span>
+                            <span>🥉 $10,000</span>
                         </p>
         </div>
        
@@ -53,9 +53,9 @@
         <div class="section-label">Total Likes</div>
         <div class="section-value">
             <p style="margin-bottom: 0.5rem; text-align: center; display: flex; justify-content: center; gap: 2rem;font-size: 1.2rem;">
-                            <span>🥇 10,000$</span>
-                            <span>🥈 8,000$</span>
-                            <span>🥉 5,000$</span>
+                            <span>🥇 $10,000</span>
+                            <span>🥈 $8,000</span>
+                            <span>🥉 $5,000</span>
                         </p>
         </div>
      
@@ -102,7 +102,7 @@
           </div>
         </div>
         <div class="podium-profit">
-          <span class="podium-profit-amount">{{ traders[1].total_profit.toLocaleString() }}$</span>
+          <span class="podium-profit-amount">{{ formatMoneySigned(traders[1].total_profit) }}</span>
           <div class="podium-profit-bar">
             <div class="podium-profit-fill" style="width: 100%"></div>
           </div>
@@ -140,7 +140,7 @@
           </div>
         </div>
         <div class="podium-profit">
-          <span class="podium-profit-amount">{{ traders[0].total_profit.toLocaleString() }}$</span>
+          <span class="podium-profit-amount">{{ formatMoneySigned(traders[0].total_profit) }}</span>
           <div class="podium-profit-bar">
             <div class="podium-profit-fill" style="width: 100%"></div>
           </div>
@@ -178,7 +178,7 @@
           </div>
         </div>
         <div class="podium-profit">
-          <span class="podium-profit-amount">{{ traders[2].total_profit.toLocaleString() }}$</span>
+          <span class="podium-profit-amount">{{ formatMoneySigned(traders[2].total_profit) }}</span>
           <div class="podium-profit-bar">
             <div class="podium-profit-fill" style="width: 100%"></div>
           </div>
@@ -219,7 +219,7 @@
           </div>
         </div>
         <div class="podium-profit">
-          <span class="podium-profit-amount">{{ traders[0].total_profit.toLocaleString() }}$</span>
+          <span class="podium-profit-amount">{{ formatMoneySigned(traders[0].total_profit) }}</span>
           <div class="podium-profit-bar">
             <div class="podium-profit-fill" style="width: 100%"></div>
           </div>
@@ -257,7 +257,7 @@
           </div>
         </div>
         <div class="podium-profit">
-          <span class="podium-profit-amount">{{ traders[1].total_profit.toLocaleString() }}$</span>
+          <span class="podium-profit-amount">{{ formatMoneySigned(traders[1].total_profit) }}</span>
           <div class="podium-profit-bar">
             <div class="podium-profit-fill" style="width: 100%"></div>
           </div>
@@ -297,7 +297,7 @@
           </div>
         </div>
         <div class="podium-profit">
-          <span class="podium-profit-amount">{{ traders[2].total_profit.toLocaleString() }}$</span>
+          <span class="podium-profit-amount">{{ formatMoneySigned(traders[2].total_profit) }}</span>
           <div class="podium-profit-bar">
             <div class="podium-profit-fill" style="width: 100%"></div>
           </div>
@@ -357,7 +357,7 @@
         </div>
         <div class="list-profit ms-auto">
           <span class="list-social-label">Monthly Profit</span>
-          {{ trader.total_profit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}$
+          {{ formatMoneySigned(trader.total_profit) }}
         </div>
       </div>
     </div>
@@ -374,6 +374,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue';
 import{ getleaderboard, likeleaderboard } from '../../api/module/web/index'
+import { formatMoneySigned } from '@/utils/formatNumber';
 import { layer } from '@layui/layui-vue';
 // 模拟数据
 const traders = ref([

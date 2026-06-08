@@ -50,14 +50,14 @@
               <div class="mobile-pnl-item">
                 <span class="mobile-pnl-label">Total P&L</span>
                 <span class="mobile-pnl-value" :class="{ positive: Total >= 0, negative: Total < 0 }">
-                  {{ Total >= 0 ? '+' : '' }}{{ formatCurrency(Total) }}$
+                  {{ formatMoneySigned(Total) }}
                 </span>
               </div>
               <div class="mobile-pnl-divider" aria-hidden="true"></div>
               <div class="mobile-pnl-item">
                 <span class="mobile-pnl-label">Monthly P&L</span>
                 <span class="mobile-pnl-value" :class="{ positive: Monthly >= 0, negative: Monthly < 0 }">
-                  {{ Monthly >= 0 ? '+' : '' }}{{ formatCurrency(Monthly) }}$
+                  {{ formatMoneySigned(Monthly) }}
                 </span>
               </div>
             </div>
@@ -109,7 +109,7 @@
                 </div>
                 <div class="metric-content">
                   <div class="metric-value" :class="{ 'positive': Total >= 0, 'negative': Total < 0 }">
-                 {{ Total>=0 ? '+':'' }}{{formatCurrency(Total)}}$
+                 {{ formatMoneySigned(Total) }}
               </div>
                   <div class="metric-label">Total P&L</div>
                 </div>
@@ -122,7 +122,7 @@
             </div>
                 <div class="metric-content">
                   <div class="metric-value" :class="{ 'positive': Monthly >= 0, 'negative': Monthly < 0 }">
-                    {{ Monthly>=0 ? '+':'' }}{{formatCurrency(Monthly)}}$
+                    {{ formatMoneySigned(Monthly) }}
           </div>
                   <div class="metric-label">Monthly P&L</div>
               </div>
@@ -257,7 +257,13 @@
                     <span class="analysis-icon">📊</span>
                   </div>
                   <div class="analysis-label">Market View</div>
-                  <p class="analysis-text">{{ strategy_info.market_analysis }}</p>
+                  <div class="analysis-text">
+                    <p
+                      v-for="(paragraph, index) in splitStrategyParagraphs(strategy_info.market_analysis)"
+                      :key="'analysis-' + index"
+                      class="strategy-paragraph"
+                    >{{ paragraph }}</p>
+                  </div>
                 </div>
                 <div class="media-container" v-if="strategy_info.analysis_path">
                   <audio v-if="strategy_info.stype==1" :src="strategy_info.analysis_path" controls class="media-player"></audio>
@@ -318,7 +324,7 @@
                         <div class="share-focus-stats">
                           <div class="share-focus-stat">
                             <span class="share-focus-stat-label">Suggested Price</span>
-                            <span class="share-focus-stat-value">{{ stock.price }}$</span>
+                            <span class="share-focus-stat-value">{{ formatPriceRight(stock.price) }}</span>
                           </div>
                           <div v-if="stock.buyTime" class="share-focus-stat">
                             <span class="share-focus-stat-label">Suggested Time</span>
@@ -365,7 +371,13 @@
                     <span class="warning-icon">!</span>
                   </div>
                   <div class="warning-label">Important Notice</div>
-                  <p class="warning-text">{{ strategy_info.risk_warning }}</p>
+                  <div class="warning-text">
+                    <p
+                      v-for="(paragraph, index) in splitStrategyParagraphs(strategy_info.risk_warning)"
+                      :key="'warning-' + index"
+                      class="strategy-paragraph"
+                    >{{ paragraph }}</p>
+                  </div>
                 </div>
                 <div class="media-container" v-if="strategy_info.warn_path">
                   <audio v-if="strategy_info.warntype==1" :src="strategy_info.warn_path" controls class="media-player"></audio>
@@ -490,7 +502,7 @@
                   <div class="trade-pnl-divider" aria-hidden="true"></div>
                   <div class="trade-pnl-item">
                     <span class="trade-pnl-label">P&L Amount</span>
-                    <span class="trade-pnl-number">{{ formatMoneyRight(getTradeMetrics(value).amount, value.currency) }}</span>
+                    <span class="trade-pnl-number">{{ formatMoneySigned(getTradeMetrics(value).amount, value.currency) }}</span>
                   </div>
                 </div>
               </div>
@@ -577,7 +589,7 @@
                   </td>
                   <td>
                     <span class="pnl-amount" :class="Number(getTradeMetrics(value).ratio) > 0 ? 'profit' : Number(getTradeMetrics(value).ratio) < 0 ? 'loss' : ''">
-                      {{ formatMoneyRight(getTradeMetrics(value).amount, value.currency) }}
+                      {{ formatMoneySigned(getTradeMetrics(value).amount, value.currency) }}
                     </span>
                   </td>
                   <td>
@@ -726,7 +738,7 @@
                                 </svg>
                             </div>
                             <div class="welcome-stat-value" :class="{ positive: Total >= 0, negative: Total < 0 }">
-                                {{ Total>=0 ? '+':'' }}{{ formatCurrency(Total) }}$
+                                {{ formatMoneySigned(Total) }}
                             </div>
                             <div class="welcome-stat-label">Total P&L</div>
                         </div>
@@ -737,7 +749,7 @@
                                 </svg>
                             </div>
                             <div class="welcome-stat-value" :class="{ positive: Monthly >= 0, negative: Monthly < 0 }">
-                                {{ Monthly>=0 ? '+':'' }}{{ formatCurrency(Monthly) }}$
+                                {{ formatMoneySigned(Monthly) }}
                             </div>
                             <div class="welcome-stat-label">Monthly P&L</div>
                         </div>
@@ -861,7 +873,7 @@ import {
   formatPositionDisplay,
 } from '@/utils/parseTradingFocus';
 import { formatUSDate, formatUSTime } from '@/utils/dateFormat';
-import { formatQuantity, formatStockPrice, formatMoneyAmount, formatMoneyRight, formatPriceRight, parseShareSize } from '@/utils/formatNumber';
+import { formatQuantity, formatStockPrice, formatMoneyAmount, formatMoneyRight, formatMoneySigned, formatPriceRight, parseShareSize } from '@/utils/formatNumber';
 const trader_profiles=ref({});
 const strategy_info=ref({
     "updated_at": "",
@@ -1595,6 +1607,15 @@ const getPnlClass = (ratio: number | string) => {
 
 const formatCurrency = formatMoneyAmount;
 
+/** 交易策略文案按换行分段，每段首行缩进 2em */
+const splitStrategyParagraphs = (text: string) => {
+  if (!text?.trim()) return [];
+  return text
+    .split(/\r?\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+};
+
 // 格式化点赞数
 const formatLikesCount = (count: number | string | undefined) => {
   if (!count && count !== 0) return '0K';
@@ -2015,6 +2036,15 @@ const formatLikesCount = (count: number | string | undefined) => {
   color: #ffffff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   word-break: break-word;
+}
+
+.strategy-paragraph {
+  margin: 0 0 0.85em;
+  text-indent: 2em;
+}
+
+.strategy-paragraph:last-child {
+  margin-bottom: 0;
 }
 
 .media-container {

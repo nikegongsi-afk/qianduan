@@ -108,7 +108,8 @@
       <div style="padding: 20px">
         <lay-form :model="model11" :pane="true" ref="layFormRef11" required>
           <lay-form-item label="市场分析" prop="market_analysis">
-            <lay-textarea v-model="model11.market_analysis" placeholder="请输入市场分析" rows="4"></lay-textarea>
+            <div class="textarea-tip">段落之间按回车换行即可，前台会自动分段并首行空两格。</div>
+            <lay-textarea v-model="model11.market_analysis" placeholder="请输入市场分析，每段结束后按回车开始下一段" rows="8"></lay-textarea>
           </lay-form-item>
           <lay-form-item label="分析文件类型" prop="stype" :label-width="140">
             <lay-select v-model="model11.stype" placeholder="请选择策略类型">
@@ -173,7 +174,8 @@
             </lay-button>
           </lay-form-item>
           <lay-form-item label="风险提示" prop="risk_warning">
-            <lay-textarea v-model="model11.risk_warning" placeholder="请输入风险提示" rows="4"></lay-textarea>
+            <div class="textarea-tip">段落之间按回车换行即可，前台会自动分段并首行空两格。</div>
+            <lay-textarea v-model="model11.risk_warning" placeholder="请输入风险提示，每段结束后按回车开始下一段" rows="8"></lay-textarea>
           </lay-form-item>
           
           
@@ -801,7 +803,8 @@ function handleWarnFileUploadSuccess(response: any) {
   text-decoration: underline;
 }
 
-.trading-focus-tip {
+.trading-focus-tip,
+.textarea-tip {
   margin-bottom: 12px;
   padding: 10px 12px;
   border-radius: 8px;
