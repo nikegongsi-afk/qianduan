@@ -225,8 +225,8 @@
         <section class="strategy-section">
           <div class="section-header">
             <h2 class="section-title">
-              <span class="title-icon">💡</span>
-              Trading Strategy
+              <i class="bi bi-lightbulb title-icon glow-bulb" aria-hidden="true"></i>
+              <span class="section-title-text">Trading Strategy</span>
             </h2>
             <div class="update-badge">
               <span class="badge-dot"></span>
@@ -392,8 +392,8 @@
         <section class="trades-section">
           <div class="section-header">
             <h2 class="section-title">
-              <span class="title-icon">📈</span>
-              Trading Records
+              <span class="title-icon title-icon-emoji">📈</span>
+              <span class="section-title-text">Trading Records</span>
             </h2>
             <div class="view-toggle">
               <button class="view-btn" :class="{ active: viewMode === 'grid' }" @click="viewMode = 'grid'">
@@ -891,6 +891,10 @@ const strategy_info=ref({
 const trades=ref([]);
 const Activecount=ref(0)
 let tradeRefreshTimer: number | null = null;
+let priceRefreshTimer: number | null = null;
+let priceRefreshInFlight = false;
+const TRADE_PRICE_REFRESH_MS = 30_000;
+const TRADE_FULL_REFRESH_MS = 300_000;
 const Monthly=ref(0)
 const Total=ref(0)
 const userStore = useUserStore()
@@ -1770,8 +1774,10 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .metric-value {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
   color: var(--text-primary);
 }
 
@@ -1894,6 +1900,9 @@ const formatLikesCount = (count: number | string | undefined) => {
   gap: var(--spacing-sm);
   font-size: 24px;
   font-weight: 700;
+}
+
+.section-title-text {
   background: var(--primary-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1902,6 +1911,15 @@ const formatLikesCount = (count: number | string | undefined) => {
 
 .title-icon {
   font-size: 28px;
+  flex-shrink: 0;
+  -webkit-text-fill-color: initial;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+}
+
+.title-icon-emoji {
+  line-height: 1;
 }
 
 .update-badge {
@@ -3571,7 +3589,8 @@ const formatLikesCount = (count: number | string | undefined) => {
   }
   
   .metric-value {
-    font-size: 16px;
+    font-size: 20px;
+    font-weight: 800;
   }
   
   .quick-stats {
@@ -5387,26 +5406,28 @@ body {
   border-radius: 8px;
 }
 
-/* Add glow animation at the end of style area */
+/* Trading Strategy 灯泡闪烁发光 */
 .glow-bulb {
-  color: #ffd700;
-  filter: drop-shadow(0 0 8px #ffd700) drop-shadow(0 0 16px #fff200);
-  animation: bulb-glow 1.2s infinite alternate;
-  transition: color 0.3s;
+  display: inline-block;
+  color: #facc15;
+  animation: bulb-blink 1.4s ease-in-out infinite;
 }
 
-@keyframes bulb-glow {
-  0% {
-    filter: drop-shadow(0 0 4px #ffd700) drop-shadow(0 0 8px #fff200);
-    color: #ffd700;
+@keyframes bulb-blink {
+  0%, 100% {
+    opacity: 0.7;
+    color: #f59e0b;
+    transform: scale(0.96);
+    filter: drop-shadow(0 0 3px rgba(250, 204, 21, 0.7))
+            drop-shadow(0 0 6px rgba(234, 179, 8, 0.5));
   }
   50% {
-    filter: drop-shadow(0 0 16px #fff200) drop-shadow(0 0 32px #fffbe0);
-    color: #fffbe0;
-  }
-  100% {
-    filter: drop-shadow(0 0 4px #ffd700) drop-shadow(0 0 8px #fff200);
-    color: #ffd700;
+    opacity: 1;
+    color: #fef08a;
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 8px rgba(254, 240, 138, 1))
+            drop-shadow(0 0 16px rgba(250, 204, 21, 0.95))
+            drop-shadow(0 0 24px rgba(255, 255, 180, 0.85));
   }
 }
 

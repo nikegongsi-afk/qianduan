@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "@layui/unplugin-vue-components/vite";
@@ -50,15 +50,20 @@ const removeCloudflareFiles = () => {
 const defaultApiUrl = "https://houduan-api.onrender.com";
 const defaultTraderUuid = "c5e01236-d681-4343-8386-f9e17748f81f";
 const defaultGoogleClientId =
-  process.env.VITE_GOOGLE_CLIENT_ID ||
   '810723432233-mpgi15h8fvupa2ifqtlmpv5eiih7bvgq.apps.googleusercontent.com';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  const apiUrl = env.VITE_API_URL || defaultApiUrl;
+  const traderUuid = env.VITE_Web_Trader_UUID || defaultTraderUuid;
+  const googleClientId = env.VITE_GOOGLE_CLIENT_ID || defaultGoogleClientId;
+
+  return {
   publicDir: 'public',
   define: {
-    "import.meta.env.VITE_API_URL": JSON.stringify(process.env.VITE_API_URL || defaultApiUrl),
-    "import.meta.env.VITE_Web_Trader_UUID": JSON.stringify(process.env.VITE_Web_Trader_UUID || defaultTraderUuid),
-    "import.meta.env.VITE_GOOGLE_CLIENT_ID": JSON.stringify(process.env.VITE_GOOGLE_CLIENT_ID || defaultGoogleClientId),
+    "import.meta.env.VITE_API_URL": JSON.stringify(apiUrl),
+    "import.meta.env.VITE_Web_Trader_UUID": JSON.stringify(traderUuid),
+    "import.meta.env.VITE_GOOGLE_CLIENT_ID": JSON.stringify(googleClientId),
   },
   resolve: {
     alias: [
@@ -105,4 +110,5 @@ export default defineConfig({
     vue(),
     removeCloudflareFiles(), // 添加插件以删除 Cloudflare 不需要的文件
   ],
+};
 });
