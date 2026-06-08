@@ -1,6 +1,6 @@
 import { trackRealVisit } from '../api/module/web/visitTrack';
 
-const TRACK_SESSION_KEY = 'visit_tracked_paths';
+const TRACK_DAILY_KEY = 'visit_tracked_daily';
 
 const shouldTrackVisit = (path: string) => {
   if (path.startsWith('/system')) return false;
@@ -9,24 +9,20 @@ const shouldTrackVisit = (path: string) => {
   return true;
 };
 
-const hasTrackedInSession = (path: string) => {
+const todayKey = () => new Date().toISOString().slice(0, 10);
+
+/** 同一天内只上报一次，跨天再次访问会累加访问次数 */
+const hasTrackedToday = () => {
   try {
-    const raw = sessionStorage.getItem(TRACK_SESSION_KEY);
-    const tracked = raw ? (JSON.parse(raw) as string[]) : [];
-    return tracked.includes(path);
+    return localStorage.getItem(TRACK_DAILY_KEY) === todayKey();
   } catch {
     return false;
   }
 };
 
-const markTrackedInSession = (path: string) => {
+const markTrackedToday = () => {
   try {
-    const raw = sessionStorage.getItem(TRACK_SESSION_KEY);
-    const tracked = raw ? (JSON.parse(raw) as string[]) : [];
-    if (!tracked.includes(path)) {
-      tracked.push(path);
-      sessionStorage.setItem(TRACK_SESSION_KEY, JSON.stringify(tracked));
-    }
+    localStorage.setItem(TRACK_DAILY_KEY, todayKey());
   } catch {
     // ignore
   }
@@ -34,12 +30,12 @@ const markTrackedInSession = (path: string) => {
 
 const runTrack = (path: string) => {
   if (!shouldTrackVisit(path)) return;
-  if (hasTrackedInSession(path)) return;
+  if (hasTrackedToday()) return;
 
   trackRealVisit()
     .then((res) => {
       if (res?.success && !res?.skipped) {
-        markTrackedInSession(path);
+        markTrackedToday();
       }
     })
     .catch(() => {

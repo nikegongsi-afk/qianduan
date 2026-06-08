@@ -18,6 +18,8 @@ export interface PageVisit {
   visitor_label?: string;
   user_id?: number;
   user_agent?: string;
+  visit_count?: number;
+  first_visited_at?: string;
   visited_at?: string;
 }
 
@@ -33,6 +35,7 @@ export interface VisitMapCity {
 export interface VisitMapSummary {
   totalVisits: number;
   uniqueIps: number;
+  totalVisitCount?: number;
   uniqueCountries: number;
   cities: VisitMapCity[];
   recent: PageVisit[];

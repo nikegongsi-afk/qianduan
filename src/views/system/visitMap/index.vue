@@ -18,9 +18,9 @@
       </lay-col>
       <lay-col :md="6" :sm="12" :xs="24">
         <lay-card class="stat-card">
-          <template #title>独立 IP</template>
-          <div class="stat-value">{{ summary.uniqueIps || 0 }}</div>
-          <div class="stat-sub">不同访客 IP</div>
+          <template #title>总访问次数</template>
+          <div class="stat-value">{{ summary.totalVisitCount || 0 }}</div>
+          <div class="stat-sub">同一 IP 多次访问累计</div>
         </lay-card>
       </lay-col>
       <lay-col :md="6" :sm="12" :xs="24">
@@ -114,12 +114,14 @@ const formatTime = (value?: string | null) => {
 };
 
 const baseColumns = [
-  { title: 'IP 地址', width: '130px', key: 'ip_address' },
-  { title: '用户', width: '120px', key: 'visitor_label' },
+  { title: 'IP 地址', width: '150px', key: 'ip_address' },
+  { title: '用户', width: '100px', key: 'visitor_label' },
+  { title: '访问次数', width: '90px', key: 'visit_count' },
   { title: '国家', width: '80px', key: 'country' },
-  { title: '城市', width: '110px', key: 'city' },
-  { title: '访问域名', width: '220px', key: 'visit_url' },
-  { title: '最近访问', width: '180px', key: 'visited_at' },
+  { title: '城市', width: '100px', key: 'city' },
+  { title: '访问域名', width: '200px', key: 'visit_url' },
+  { title: '首次访问', width: '170px', key: 'first_visited_at' },
+  { title: '最近访问', width: '170px', key: 'visited_at' },
 ];
 
 const columns = computed(() => {
