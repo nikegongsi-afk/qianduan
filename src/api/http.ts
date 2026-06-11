@@ -45,7 +45,7 @@ class Http {
                 
             } else {
                 if(router.currentRoute.value.path.indexOf('system')>=0) {
-                    router.push('/userlogin');
+                    router.push('/login');
                 }
             }
             return config
@@ -85,10 +85,10 @@ class Http {
                 message = error.response.data?.message || error.response.data?.msg || 'Request failed';
                  const userInfoStore = useUserStore();
                 if (status === 401) {
-                layer.msg('Login and failure, please log in again!', { icon: 2 });
+                layer.msg('登录已失效，请重新登录', { icon: 2 });
                 userInfoStore.token=null
                 userInfoStore.userInfo=null
-                router.push('/userlogin');
+                router.push(router.currentRoute.value.path.indexOf('system') >= 0 ? '/login' : '/userlogin');
                 } else if (status === 403) {
                     
                     layer.msg('You do not have permission to perform this action', { icon: 2 });

@@ -45,6 +45,42 @@ export function formatUSDate(dateString: string | Date | null | undefined): stri
 /** Alias for date-only US display (no time/minutes). */
 export const formatUSTime = formatUSDate;
 
+/** 表单 datetime-local 控件用，格式 YYYY-MM-DDTHH:mm */
+export function formatDateTimeLocalInput(dateString: string | Date | null | undefined): string {
+  const date = parseUsDate(dateString);
+  if (!date) return '';
+
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: US_TIMEZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(date);
+
+  const get = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value || '';
+
+  return `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}`;
+}
+
+/** 提交 API 时使用 ISO 时间 */
+export function toApiDateTime(dateString: string | Date | null | undefined): string | null {
+  const value = String(dateString || '').trim();
+  if (!value) return null;
+
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date.toISOString();
+  }
+
+  const date = parseUsDate(dateString);
+  if (!date) return null;
+  return date.toISOString();
+}
+
 /** Format timestamp fields on a row for table display. */
 export function formatDatesForDisplay<T extends Record<string, unknown>>(
   row: T,

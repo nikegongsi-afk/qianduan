@@ -114,8 +114,13 @@
           <lay-form-item label="是否公开" prop="ispublic">
             <lay-switch v-model="model11.ispublic" :checked="model11.ispublic === 1" trueValue="1" falseValue="0"></lay-switch>
           </lay-form-item>
-          <lay-form-item label="最后更新" prop="last_update" v-if="(model11.id || model11.id === 0) && model11.last_update">
-            <lay-input v-model="model11.last_update" placeholder="最后更新时间将自动记录"></lay-input>
+          <lay-form-item label="最后更新" prop="last_update" v-if="model11.id">
+            <input
+              v-model="model11.last_update"
+              type="datetime-local"
+              class="layui-input"
+              style="width: 100%; height: 38px; padding: 0 10px; border: 1px solid #eee; border-radius: 4px;"
+            />
           </lay-form-item>
         </lay-form>
         <div style="width: 100%; text-align: right">
@@ -134,7 +139,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getVideos, createVideo, updateVideo, deleteVideo } from '../../../api/module/videos'
 import { getUploadUrl, parseUploadResponse, isAllowedVideoFile } from '@/utils/apiUrl'
-import { formatUSDate } from '@/utils/dateFormat'
+import { formatUSDate, formatDateTimeLocalInput, toApiDateTime } from '@/utils/dateFormat'
 
 const uploadvideosUrl = getUploadUrl('videos')
 // 定义视频接口
@@ -357,7 +362,7 @@ const changeVisible11 = (text: string, row?: Video) => {
     // 编辑模式，复制行数据并格式化时间
     model11.value = { 
       ...row, 
-      last_update: row.last_update ? formatUSDate(row.last_update) : '' 
+      last_update: row.last_update ? formatDateTimeLocalInput(row.last_update) : formatDateTimeLocalInput(new Date())
     }
   } else {
     // 新增模式，设置当前时间
@@ -367,7 +372,7 @@ const changeVisible11 = (text: string, row?: Video) => {
       description: '',
       video_url: '',
       ispublic: 1,
-      last_update: new Date().toISOString().slice(0, 19).replace('T', ' ')
+      last_update: formatDateTimeLocalInput(new Date())
     }
   }
   visible11.value = true
@@ -408,7 +413,7 @@ async function toSubmit() {
       description: model11.value.description,
       video_url: model11.value.video_url,
       ispublic: model11.value.ispublic,
-      last_update: model11.value.last_update
+      last_update: toApiDateTime(model11.value.last_update) || new Date().toISOString()
     };
     if(submitData.ispublic)
     {

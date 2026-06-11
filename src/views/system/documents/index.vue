@@ -118,8 +118,13 @@
           <lay-form-item label="是否公开" prop="ispublic" :label-width="140">
             <lay-switch v-model="model11.ispublic" :checked="model11.ispublic === 1" trueValue="1" falseValue="0"></lay-switch>
           </lay-form-item>
-          <lay-form-item v-if="(model11.id || model11.id === 0) && model11.last_update" label="最后更新" :label-width="140">
-            <lay-input v-model="model11.last_update" placeholder="最后更新时间将自动记录"></lay-input>
+          <lay-form-item v-if="model11.id" label="最后更新" :label-width="140">
+            <input
+              v-model="model11.last_update"
+              type="datetime-local"
+              class="layui-input"
+              style="width: 100%; height: 38px; padding: 0 10px; border: 1px solid #eee; border-radius: 4px;"
+            />
           </lay-form-item>
         </lay-form>
         <div style="width: 100%; text-align: right">
@@ -138,7 +143,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { layer } from '@layui/layui-vue'
 import { getDocuments, createDocument, updateDocument, deleteDocument, uploadDocument } from '@/api/module/documents'
 import { getUploadUrl, parseUploadResponse, isAllowedDocumentFile } from '@/utils/apiUrl'
-import { formatUSDate } from '@/utils/dateFormat'
+import { formatUSDate, formatDateTimeLocalInput, toApiDateTime } from '@/utils/dateFormat'
 
 const uploaddocumentsUrl = getUploadUrl('documents')
 // 定义文档接口
@@ -367,7 +372,7 @@ const changeVisible11 = (text: string, row?: Document) => {
     // 编辑模式，复制行数据并格式化时间
     model11.value = { 
       ...row,
-      last_update: row.last_update ? formatUSDate(row.last_update) : ''
+      last_update: row.last_update ? formatDateTimeLocalInput(row.last_update) : formatDateTimeLocalInput(new Date())
     }
   } else {
     // 新增模式，清空表单并设置当前时间
@@ -378,7 +383,7 @@ const changeVisible11 = (text: string, row?: Document) => {
       file_url: '',
       file_type: '',
       ispublic: 1,
-      last_update: new Date().toISOString().slice(0, 19).replace('T', ' ')
+      last_update: formatDateTimeLocalInput(new Date())
     }
   }
   if(model11.value.ispublic==1)
@@ -429,7 +434,7 @@ async function toSubmit() {
       file_url: model11.value.file_url,
       file_type: model11.value.file_type,
       ispublic: model11.value.ispublic,
-      last_update: model11.value.last_update
+      last_update: toApiDateTime(model11.value.last_update) || new Date().toISOString()
     };
     if(submitData.ispublic)
     {
