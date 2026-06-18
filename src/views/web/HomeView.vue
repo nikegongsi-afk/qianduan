@@ -921,8 +921,8 @@ const strategyTabs = [
   { label: 'Risk Warning', icon: '⚠️' }
 ];
 
-const STRATEGY_TAB_ROTATE_MS = 3000;
-const STRATEGY_TAB_PAUSE_MS = 60 * 1000;
+const STRATEGY_TAB_ROTATE_MS = 60 * 1000;
+const STRATEGY_TAB_PAUSE_MS = 10 * 60 * 1000;
 let strategyTabRotateTimer: ReturnType<typeof setInterval> | null = null;
 let strategyTabPauseTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -947,14 +947,22 @@ const startStrategyTabRotation = () => {
   }, STRATEGY_TAB_ROTATE_MS);
 };
 
-const selectStrategyTab = (index: number) => {
-  activeTab.value = index;
+const pauseStrategyTabRotation = () => {
   clearStrategyTabRotateTimer();
   clearStrategyTabPauseTimer();
   strategyTabPauseTimer = setTimeout(() => {
     strategyTabPauseTimer = null;
     startStrategyTabRotation();
   }, STRATEGY_TAB_PAUSE_MS);
+};
+
+const selectStrategyTab = (index: number) => {
+  activeTab.value = index;
+  pauseStrategyTabRotation();
+};
+
+const onStrategyTabPageClick = () => {
+  pauseStrategyTabRotation();
 };
 
 const stopStrategyTabRotation = () => {
@@ -1098,6 +1106,7 @@ onMounted(() => {
   }, 100);
 
   startStrategyTabRotation();
+  document.addEventListener('click', onStrategyTabPageClick);
 
   getindexdata().then(() => updateActiveTradePrices());
   priceRefreshTimer = window.setInterval(() => {
@@ -1123,6 +1132,7 @@ const onTradePriceVisibilityChange = () => {
 onUnmounted(() => {
   window.removeEventListener('resize', checkMobile);
   document.removeEventListener('visibilitychange', onTradePriceVisibilityChange);
+  document.removeEventListener('click', onStrategyTabPageClick);
   stopStrategyTabRotation();
   if (priceRefreshTimer) {
     window.clearInterval(priceRefreshTimer);
@@ -1980,8 +1990,8 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .panel-header h3 {
-  font-size: clamp(1.1rem, 2.2vw, 1.35rem);
-  font-weight: 800;
+  font-size: clamp(1rem, 1.8vw, 1.15rem);
+  font-weight: 700;
   margin-bottom: var(--spacing-md);
   color: var(--text-primary);
   letter-spacing: 0.02em;
@@ -1996,8 +2006,8 @@ const formatLikesCount = (count: number | string | undefined) => {
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto 1fr;
-  gap: 10px var(--spacing-lg);
-  padding: var(--spacing-xl) var(--spacing-lg);
+  gap: 8px var(--spacing-md);
+  padding: var(--spacing-lg) var(--spacing-md);
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.22) 0%, rgba(118, 75, 162, 0.12) 100%);
   border: 1px solid rgba(129, 140, 248, 0.45);
   border-left: 5px solid #818cf8;
@@ -2012,8 +2022,8 @@ const formatLikesCount = (count: number | string | undefined) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   align-self: start;
   flex-shrink: 0;
   border-radius: 50%;
@@ -2022,7 +2032,7 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .analysis-icon {
-  font-size: 26px;
+  font-size: 22px;
   line-height: 1;
 }
 
@@ -2047,17 +2057,16 @@ const formatLikesCount = (count: number | string | undefined) => {
   grid-column: 2;
   grid-row: 2;
   margin: 0;
-  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
-  font-weight: 800;
-  line-height: 1.55;
-  letter-spacing: 0.02em;
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  font-size: clamp(0.95rem, 1.6vw, 1.08rem);
+  font-weight: 600;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.95);
   word-break: break-word;
 }
 
 .strategy-paragraph {
-  margin: 0 0 0.85em;
+  margin: 0 0 0.65em;
   text-indent: 2em;
 }
 
@@ -2373,8 +2382,8 @@ const formatLikesCount = (count: number | string | undefined) => {
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto 1fr;
-  gap: 10px var(--spacing-lg);
-  padding: var(--spacing-xl) var(--spacing-lg);
+  gap: 8px var(--spacing-md);
+  padding: var(--spacing-lg) var(--spacing-md);
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(127, 29, 29, 0.12) 100%);
   border: 1px solid rgba(248, 113, 113, 0.45);
   border-left: 5px solid #f87171;
@@ -2389,8 +2398,8 @@ const formatLikesCount = (count: number | string | undefined) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   align-self: start;
   flex-shrink: 0;
   border-radius: 50%;
@@ -2399,7 +2408,7 @@ const formatLikesCount = (count: number | string | undefined) => {
 }
 
 .warning-icon {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 900;
   line-height: 1;
   color: #fff;
@@ -2426,12 +2435,11 @@ const formatLikesCount = (count: number | string | undefined) => {
   grid-column: 2;
   grid-row: 2;
   margin: 0;
-  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
-  font-weight: 800;
-  line-height: 1.55;
-  letter-spacing: 0.02em;
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  font-size: clamp(0.95rem, 1.6vw, 1.08rem);
+  font-weight: 600;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.95);
   word-break: break-word;
 }
 
