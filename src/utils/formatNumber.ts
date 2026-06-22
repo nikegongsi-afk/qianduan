@@ -64,6 +64,19 @@ export function formatPriceRight(value: number | string, currency?: string | nul
   return `${currencySymbol(currency)}${formatStockPrice(value)}`;
 }
 
+/** Live quote display only — always 2 decimals; use raw price for P&L math. */
+export function formatLivePriceRight(value: number | string, currency?: string | null): string {
+  if (value !== 0 && !value) return `${currencySymbol(currency)}0.00`;
+
+  const num = typeof value === 'string' ? parseFloat(value) : value;
+  if (!Number.isFinite(num)) return `${currencySymbol(currency)}0.00`;
+
+  return `${currencySymbol(currency)}${num.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
 /** Signed P&L: +$1,234.56 / -$1,234.56 */
 export function formatMoneySigned(value: number | string, currency?: string | null): string {
   const num = typeof value === 'string' ? parseFloat(value) : value;

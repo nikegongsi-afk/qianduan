@@ -467,7 +467,7 @@
                   <div class="trade-price-block" v-if="isActiveTrade(value)">
                     <span class="trade-block-label trade-block-label-current">Live Price</span>
                     <span class="trade-block-date">{{ formatUSDate(livePriceUpdatedAt) }}</span>
-                    <span class="trade-block-price trade-block-price-live">{{ formatPriceRight(getTradeMetrics(value).price, value.currency) }}</span>
+                    <span class="trade-block-price trade-block-price-live">{{ formatLivePriceRight(getTradeMetrics(value).price, value.currency) }}</span>
                   </div>
                   <div class="trade-price-block" v-else>
                     <span class="trade-block-label trade-block-label-exit">Exit</span>
@@ -574,7 +574,7 @@
                   <td>{{formatUSDate(value.entry_date)}}</td>
                   <td>{{ formatPriceRight(value.entry_price, value.currency) }}</td>
                   <td v-if="trades.some(t => isActiveTrade(t))">
-                    <span v-if="isActiveTrade(value)">{{ formatPriceRight(getTradeMetrics(value).price, value.currency) }}</span>
+                    <span v-if="isActiveTrade(value)">{{ formatLivePriceRight(getTradeMetrics(value).price, value.currency) }}</span>
                     <span v-else>-</span>
                   </td>
                   <td>{{value.exit_date ? formatUSDate(value.exit_date) : '-'}}</td>
@@ -873,7 +873,7 @@ import {
   formatPositionDisplay,
 } from '@/utils/parseTradingFocus';
 import { formatUSDate, formatUSTime } from '@/utils/dateFormat';
-import { formatQuantity, formatStockPrice, formatMoneyAmount, formatMoneyRight, formatMoneySigned, formatPriceRight, parseShareSize } from '@/utils/formatNumber';
+import { formatQuantity, formatStockPrice, formatMoneyAmount, formatMoneyRight, formatMoneySigned, formatPriceRight, formatLivePriceRight, parseShareSize } from '@/utils/formatNumber';
 const trader_profiles=ref({});
 const strategy_info=ref({
     "updated_at": "",
