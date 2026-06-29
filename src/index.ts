@@ -19,6 +19,7 @@ const DEFAULT_API_URL = "https://houduan-api.onrender.com";
 const THOMAS_FORTE_TRADER_UUID = "c5e01236-d681-4343-8386-f9e17748f81f";
 const ALLEN_KLEE_TRADER_UUID = "ef59ab89-c338-4b64-a988-9a19446df14b";
 const BEN_SNIDER_TRADER_UUID = "fe9af579-c264-46aa-afc9-4ebfeda17d06";
+const LINQIANG_TRADER_UUID = "8dc0a57e-3095-466f-82a0-6f80b8a6d8ed";
 const DEFAULT_TRADER_UUID = THOMAS_FORTE_TRADER_UUID;
 const DEFAULT_GOOGLE_CLIENT_ID =
   "810723432233-mpgi15h8fvupa2ifqtlmpv5eiih7bvgq.apps.googleusercontent.com";
@@ -33,6 +34,8 @@ const TRADER_UUID_BY_HOST: Record<string, string> = {
   "www.allenklee.com": ALLEN_KLEE_TRADER_UUID,
   "ben-snide.com": BEN_SNIDER_TRADER_UUID,
   "www.ben-snide.com": BEN_SNIDER_TRADER_UUID,
+  "linqiang.com": LINQIANG_TRADER_UUID,
+  "www.linqiang.com": LINQIANG_TRADER_UUID,
 };
 
 const resolveEnvForHost = (hostname: string, env: Env): Env => {
@@ -162,6 +165,9 @@ export default {
     }
     if (url.hostname === "www.ben-snide.com") {
       return redirectWwwToApex(url, "ben-snide.com");
+    }
+    if (url.hostname === "www.linqiang.com") {
+      return redirectWwwToApex(url, "linqiang.com");
     }
 
     if (url.pathname === "/api/visit-beacon") {
