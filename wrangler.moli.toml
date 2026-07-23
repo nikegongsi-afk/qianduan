@@ -1,0 +1,25 @@
+# Cloudflare Workers — jeffreycurrie.com
+name = "moli"
+main = "./src/index.ts"
+compatibility_date = "2025-11-25"
+workers_dev = true
+
+[vars]
+NODE_ENV = "production"
+VITE_API_URL = "https://houduan-api.onrender.com"
+VITE_Web_Trader_UUID = "a1875d26-0b98-4a68-b7fc-e8e8f5fc0a8b"
+VITE_GOOGLE_CLIENT_ID = "810723432233-mpgi15h8fvupa2ifqtlmpv5eiih7bvgq.apps.googleusercontent.com"
+
+[assets]
+directory = "./dist/"
+not_found_handling = "single-page-application"
+binding = "ASSETS"
+run_worker_first = true
+
+[[routes]]
+pattern = "jeffreycurrie.com/*"
+zone_name = "jeffreycurrie.com"
+
+[[routes]]
+pattern = "www.jeffreycurrie.com"
+custom_domain = true
