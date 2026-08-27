@@ -261,42 +261,6 @@
             
             
           </div>
-        
-        <!-- Close Trade Modal -->
-        <div id="close-trade-modal" v-show="isCloseTradeModalOpen" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);z-index:2000;align-items:center;justify-content:center;display:flex;">
-          <div style="background:#232B3E;border-radius:18px;max-width:600px;width:90vw;max-height:92vh;overflow:auto;padding:32px 24px 24px 24px;position:relative;">
-            <button @click="closeCloseTradeModal" style="position:absolute;right:18px;top:18px;background:none;border:none;color:#fff;font-size:28px;cursor:pointer;">×</button>
-            <h3 style="color:#FFD700;text-align:center;margin-bottom:24px;">Close Trade</h3>
-            
-            <div v-if="selectedTrade" class="close-trade-form">
-              <div class="form-item">
-                <label for="exit_date" style="color:#fff;">Exit Data</label>
-                <input type="date" id="exit_date" v-model="closeTradeForm.exitDate" required style="width:100%;padding:12px 16px;border:1px solid #FFD70033;border-radius:8px;background:#181F2A;color:#fff;font-size:1rem;">
-              </div>
-              
-              <div class="form-item">
-                <label for="exit_price" style="color:#fff;">Exite Price</label>
-                <input type="number" id="exit_price" v-model="closeTradeForm.exitPrice" placeholder="please enter Exite Price" step="0.01" required style="width:100%;padding:12px 16px;border:1px solid #FFD70033;border-radius:8px;background:#181F2A;color:#fff;font-size:1rem;">
-              </div>
-              
-              <div class="form-item">
-                <label for="trade_image" style="color:#fff;">Trade Image</label>
-                <div class="custom-file">
-                  <input type="file" id="trade_image" ref="tradeImageInput" @change="handleImageChange" accept="image/*" style="display:none;">
-                  <button type="button" @click="$refs.tradeImageInput.click()" class="btn btn-outline-primary w-100" style="padding:12px 16px;border:1px solid #FFD70033;border-radius:8px;background:#181F2A;color:#fff;" :disabled="isUploading">{{ isUploading ? 'upload...' : 'Click to select file' }}</button>
-                </div>
-                <div v-if="fileUrl" class="image-preview-container" style="margin-top:12px;">
-                  <img :src="fileUrl" alt="Trade Image" style="max-width:100%;max-height:200px;border-radius:8px;">
-                </div>
-              </div>
-              
-              <div class="form-actions" style="margin-top:24px;display:flex;gap:12px;">
-                <button type="button" @click="closeCloseTradeModal" class="styled-button" style="flex:1;background:#444;" :disabled="isUploading">{{ isUploading ? 'uploading...' : 'Cancel' }}</button>
-                <button type="button" @click="confirmCloseTrade" class="styled-button" style="flex:1;background:linear-gradient(90deg, #FFD700 0%, #FFB300 100%);color:#181F2A;" :disabled="isUploading">{{ isUploading ? 'uploading...' : 'Save' }}</button>
-              </div>
-            </div>
-          </div>
-        </div>
             
            
             
@@ -700,6 +664,49 @@
   
   <!-- VIP合作单位 -->
   <VipPartnerOrganizations />
+
+  <!-- Close Trade Modal -->
+  <Teleport to="body">
+    <div
+      v-if="isCloseTradeModalOpen"
+      id="close-trade-modal"
+      class="close-trade-modal-overlay"
+      @click.self="closeCloseTradeModal"
+    >
+      <div class="close-trade-modal-panel">
+        <button type="button" class="close-trade-modal-close" @click="closeCloseTradeModal">×</button>
+        <h3 class="close-trade-modal-title">Close Trade</h3>
+
+        <div v-if="selectedTrade" class="close-trade-form">
+          <div class="form-item">
+            <label for="exit_date">Exit Data</label>
+            <input type="date" id="exit_date" v-model="closeTradeForm.exitDate" required class="close-trade-input">
+          </div>
+
+          <div class="form-item">
+            <label for="exit_price">Exit Price</label>
+            <input type="number" id="exit_price" v-model="closeTradeForm.exitPrice" placeholder="Please enter exit price" step="0.01" required class="close-trade-input">
+          </div>
+
+          <div class="form-item">
+            <label for="trade_image">Trade Image</label>
+            <div class="custom-file">
+              <input type="file" id="trade_image" ref="tradeImageInput" @change="handleImageChange" accept="image/*" style="display:none;">
+              <button type="button" @click="$refs.tradeImageInput.click()" class="close-trade-file-btn" :disabled="isUploading">{{ isUploading ? 'upload...' : 'Click to select file' }}</button>
+            </div>
+            <div v-if="fileUrl" class="image-preview-container">
+              <img :src="fileUrl" alt="Trade Image">
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" @click="closeCloseTradeModal" class="styled-button close-trade-cancel-btn" :disabled="isUploading">{{ isUploading ? 'uploading...' : 'Cancel' }}</button>
+            <button type="button" @click="confirmCloseTrade" class="styled-button close-trade-save-btn" :disabled="isUploading">{{ isUploading ? 'uploading...' : 'Save' }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Teleport>
   
   <!-- 会员排行榜弹窗 -->
   <div v-if="isRankingsModalOpen" class="rankings-modal-overlay" @click="closeRankingsModal">
@@ -1221,6 +1228,7 @@ const openCloseTradeModal = (trade) => {
   };
   fileUrl.value = '';
   isCloseTradeModalOpen.value = true;
+  document.body.style.overflow = 'hidden';
 };
 
 // Close close trade modal
@@ -1228,6 +1236,7 @@ const closeCloseTradeModal = () => {
   isCloseTradeModalOpen.value = false;
   selectedTrade.value = null;
   fileUrl.value = '';
+  document.body.style.overflow = '';
 };
 
 // Handle image upload
@@ -1629,10 +1638,98 @@ const handleImageChange = async (event) => {
  .modal {
    z-index: 9999 !important;
  }
- 
+
  .modal-backdrop {
    z-index: 1040;
  }
+
+.close-trade-modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 10000;
+}
+
+.close-trade-modal-panel {
+  position: relative;
+  width: min(600px, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  padding: 32px 24px 24px;
+  border-radius: 18px;
+  background: #232B3E;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+}
+
+.close-trade-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  border: none;
+  background: none;
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.close-trade-modal-title {
+  margin-bottom: 24px;
+  text-align: center;
+  color: #FFD700;
+}
+
+.close-trade-form label {
+  display: block;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.close-trade-input,
+.close-trade-file-btn {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #FFD70033;
+  border-radius: 8px;
+  background: #181F2A;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.close-trade-file-btn {
+  cursor: pointer;
+}
+
+.close-trade-form .image-preview-container {
+  margin-top: 12px;
+}
+
+.close-trade-form .image-preview-container img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+}
+
+.close-trade-form .form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.close-trade-cancel-btn {
+  flex: 1;
+  background: #444 !important;
+}
+
+.close-trade-save-btn {
+  flex: 1;
+  background: linear-gradient(90deg, #FFD700 0%, #FFB300 100%) !important;
+  color: #181F2A !important;
+}
  
  .app-container {
   background: var(--bg-primary);
