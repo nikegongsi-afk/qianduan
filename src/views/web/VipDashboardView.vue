@@ -304,12 +304,18 @@
                
               </td>
               <td style="text-align:right;font-weight:900;">
-                <span style="font-size:1.12rem;" :style="{color: parseFloat(user.monthly_profit) > 0 ? '#00ffae' : parseFloat(user.totalProfit) < 0 ? '#ff4d4f' : '#b0c4e6'}">
+                <span
+                  class="rank-total-profit"
+                  :style="{color: parseFloat(user.utotle_profit) > 0 ? '#00ffae' : parseFloat(user.utotle_profit) < 0 ? '#ff4d4f' : '#b0c4e6'}"
+                >
                   {{ formatMoneySigned(user.utotle_profit) }}
                 </span>
               </td>
               <td style="text-align:right;font-weight:900;">
-                <span style="font-size:1.12rem;" :style="{color: parseFloat(user.profitRate) > 0 ? '#52c41a' : parseFloat(user.profitRate) < 0 ? '#ff4d4f' : '#b0c4e6'}">
+                <span
+                  class="rank-month-profit"
+                  :style="{color: parseFloat(user.umonth_profit) > 0 ? '#00ffae' : parseFloat(user.umonth_profit) < 0 ? '#ff4d4f' : '#b0c4e6'}"
+                >
                   {{ formatMoneySigned(user.umonth_profit) }}
                 </span>
               </td>
@@ -318,28 +324,39 @@
         </table>
       </div>
       
-      <!-- 查看所有按钮 -->
-      <div style="text-align:center;margin-top:24px;">
-        <button v-if="Vipdata.usersSort && Vipdata.usersSort.length > 5" 
-                class="styled-button" 
-                @click="openRankingsModal">
-          View All Rankings ({{ Vipdata.usersSort.length }} members)
+      <!-- 查看所有按钮（仅桌面端；移动端用列表下方按钮） -->
+      <div class="rankings-view-all-pc" v-if="Vipdata.usersSort && Vipdata.usersSort.length > 5">
+        <button type="button" class="styled-button" @click="openRankingsModal">
+          View Top {{ Math.min(Vipdata.usersSort.length, 50) }} Members
         </button>
       </div>
 
       <!-- Mobile Member Ranking -->
       <div class="member-rank-mobile-list">
-        <div v-for="(user, index) in displayedUsers" :key="user.id" class="member-rank-mobile-card" style="background:linear-gradient(135deg,#232B3E 60%,#232e4a 100%);border-radius:14px;box-shadow:0 4px 16px rgba(24,31,42,0.2),0 0 0 2px rgba(255,215,0,0.13);border:1.5px solid rgba(255,215,0,0.10);padding:14px 12px 10px 12px;margin-bottom:14px;display:flex;flex-direction:column;gap:8px;">
-          <div class="rank-row-main" style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-            <span class="rank-num" style="font-size:1.18rem;font-weight:900;min-width:24px;text-align:center;" :style="{color: index === 0 ? '#FFD700' : index === 1 ? '#b0c4e6' : index === 2 ? '#faad14' : '#fff'}">{{ index + 1 }}</span>
-            <img :src="user.avatar_url" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid #FFD700;box-shadow:0 0 4px rgba(255,215,0,0.2);display:flex;align-items:center;justify-content:center;"></img>
-            <span class="rank-name" style="font-weight:700;font-size:1.05rem;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;">{{ user.username }}</span>
-            <span class="rank-level" :class="user.membership_level" style="font-size:0.95rem;padding:2px 10px;border-radius:8px;background:#1a2236;margin-left:4px;min-width:80px;text-align:center;display:inline-block;">{{ user.membership_level }}</span>
+        <div v-for="(user, index) in displayedUsers" :key="user.id" class="member-rank-mobile-card">
+          <div class="rank-row-main">
+            <span class="rank-num" :style="{color: index === 0 ? '#FFD700' : index === 1 ? '#b0c4e6' : index === 2 ? '#faad14' : '#fff'}">{{ index + 1 }}</span>
+            <img :src="user.avatar_url || '/default-avatar.png'" :alt="user.username" class="rank-avatar">
+            <div class="rank-mobile-meta">
+              <span class="rank-name">{{ user.username }}</span>
+              <span class="rank-level" :class="user.membership_level">{{ user.membership_level || 'Member' }}</span>
+            </div>
           </div>
-          <div class="rank-row-bottom" style="display:flex;justify-content:space-between;font-size:1.05em;margin-top:2px;">
-            <span class="rank-amount" style="font-weight:900;font-size:1.08rem;" :style="{color: parseFloat(user.utotle_profit) > 0 ? '#00ffae' : parseFloat(user.utotle_profit) < 0 ? '#ff4d4f' : '#b0c4e6'}">{{ formatMoneySigned(user.utotle_profit) }}</span>
-            <span class="rank-rate" style="font-weight:900;font-size:1.08rem;" :style="{color: parseFloat(user.umonth_profit) > 0 ? '#52c41a' : parseFloat(user.umonth_profit) < 0 ? '#ff4d4f' : '#b0c4e6'}">{{ formatMoneySigned(user.umonth_profit) }}</span>
+          <div class="rank-row-bottom">
+            <div class="rank-mobile-stat">
+              <span class="rank-mobile-label">Total</span>
+              <span class="rank-amount" :style="{color: parseFloat(user.utotle_profit) > 0 ? '#00ffae' : parseFloat(user.utotle_profit) < 0 ? '#ff4d4f' : '#b0c4e6'}">{{ formatMoneySigned(user.utotle_profit) }}</span>
+            </div>
+            <div class="rank-mobile-stat">
+              <span class="rank-mobile-label">Monthly</span>
+              <span class="rank-rate" :style="{color: parseFloat(user.umonth_profit) > 0 ? '#00ffae' : parseFloat(user.umonth_profit) < 0 ? '#ff4d4f' : '#b0c4e6'}">{{ formatMoneySigned(user.umonth_profit) }}</span>
+            </div>
           </div>
+        </div>
+        <div class="rank-mobile-more" v-if="Vipdata.usersSort && Vipdata.usersSort.length > 5">
+          <button type="button" class="styled-button" @click="openRankingsModal">
+            View Top {{ Math.min(Vipdata.usersSort.length, 50) }} Members
+          </button>
         </div>
       </div>
     </div>
@@ -709,70 +726,135 @@
   </Teleport>
   
   <!-- 会员排行榜弹窗 -->
-  <div v-if="isRankingsModalOpen" class="rankings-modal-overlay" @click="closeRankingsModal">
-    <div class="rankings-modal" @click.stop>
-      <div class="rankings-modal-header">
-        <h3 class="rankings-modal-title">Member Profit Ranking - All Members</h3>
-        <button class="rankings-modal-close" @click="closeRankingsModal">×</button>
-      </div>
-      <div class="rankings-modal-content">
-        <table class="rankings-modal-table">
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>Avatar</th>
-              <th>Username</th>
-              <th>Membership Level</th>
-              <th>Total Profit</th>
-              <th>Monthly Profit</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(user, index) in Vipdata.usersSort" :key="user.id" class="rank-row" style="border-bottom:1.5px solid rgba(255,215,0,0.13);background:linear-gradient(90deg,#232B3E 80%,#232e4a 100%);">
-              <td style="text-align:center;font-weight:900;">
-                <span style="font-size:1.6rem;" :style="{
-                  color: index === 0 ? '#FFD700' : index === 1 ? '#b0c4e6' : index === 2 ? '#faad14' : '#fff',
-                  textShadow: index <= 2 ? '0 0 8px rgba(255,215,0,0.6)' : 'none'
-                }">
-                  {{ index + 1 }}
-                </span>
-              </td>
-              <td style="text-align:left;">
-                <img :src="user.avatar_url || '/default-avatar.png'" 
-                     :alt="user.username" 
-                     style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #FFD700;box-shadow:0 0 8px #FFD70033;">
-              </td>
-              <td style="text-align:left;font-weight:700;font-size:1.12rem;letter-spacing:1px;color:#fff;">{{ user.username }}</td>
-              <td style="text-align:left;">
-                <span class="membership-badge" :class="user.membership_level" style="font-size:1.08rem;font-weight:900;padding:6px 18px;border-radius:20px;box-shadow:0 0 12px #FFD70055;letter-spacing:1px;background:linear-gradient(90deg,#b0c4e6 60%,#FFD700 100%);color:#232B3E;">
-                  {{ user.membership_level }}
-                </span>
-              </td>
-              <td style="text-align:right;font-weight:900;">
-                <span style="font-size:1.12rem;" :style="{
-                  color: parseFloat(user.utotle_profit) > 0 ? '#00ffae' : parseFloat(user.utotle_profit) < 0 ? '#ff4d4f' : '#b0c4e6'
-                }">
-                  {{ formatMoneySigned(user.utotle_profit) }}
-                </span>
-              </td>
-              <td style="text-align:right;font-weight:900;">
-                <span style="font-size:1.12rem;" :style="{
-                  color: parseFloat(user.umonth_profit) > 0 ? '#52c41a' : parseFloat(user.umonth_profit) < 0 ? '#ff4d4f' : '#b0c4e6'
-                }">
-                  {{ formatMoneySigned(user.umonth_profit) }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+  <Teleport to="body">
+    <div
+      v-if="isRankingsModalOpen"
+      class="rankings-modal-overlay"
+      @click="closeRankingsModal"
+    >
+      <div class="rankings-modal" @click.stop>
+        <div class="rankings-modal-handle" aria-hidden="true"></div>
+        <div class="rankings-modal-header">
+          <div class="rankings-modal-heading">
+            <h3 class="rankings-modal-title">Top {{ modalRankings.length }}</h3>
+            <p class="rankings-modal-subtitle">Member profit ranking</p>
+          </div>
+          <button type="button" class="rankings-modal-close" aria-label="Close" @click="closeRankingsModal">×</button>
+        </div>
+
+        <div class="rankings-modal-content">
+          <!-- Desktop table -->
+          <table class="rankings-modal-table rankings-modal-table-desktop">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Member</th>
+                <th>Level</th>
+                <th>Total Profit</th>
+                <th>Monthly Profit</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(user, index) in modalRankings" :key="user.id || index">
+                <td>
+                  <span class="rankings-rank-num" :class="'rank-' + (index + 1)">{{ index + 1 }}</span>
+                </td>
+                <td>
+                  <div class="rankings-member-cell">
+                    <img
+                      :src="user.avatar_url || '/default-avatar.png'"
+                      :alt="user.username"
+                      class="rankings-avatar"
+                    >
+                    <span class="rankings-username">{{ user.username }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="rankings-level-badge">{{ user.membership_level || 'Member' }}</span>
+                </td>
+                <td>
+                  <span
+                    class="rankings-money"
+                    :class="{
+                      positive: parseFloat(user.utotle_profit) > 0,
+                      negative: parseFloat(user.utotle_profit) < 0
+                    }"
+                  >
+                    {{ formatMoneySigned(user.utotle_profit) }}
+                  </span>
+                </td>
+                <td>
+                  <span
+                    class="rankings-money"
+                    :class="{
+                      positive: parseFloat(user.umonth_profit) > 0,
+                      negative: parseFloat(user.umonth_profit) < 0
+                    }"
+                  >
+                    {{ formatMoneySigned(user.umonth_profit) }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Mobile cards -->
+          <div class="rankings-modal-cards">
+            <article
+              v-for="(user, index) in modalRankings"
+              :key="user.id || index"
+              class="rankings-card"
+              :class="{ 'is-top': index < 3 }"
+            >
+              <div class="rankings-card-top">
+                <span class="rankings-rank-num" :class="'rank-' + (index + 1)">{{ index + 1 }}</span>
+                <img
+                  :src="user.avatar_url || '/default-avatar.png'"
+                  :alt="user.username"
+                  class="rankings-avatar"
+                >
+                <div class="rankings-card-meta">
+                  <div class="rankings-username">{{ user.username }}</div>
+                  <span class="rankings-level-badge">{{ user.membership_level || 'Member' }}</span>
+                </div>
+              </div>
+              <div class="rankings-card-stats">
+                <div class="rankings-stat">
+                  <span class="rankings-stat-label">Total</span>
+                  <span
+                    class="rankings-money"
+                    :class="{
+                      positive: parseFloat(user.utotle_profit) > 0,
+                      negative: parseFloat(user.utotle_profit) < 0
+                    }"
+                  >
+                    {{ formatMoneySigned(user.utotle_profit) }}
+                  </span>
+                </div>
+                <div class="rankings-stat">
+                  <span class="rankings-stat-label">Monthly</span>
+                  <span
+                    class="rankings-money"
+                    :class="{
+                      positive: parseFloat(user.umonth_profit) > 0,
+                      negative: parseFloat(user.umonth_profit) < 0
+                    }"
+                  >
+                    {{ formatMoneySigned(user.umonth_profit) }}
+                  </span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  </Teleport>
 
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import navcomponent from '../component/nav/nav.vue';
 import VipPartnerOrganizations from '@/components/VipPartnerOrganizations.vue';
@@ -870,14 +952,23 @@ const toggleRankingsView = () => {
 // 排行榜弹窗控制
 const isRankingsModalOpen = ref(false);
 
+const modalRankings = computed(() => {
+  if (!Vipdata.value.usersSort || !Array.isArray(Vipdata.value.usersSort)) {
+    return [];
+  }
+  return Vipdata.value.usersSort.slice(0, 50);
+});
+
 // 打开排行榜弹窗
 const openRankingsModal = () => {
   isRankingsModalOpen.value = true;
+  document.body.style.overflow = 'hidden';
 };
 
 // 关闭排行榜弹窗
 const closeRankingsModal = () => {
   isRankingsModalOpen.value = false;
+  document.body.style.overflow = '';
 };
 
 // 视频显示控制
@@ -961,6 +1052,10 @@ onMounted(()=>{
      updateStockPrices();
    }
  }, 10000);
+})
+
+onUnmounted(() => {
+  document.body.style.overflow = '';
 })
 const gettraderprofiles= async()=>{
   try {
@@ -2571,29 +2666,59 @@ const handleImageChange = async (event) => {
             font-weight: 900;
             margin-left: 4px;
         }
+        .member-rank-table-pc .rank-total-profit {
+          font-size: 1.02rem;
+          font-weight: 900;
+        }
+        .member-rank-table-pc .rank-month-profit {
+          font-size: 1.22rem;
+          font-weight: 900;
+        }
         .member-rank-mobile-list { display: none; margin-top: 10px; }
         .member-rank-mobile-card {
-            background: linear-gradient(135deg, #232B3E 60%, #232e4a 100%);
+            background: #232B3E;
             border-radius: 14px;
-            box-shadow: 0 4px 16px #181F2A33, 0 0 0 2px #FFD70022;
-            border: 1.5px solid rgba(255, 215, 0, 0.10);
-            padding: 12px 12px 8px 12px;
-            margin-bottom: 12px;
-        }
-        .member-rank-mobile-card .rank-row {
-            display: flex;
-            align-items: center;
+            border: 1px solid rgba(255, 215, 0, 0.16);
+            padding: 12px;
+            margin-bottom: 10px;
         }
         .member-rank-mobile-card .rank-row-main {
-            gap: 8px;
-            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+        .member-rank-mobile-card .rank-mobile-meta {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
         .member-rank-mobile-card .rank-row-bottom {
-            gap: 12px;
-            justify-content: flex-end;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .member-rank-mobile-card .rank-mobile-stat {
+            background: rgba(24, 31, 42, 0.9);
+            border-radius: 10px;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            min-width: 0;
+        }
+        .member-rank-mobile-card .rank-mobile-label {
+            color: #8fa0bf;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
         }
         .member-rank-mobile-card .rank-num {
-            font-size: 1.18rem;
+            font-size: 1.1rem;
             font-weight: 900;
             color: #FFD700;
             min-width: 24px;
@@ -2601,24 +2726,51 @@ const handleImageChange = async (event) => {
             flex-shrink: 0;
         }
         .member-rank-mobile-card .rank-avatar {
-            width: 28px; height: 28px; border-radius: 50%; background: #232b3e; color: #FFD700; font-weight: 900; text-align: center; line-height: 28px; font-size: 1.08rem; box-shadow: 0 0 6px #FFD70033; flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #FFD700;
+            background: #181F2A;
+            flex-shrink: 0;
         }
         .member-rank-mobile-card .rank-name {
-            color: #fff; font-weight: 700; font-size: 1.05rem; margin: 0 4px; white-space:nowrap; flex: 1 1 0%; min-width: 0; overflow: hidden; text-overflow: ellipsis;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.98rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .member-rank-mobile-card .rank-level {
-            font-size: 0.98rem; font-weight: 700; border-radius: 10px; padding: 2px 14px; margin-left: 0; flex-shrink: 0;
-            width: 80px; min-width: 80px; max-width: 80px; text-align: center; display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 2px 8px;
+            width: fit-content;
+            max-width: 100%;
+            background: rgba(255, 215, 0, 0.12);
+            color: #FFD700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .member-rank-mobile-card .rank-level.vip { background: #FFD700; color: #232B3E; }
         .member-rank-mobile-card .rank-level.gold { background: #ffe066; color: #232B3E; }
         .member-rank-mobile-card .rank-level.diamond { background: #b0c4e6; color: #232B3E; }
-        .member-rank-mobile-card .rank-level.black { background: #232B3E; color: #FFD700; border:1.5px solid #FFD700; }
-        .member-rank-mobile-card .rank-rate {
-            color: #00ffae; font-weight: 900; font-size: 1.13rem; min-width: 60px; text-align: right; flex-shrink: 0;
-        }
+        .member-rank-mobile-card .rank-level.black { background: #232B3E; color: #FFD700; border:1px solid #FFD700; }
+        .member-rank-mobile-card .rank-rate,
         .member-rank-mobile-card .rank-amount {
-            color: #FFD700; font-weight: 900; font-size: 1.13rem; min-width: 80px; text-align: right; flex-shrink: 0;
+            font-weight: 800;
+            font-size: 0.92rem;
+            word-break: break-all;
+        }
+        .rank-mobile-more {
+            text-align: center;
+            margin: 8px 0 4px;
+        }
+        .rank-mobile-more .styled-button {
+            width: 100%;
         }
         @media (max-width: 768px) {
             .member-rank-table-pc { display: none !important; }
@@ -2747,62 +2899,14 @@ const handleImageChange = async (event) => {
             background: #eee;
             color: #232B3E;
         }
-        /* 移动端会员收益排名卡片样式 */
-        @media (max-width: 768px) {
-          .member-rank-mobile-list {
-            display: block;
-            margin-top: 10px;
-          }
-          .member-rank-mobile-card {
-            background: #232e4a;
-            border-radius: 14px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            margin-bottom: 16px;
-            padding: 16px 12px;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-          }
-          .rank-row-main {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 6px;
-          }
-          .rank-num {
-            font-size: 1.3em;
-            font-weight: bold;
-            width: 28px;
-            text-align: center;
-          }
-          .rank-avatar {
-            border-radius: 50%;
-            border: 2px solid #b0c4e6;
-            width: 36px;
-            height: 36px;
-            object-fit: cover;
-          }
-          .rank-name {
-            font-weight: 500;
-            flex: 1;
-            margin-left: 6px;
-          }
-          .rank-level {
-            font-size: 0.95em;
-            padding: 2px 8px;
-            border-radius: 8px;
-            background: #1a2236;
-            margin-left: 4px;
-          }
-          .rank-row-bottom {
-            font-size: 1.05em;
-            justify-content: space-between;
-            margin-top: 2px;
-          }
+        .rankings-view-all-pc {
+          display: none;
+          text-align: center;
+          margin-top: 24px;
         }
         @media (min-width: 769px) {
           .member-rank-mobile-list { display: none !important; }
+          .rankings-view-all-pc { display: block; }
         }
         @media (max-width: 768px) {
           .agreement-table-pc { display: none !important; }
@@ -4833,17 +4937,20 @@ const handleImageChange = async (event) => {
           transition: all 0.2s;
         }
 
-        /* 响应式媒体查询，确保PC端只显示表格，移动端只显示卡片 */
-        @media (max-width: 700px) {
+        /* 响应式：PC 表格 / 移动端卡片 */
+        @media (max-width: 768px) {
           .member-rank-table-pc {
             display: none !important;
           }
           .member-rank-mobile-list {
             display: block !important;
           }
+          .rankings-view-all-pc {
+            display: none !important;
+          }
         }
 
-        @media (min-width: 701px) {
+        @media (min-width: 769px) {
           .member-rank-table-pc {
             display: block !important;
           }
@@ -5088,198 +5195,289 @@ const handleImageChange = async (event) => {
         /* 排行榜弹窗样式 */
         .rankings-modal-overlay {
           position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.8);
+          inset: 0;
+          background: rgba(0, 0, 0, 0.78);
           display: flex;
-          align-items: center;
+          align-items: flex-end;
           justify-content: center;
-          z-index: 1000;
+          z-index: 10000;
+          padding: 0;
         }
 
         .rankings-modal {
-          background: linear-gradient(135deg, #232B3E 0%, #1A2235 100%);
-          border-radius: 18px;
-          border: 3px solid #FFD700;
-          width: 95vw;
-          height: 75vh;
-          max-width: 1400px;
-          max-height: 700px;
+          background: #1a2235;
+          border-radius: 20px 20px 0 0;
+          border: 1px solid rgba(255, 215, 0, 0.35);
+          border-bottom: none;
+          width: 100%;
+          max-height: 88vh;
           overflow: hidden;
-          box-shadow: 0 0 24px rgba(255, 215, 0, 0.2);
+          box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
           display: flex;
           flex-direction: column;
         }
 
+        .rankings-modal-handle {
+          width: 40px;
+          height: 4px;
+          border-radius: 999px;
+          background: rgba(255, 215, 0, 0.35);
+          margin: 10px auto 0;
+          flex-shrink: 0;
+        }
+
         .rankings-modal-header {
-          padding: 24px 20px 20px 20px;
-          border-bottom: 1.5px solid rgba(255, 215, 0, 0.13);
+          padding: 12px 16px 12px;
+          border-bottom: 1px solid rgba(255, 215, 0, 0.15);
           display: flex;
           justify-content: space-between;
-          align-items: center;
+          align-items: flex-start;
+          gap: 12px;
           flex-shrink: 0;
-          background: linear-gradient(90deg, #232e4a 0%, #232B3E 100%);
+          background: #232b3e;
+        }
+
+        .rankings-modal-heading {
+          min-width: 0;
         }
 
         .rankings-modal-title {
           color: #FFD700;
-          font-size: 1.8rem;
-          font-weight: 900;
+          font-size: 1.15rem;
+          font-weight: 800;
           margin: 0;
-          text-shadow: 0 2px 8px rgba(24, 31, 42, 0.53);
+          line-height: 1.3;
+        }
+
+        .rankings-modal-subtitle {
+          margin: 4px 0 0;
+          color: #9aa8c7;
+          font-size: 0.82rem;
         }
 
         .rankings-modal-close {
-          background: none;
-          border: none;
+          background: rgba(255, 215, 0, 0.08);
+          border: 1px solid rgba(255, 215, 0, 0.25);
           color: #FFD700;
-          font-size: 1.8rem;
+          font-size: 1.5rem;
           cursor: pointer;
-          padding: 6px;
+          width: 36px;
+          height: 36px;
           border-radius: 50%;
-          transition: all 0.3s;
+          transition: all 0.2s;
           line-height: 1;
-          font-weight: 900;
+          flex-shrink: 0;
         }
 
         .rankings-modal-close:hover {
-          background: rgba(255, 215, 0, 0.1);
-          transform: scale(1.1);
+          background: rgba(255, 215, 0, 0.16);
         }
 
         .rankings-modal-content {
-          padding: 24px 20px 20px 20px;
+          padding: 12px 12px calc(20px + env(safe-area-inset-bottom, 0px));
           overflow-y: auto;
           flex: 1;
           min-height: 0;
+          -webkit-overflow-scrolling: touch;
         }
 
-        .rankings-modal-table {
+        .rankings-modal-table-desktop {
+          display: none;
           width: 100%;
           border-collapse: collapse;
-          border-radius: 18px;
+          border-radius: 14px;
           overflow: hidden;
           background: #181F2A;
-          box-shadow: 0 0 24px rgba(255, 215, 0, 0.2);
         }
 
-        .rankings-modal-table th {
+        .rankings-modal-table-desktop th {
           background: #232e4a;
           color: #FFD700;
           padding: 12px 10px;
-          text-align: center;
-          border-bottom: 2px solid rgba(255, 215, 0, 0.2);
-          font-weight: 900;
-          font-size: 1.1rem;
-          letter-spacing: 1px;
+          text-align: left;
+          border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+          font-weight: 800;
+          font-size: 0.92rem;
           position: sticky;
           top: 0;
           z-index: 1;
+          white-space: nowrap;
         }
 
-        .rankings-modal-table td {
-          padding: 10px 10px;
-          text-align: center;
-          border-bottom: 1.5px solid rgba(255, 215, 0, 0.13);
+        .rankings-modal-table-desktop td {
+          padding: 12px 10px;
+          border-bottom: 1px solid rgba(255, 215, 0, 0.1);
           color: #fff;
-          font-size: 1rem;
-          background: linear-gradient(90deg, #232B3E 80%, #232e4a 100%);
+          background: #232B3E;
+          vertical-align: middle;
         }
 
-        .rankings-modal-table tr:hover {
-          background: linear-gradient(90deg, rgba(255, 215, 0, 0.13) 0%, rgba(255, 251, 230, 0.08) 100%) !important;
-          box-shadow: 0 2px 12px rgba(255, 215, 0, 0.2);
-          transition: all 0.2s;
+        .rankings-modal-table-desktop th:nth-child(4),
+        .rankings-modal-table-desktop th:nth-child(5),
+        .rankings-modal-table-desktop td:nth-child(4),
+        .rankings-modal-table-desktop td:nth-child(5) {
+          text-align: right;
         }
 
-        .rankings-modal-table th:first-child,
-        .rankings-modal-table td:first-child {
-          text-align: left !important;
-          padding-left: 24px !important;
-          width: 80px;
+        .rankings-modal-cards {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
         }
 
-        .rankings-modal-table th:nth-child(2),
-        .rankings-modal-table td:nth-child(2) {
-          text-align: left !important;
-          width: 80px;
+        .rankings-card {
+          background: #232B3E;
+          border: 1px solid rgba(255, 215, 0, 0.14);
+          border-radius: 12px;
+          padding: 10px 12px;
         }
 
-        .rankings-modal-table th:nth-child(3),
-        .rankings-modal-table td:nth-child(3) {
-          text-align: left !important;
+        .rankings-card.is-top {
+          border-color: rgba(255, 215, 0, 0.35);
+          box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.08);
         }
 
-        .rankings-modal-table th:nth-child(4),
-        .rankings-modal-table td:nth-child(4) {
-          text-align: left !important;
+        .rankings-card-top {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          min-width: 0;
         }
 
-        .rankings-modal-table th:nth-child(5),
-        .rankings-modal-table td:nth-child(5) {
-          text-align: right !important;
-          padding-right: 24px !important;
+        .rankings-card-meta {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
         }
 
-        .rankings-modal-table th:nth-child(6),
-        .rankings-modal-table td:nth-child(6) {
-          text-align: right !important;
-          padding-right: 24px !important;
+        .rankings-avatar {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid #FFD700;
+          flex-shrink: 0;
+          background: #181F2A;
         }
 
-        @media (max-width: 700px) {
+        .rankings-username {
+          color: #fff;
+          font-weight: 700;
+          font-size: 0.95rem;
+          line-height: 1.25;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .rankings-rank-num {
+          min-width: 26px;
+          text-align: center;
+          font-size: 1.05rem;
+          font-weight: 900;
+          color: #c5d0e6;
+          flex-shrink: 0;
+        }
+
+        .rankings-rank-num.rank-1 { color: #FFD700; }
+        .rankings-rank-num.rank-2 { color: #b0c4e6; }
+        .rankings-rank-num.rank-3 { color: #faad14; }
+
+        .rankings-level-badge {
+          display: inline-flex;
+          align-items: center;
+          width: fit-content;
+          max-width: 100%;
+          padding: 2px 8px;
+          border-radius: 999px;
+          background: rgba(255, 215, 0, 0.12);
+          color: #FFD700;
+          font-size: 0.7rem;
+          font-weight: 700;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .rankings-card-stats {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+          margin-top: 10px;
+        }
+
+        .rankings-stat {
+          background: rgba(24, 31, 42, 0.85);
+          border-radius: 10px;
+          padding: 8px 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+          min-width: 0;
+        }
+
+        .rankings-stat-label {
+          color: #8fa0bf;
+          font-size: 0.68rem;
+          font-weight: 600;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+        }
+
+        .rankings-money {
+          color: #b0c4e6;
+          font-weight: 800;
+          font-size: 0.9rem;
+          word-break: break-all;
+        }
+
+        .rankings-money.positive { color: #00ffae; }
+        .rankings-money.negative { color: #ff4d4f; }
+
+        .rankings-member-cell {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          min-width: 0;
+        }
+
+        @media (min-width: 768px) {
+          .rankings-modal-overlay {
+            align-items: center;
+            padding: 24px;
+          }
+
           .rankings-modal {
-            width: 98vw;
-            height: 65vh;
-            max-width: none;
-            max-height: 600px;
-            border-radius: 14px;
+            width: min(960px, 95vw);
+            max-height: 80vh;
+            border-radius: 18px;
+            border: 2px solid rgba(255, 215, 0, 0.45);
           }
-          
+
+          .rankings-modal-handle {
+            display: none;
+          }
+
           .rankings-modal-header {
-            padding: 24px 20px 20px 20px;
+            padding: 20px 24px;
           }
-          
+
           .rankings-modal-title {
-            font-size: 1.8rem;
+            font-size: 1.45rem;
           }
-          
-          .rankings-modal-close {
-            font-size: 2rem;
-          }
-          
+
           .rankings-modal-content {
-            padding: 24px 20px 20px 20px;
-          }
-          
-          .rankings-modal-table th {
-            font-size: 1rem;
-            padding: 12px 8px;
-          }
-          
-          .rankings-modal-table td {
-            font-size: 0.95rem;
-            padding: 10px 8px;
-          }
-          
-          .rankings-modal-table th:first-child,
-          .rankings-modal-table td:first-child {
-            width: 60px;
-            padding-left: 16px !important;
+            padding: 16px 20px 20px;
           }
 
-          .rankings-modal-table th:nth-child(2),
-          .rankings-modal-table td:nth-child(2) {
-            width: 60px;
+          .rankings-modal-table-desktop {
+            display: table;
           }
 
-          .rankings-modal-table th:nth-child(5),
-          .rankings-modal-table td:nth-child(5),
-          .rankings-modal-table th:nth-child(6),
-          .rankings-modal-table td:nth-child(6) {
-            padding-right: 16px !important;
+          .rankings-modal-cards {
+            display: none;
           }
         }
 
