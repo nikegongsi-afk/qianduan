@@ -862,7 +862,7 @@ import{ get_userinfo,get_membership_levels,get_VipDashboardData,closetrades, upd
 import{ gettrader_profiles} from '../../api/module/web/index'
 import { uploadImage } from '../../api/module/commone'
 import { useUserStore } from '@/store';
-import { formatUSDate } from '@/utils/dateFormat';
+import { formatUSDate, dateInputToApiIso } from '@/utils/dateFormat';
 import { formatMoneyRight, formatMoneySigned, formatPriceRight } from '@/utils/formatNumber';
 const router = useRouter();
 const userStore = useUserStore()
@@ -1377,11 +1377,16 @@ const handleImageChange = async (event) => {
     }
     
     try {
-      // Construct request data
+      // Construct request data — date-only must not be parsed as UTC midnight
+      const exitIso = dateInputToApiIso(closeTradeForm.value.exitDate);
+      if (!exitIso) {
+        alert('Please select a valid exit date');
+        return;
+      }
       const tradeData = {
         id: selectedTrade.value.id,
         exit_price: closeTradeForm.value.exitPrice,
-        exit_date: closeTradeForm.value.exitDate,
+        exit_date: exitIso,
         image_url: fileUrl.value // Pass image URL
       };
       

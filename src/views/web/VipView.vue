@@ -69,37 +69,60 @@
       <!-- Progress Section -->
       <div class="progress-section">
         <a href="/vipdashboard" class="progress-link" @click.prevent="handleProgressCardClick">
-          <div class="progress-card" :class="{ clickable: isLoggedIn, unclickable: !isLoggedIn }">
-            <div class="row align-items-center g-2">
-              <div class="col-md-3">
+          <div
+            class="progress-card"
+            :class="{
+              clickable: isLoggedIn,
+              unclickable: !isLoggedIn,
+              'is-signed': hasSignedAgreement
+            }"
+          >
+            <div class="progress-marquee" aria-hidden="true"></div>
+            <div class="progress-card-inner">
+              <div v-if="hasSignedAgreement" class="signed-chip">
+                <i class="bi bi-patch-check-fill"></i>
+                Agreement Active
+              </div>
+              <div class="progress-layout">
                 <div class="current-level">
-                  <i class="bi bi-star-fill"></i>
+                  <div class="level-icon-wrap">
+                    <i class="bi bi-star-fill"></i>
+                  </div>
                   <h4 class="level-label">Current Level</h4>
                   <p class="level-name">{{ nowLevelInfo.currlevelname }}</p>
                 </div>
-              </div>
-              <div class="col-md-6">
+
                 <div class="progress-bar-wrapper">
-                  <div class="progress">
-                    <div class="progress-bar" role="progressbar"
-                      :style="{ width: progress + '%' }"
+                  <div class="progress gold-progress">
+                    <div class="progress-track-marquee" aria-hidden="true"></div>
+                    <div
+                      class="progress-bar gold-progress-fill"
+                      role="progressbar"
+                      :class="{ 'is-empty': progress <= 0 }"
+                      :style="{ width: (progress > 0 ? Math.max(progress, 12) : 0) + '%' }"
                       :aria-valuenow="dynamicTotalAsset"
                       aria-valuemin="0"
-                      :aria-valuemax="currentTarget">
-                      <span class="progress-percent">{{ progress }}%</span>
+                      :aria-valuemax="currentTarget"
+                    >
+                      <span class="progress-shine" aria-hidden="true"></span>
+                      <span v-if="progress > 0" class="progress-percent">{{ progress }}%</span>
                     </div>
+                    <div v-if="progress <= 0" class="progress-percent-zero">{{ progress }}%</div>
                   </div>
-                  <div class="progress-labels d-flex justify-content-between">
-                    <span>{{ formatMoneyRight(dynamicTotalAsset) }} / {{ formatMoneyRight(nowLevelInfo.nextmoney) }}</span>
-                    <span class="next-level-text">Next Level: {{ nowLevelInfo.nextname }}</span>
+                  <div class="progress-labels">
+                    <span class="progress-amount">{{ formatMoneyRight(dynamicTotalAsset) }} / {{ formatMoneyRight(nowLevelInfo.nextmoney) }}</span>
+                    <span class="next-level-text">
+                      {{ nowLevelInfo.isMaxLevel ? 'Max Level Reached' : ('Next Level: ' + (nowLevelInfo.nextname || '—')) }}
+                    </span>
                   </div>
                 </div>
-              </div>
-              <div class="col-md-3">
+
                 <div class="next-milestone">
-                  <i class="bi bi-crown-fill"></i>
-                  <h4 class="level-label">Next Level</h4>
-                  <p class="level-name">{{ nowLevelInfo.nextname }}</p>
+                  <div class="level-icon-wrap crown">
+                    <i class="bi" :class="nowLevelInfo.isMaxLevel ? 'bi-trophy-fill' : 'bi-crown-fill'"></i>
+                  </div>
+                  <h4 class="level-label">{{ nowLevelInfo.isMaxLevel ? 'Highest Level' : 'Next Level' }}</h4>
+                  <p class="level-name">{{ nowLevelInfo.nextname || '—' }}</p>
                 </div>
               </div>
             </div>
@@ -374,7 +397,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { Modal } from 'bootstrap';
 import navcomponent from '../component/nav/nav.vue'
@@ -577,18 +600,21 @@ const username = ref('');
 const loginUsername = ref('');
 const loginPassword = ref('');
 const current_level=ref(0)
+
+const hasSignedAgreement = computed(() => Boolean(userStore.userInfo?.signing));
 // 模拟数据
 const nowLevelInfo = ref({
-  current_level:-1,
+  current_level: -1,
   currlevelname: 'Regular Member',
   next_level: -1,
-  nextmoney: 50000,
-  nextname: 'Gold Member'
+  nextmoney: 0,
+  nextname: '',
+  isMaxLevel: false,
 });
 
 const dynamicTotalAsset = ref(0);
-const currentTarget = ref(1000000);
-const progress = ref(Math.round((dynamicTotalAsset.value / nowLevelInfo.value.nextmoney) * 100 * 10) / 10);
+const currentTarget = ref(0);
+const progress = ref(0);
 
 const vipList = ref([]);
 
@@ -598,7 +624,9 @@ const getTitleByLevel = (level: string) => {
     'Regular Member': 'Esteemed VIP Member',
     'Gold Member': 'Honorable Gold Member',
     'Diamond Member': 'Distinguished Diamond Member',
-    'Supreme Black Card': 'Supreme Black Card Member'
+    'Supreme Black Card': 'Supreme Black Card Member',
+    '高级合伙人': 'Senior Partner',
+    'Senior Partner': 'Senior Partner'
   };
   return titleMap[level] || 'VIP Membership Area';
 };
@@ -613,6 +641,8 @@ const getCardClass = (level: string) => {
     'Diamond Member': 'diamond',
     'Supreme Black Card': 'supreme',
     'Regular Member': '',
+    '高级合伙人': 'supreme',
+    'Senior Partner': 'supreme',
   };
   return classMap[level] || '';
 };
@@ -730,8 +760,8 @@ const get_info=async()=>{
     await getUserInfo()
   }
   await get_membership_levels_list()
-   get_current_level()
-   loadTraderTerms()
+  await get_current_level()
+  loadTraderTerms()
 }
 const getUserInfo=async()=>{
   try{
@@ -741,9 +771,9 @@ const getUserInfo=async()=>{
     userinfo.value=res.data
     username.value=res.data.username
     isLoggedIn.value=true
-    dynamicTotalAsset.value = userinfo.value.initial_asset+userinfo.value.utotle_profit;
-    nowLevelInfo.value.nextmoney=1000000
-    progress.value = Math.round((dynamicTotalAsset.value / nowLevelInfo.value.nextmoney) * 100 * 10) / 10;
+    const initial = Number(userinfo.value.initial_asset) || 0;
+    const totalProfit = Number(userinfo.value.utotle_profit) || 0;
+    dynamicTotalAsset.value = initial + totalProfit;
   }
 }
 catch(err){
@@ -758,28 +788,99 @@ const get_membership_levels_list=async()=>{
   {
     vipList.value=res.data
     vipList.value.forEach(item => {
-      item.benefits=item.benefits.split(',')
+      if (typeof item.benefits === 'string') {
+        item.benefits = item.benefits.split(',').map((s: string) => s.trim()).filter(Boolean)
+      } else if (!Array.isArray(item.benefits)) {
+        item.benefits = []
+      }
     });
      userStore.vipList=vipList.value
   }
 }
-const get_current_level=async()=>{
-  vipList.value.forEach(item => {
-    if(item.min_trading_volume<=dynamicTotalAsset.value)
-    {
-      nowLevelInfo.value.current_level=item.level
-      nowLevelInfo.value.currlevelname=item.name
-    }
-  });
 
-  vipList.value.forEach(item => {
-    if(nowLevelInfo.value.next_level==-1 && item.level>nowLevelInfo.value.current_level)
-    {
-      nowLevelInfo.value.next_level=item.level
-      nowLevelInfo.value.nextmoney=item.min_trading_volume
-      nowLevelInfo.value.nextname=item.name
+/** 按会员等级门槛金额匹配当前等级 / 下一等级 */
+const get_current_level=async()=>{
+  const levels = (Array.isArray(vipList.value) ? [...vipList.value] : [])
+    .map((item: any) => ({
+      ...item,
+      level: Number(item.level) || 0,
+      min_trading_volume: Number(item.min_trading_volume) || 0,
+      name: item.name || '',
+    }))
+    .sort((a, b) => {
+      if (a.min_trading_volume !== b.min_trading_volume) {
+        return a.min_trading_volume - b.min_trading_volume;
+      }
+      return a.level - b.level;
+    });
+
+  const asset = Number(dynamicTotalAsset.value) || 0;
+
+  if (!levels.length) {
+    nowLevelInfo.value = {
+      current_level: -1,
+      currlevelname: 'Regular Member',
+      next_level: -1,
+      nextmoney: 0,
+      nextname: '',
+      isMaxLevel: false,
+    };
+    progress.value = 0;
+    currentTarget.value = 0;
+    return;
+  }
+
+  let currentIdx = -1;
+  for (let i = 0; i < levels.length; i++) {
+    if (asset >= levels[i].min_trading_volume) {
+      currentIdx = i;
     }
-  });
+  }
+
+  if (currentIdx < 0) {
+    const first = levels[0];
+    nowLevelInfo.value = {
+      current_level: 0,
+      currlevelname: 'Regular Member',
+      next_level: first.level,
+      nextmoney: first.min_trading_volume,
+      nextname: first.name,
+      isMaxLevel: false,
+    };
+  } else {
+    const current = levels[currentIdx];
+    const next = levels[currentIdx + 1] || null;
+    if (next) {
+      nowLevelInfo.value = {
+        current_level: current.level,
+        currlevelname: current.name,
+        next_level: next.level,
+        nextmoney: next.min_trading_volume,
+        nextname: next.name,
+        isMaxLevel: false,
+      };
+    } else {
+      // 已达最高档（应为高级合伙人 / Senior Partner）
+      nowLevelInfo.value = {
+        current_level: current.level,
+        currlevelname: current.name,
+        next_level: current.level,
+        nextmoney: Math.max(current.min_trading_volume, asset),
+        nextname: current.name,
+        isMaxLevel: true,
+      };
+    }
+  }
+
+  currentTarget.value = Number(nowLevelInfo.value.nextmoney) || 0;
+  if (nowLevelInfo.value.isMaxLevel) {
+    progress.value = 100;
+  } else if (currentTarget.value <= 0) {
+    progress.value = 0;
+  } else {
+    progress.value = Math.min(100, Math.round((asset / currentTarget.value) * 1000) / 10);
+  }
+
   if(userStore.token){
   await updateUserLevel({levelname:nowLevelInfo.value.currlevelname})
   }
@@ -923,18 +1024,64 @@ const copypaycode = () => {
 }
 
 .progress-section {
-  margin-bottom: 32px;
+  margin-bottom: 36px;
 }
 
 .progress-card {
-  padding: 24px;
-  background: var(--bg-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-md);
-  transition: all var(--transition-base);
+  position: relative;
+  padding: 3px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #ffd700 0%, #8a6a10 45%, #ffd700 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 215, 0, 0.25),
+    0 12px 36px rgba(0, 0, 0, 0.4),
+    0 0 28px rgba(255, 215, 0, 0.18);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  overflow: hidden;
+}
+
+.progress-marquee {
+  display: none;
+}
+
+.progress-card-inner {
+  position: relative;
+  z-index: 1;
+  padding: 24px 22px 20px;
+  border-radius: 19px;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(255, 215, 0, 0.22), transparent 55%),
+    radial-gradient(ellipse at 80% 100%, rgba(255, 196, 0, 0.14), transparent 50%),
+    linear-gradient(165deg, #232b3e 0%, #151b2a 55%, #101622 100%);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+}
+
+.progress-layout {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.9fr) minmax(0, 2.2fr) minmax(120px, 0.9fr);
+  gap: 18px;
+  align-items: center;
+}
+
+.signed-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 auto 14px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffd700, #ffe566);
+  color: #1a2235;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.55);
+  animation: signedChipPulse 1.8s ease-in-out infinite;
+}
+
+.signed-chip i {
+  font-size: 0.9rem;
 }
 
 .progress-card.clickable {
@@ -942,78 +1089,289 @@ const copypaycode = () => {
 }
 
 .progress-card.clickable:hover {
-  border-color: rgba(102, 126, 234, 0.45);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 0 1px rgba(255, 215, 0, 0.4),
+    0 18px 44px rgba(0, 0, 0, 0.45),
+    0 0 40px rgba(255, 215, 0, 0.3);
 }
 
 .progress-card.unclickable {
-  opacity: 0.75;
+  opacity: 0.8;
   cursor: not-allowed;
+  filter: grayscale(0.2) brightness(0.92);
+}
+
+/* 签署后：粗边框金色跑马灯 */
+.progress-card.is-signed {
+  padding: 4px;
+  background: transparent;
+  box-shadow:
+    0 0 0 1px rgba(255, 215, 0, 0.55),
+    0 0 36px rgba(255, 215, 0, 0.45),
+    0 14px 40px rgba(0, 0, 0, 0.45);
+}
+
+.progress-card.is-signed .progress-marquee {
+  display: block;
+  position: absolute;
+  inset: -40%;
+  background: conic-gradient(
+    from 0deg,
+    #ffd700 0deg,
+    #fff8c4 28deg,
+    transparent 55deg,
+    transparent 100deg,
+    #ffd700 130deg,
+    #fff8c4 155deg,
+    transparent 185deg,
+    transparent 240deg,
+    #ffb300 270deg,
+    #fff8c4 295deg,
+    transparent 330deg,
+    #ffd700 360deg
+  );
+  animation: marqueeSpin 2.2s linear infinite;
+  z-index: 0;
+}
+
+.progress-card.is-signed .progress-card-inner {
+  border-color: rgba(255, 215, 0, 0.65);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 215, 0, 0.25),
+    inset 0 0 32px rgba(255, 215, 0, 0.12);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 215, 0, 0.28), transparent 48%),
+    radial-gradient(ellipse at 50% 100%, rgba(255, 196, 0, 0.16), transparent 45%),
+    linear-gradient(165deg, #2a3148 0%, #171d2d 55%, #101622 100%);
+}
+
+.progress-card.is-signed .level-name {
+  color: #ffd700;
+  text-shadow: 0 0 14px rgba(255, 215, 0, 0.45);
+}
+
+@keyframes marqueeSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes signedChipPulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 215, 0, 0.4); transform: scale(1); }
+  50% { box-shadow: 0 0 24px rgba(255, 215, 0, 0.85); transform: scale(1.03); }
 }
 
 .current-level,
 .next-milestone {
   text-align: center;
-  padding: 8px;
+  padding: 4px;
+}
+
+.level-icon-wrap {
+  width: 42px;
+  height: 42px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 35% 30%, #ffe566, #ffd700 45%, #b8860b 100%);
+  box-shadow:
+    0 0 0 2px rgba(255, 215, 0, 0.35),
+    0 0 16px rgba(255, 215, 0, 0.45);
+}
+
+.level-icon-wrap.crown {
+  background: radial-gradient(circle at 35% 30%, #fff1a8, #ffd700 40%, #c9a227 100%);
 }
 
 .current-level i,
 .next-milestone i {
-  font-size: 1.5rem;
-  margin-bottom: 8px;
-  color: #fbbf24;
+  font-size: 1.15rem;
+  margin: 0;
+  color: #1a2235;
   display: block;
+  filter: none;
 }
 
 .level-label {
   margin: 0 0 6px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #9aa8c7;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.1em;
 }
 
 .level-name {
   margin: 0;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.25;
+}
+
+.progress-bar-wrapper {
+  min-width: 0;
 }
 
 .progress {
-  height: 12px !important;
-  background: rgba(255, 255, 255, 0.08);
+  height: 22px !important;
+  background: rgba(8, 12, 22, 0.85);
   border-radius: 999px;
   overflow: hidden;
-  margin: 8px 0;
+  margin: 4px 0 10px;
+  position: relative;
+  border: 1.5px solid rgba(255, 215, 0, 0.55);
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.55),
+    0 0 14px rgba(255, 215, 0, 0.2);
 }
 
-.progress-bar {
-  background: var(--primary-gradient);
+.progress-track-marquee {
+  display: none;
+}
+
+.progress-card.is-signed .progress-track-marquee {
+  display: block;
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0 10px,
+    rgba(255, 215, 0, 0.15) 10px 14px,
+    rgba(255, 248, 196, 0.7) 14px 18px,
+    rgba(255, 215, 0, 0.15) 18px 22px,
+    transparent 22px 34px
+  );
+  background-size: 120px 100%;
+  animation: trackMarquee 1.1s linear infinite;
+  opacity: 0.95;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.gold-progress-fill {
+  background: linear-gradient(90deg, #a67c00 0%, #ffd700 35%, #fff6b0 55%, #ffd700 78%, #e6b800 100%);
+  background-size: 220% 100%;
   border-radius: 999px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  min-width: 36px;
+  justify-content: flex-end;
+  min-width: 0;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  box-shadow:
+    0 0 18px rgba(255, 215, 0, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  animation: goldBarFlow 1.8s linear infinite;
+}
+
+.gold-progress-fill.is-empty {
+  width: 0 !important;
+  box-shadow: none;
+}
+
+.progress-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.75) 48%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: goldBarShine 1.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.progress-card.is-signed .gold-progress-fill {
+  animation-duration: 1.1s;
+  box-shadow:
+    0 0 26px rgba(255, 215, 0, 0.95),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.progress-card.is-signed .progress {
+  border-color: #ffd700;
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.55),
+    0 0 22px rgba(255, 215, 0, 0.45);
+}
+
+@keyframes goldBarFlow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 220% 50%; }
+}
+
+@keyframes goldBarShine {
+  0% { background-position: 140% 0; }
+  100% { background-position: -140% 0; }
+}
+
+@keyframes trackMarquee {
+  0% { background-position: 0 0; }
+  100% { background-position: 120px 0; }
 }
 
 .progress-percent {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: white;
+  position: relative;
+  z-index: 1;
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #1a2235;
+  padding: 0 10px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.progress-percent-zero {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.65);
 }
 
 .progress-labels {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: #c5d0e6;
+  margin-top: 2px;
+}
+
+.progress-amount {
+  font-weight: 700;
+  color: #e8eefc;
 }
 
 .next-level-text {
-  color: var(--color-primary);
-  font-weight: 600;
+  color: #ffd700;
+  font-weight: 800;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.35);
+}
+
+@media (max-width: 768px) {
+  .progress-layout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    text-align: center;
+  }
+
+  .progress-labels {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    font-size: 0.8rem;
+  }
 }
 
 /* Membership cards */
@@ -1426,13 +1784,19 @@ const copypaycode = () => {
   }
 
   .progress-card {
-    padding: 18px 14px;
+    padding: 3px;
   }
 
-  .progress-card .row {
-    flex-direction: column;
-    text-align: center;
-    gap: 16px;
+  .progress-card.is-signed {
+    padding: 4px;
+  }
+
+  .progress-card-inner {
+    padding: 16px 12px 14px;
+  }
+
+  .signed-chip {
+    margin-bottom: 10px;
   }
 
   .progress-labels {
@@ -1484,7 +1848,15 @@ const copypaycode = () => {
   }
 
   .progress-card {
-    padding: 14px 12px;
+    padding: 3px;
+  }
+
+  .progress-card.is-signed {
+    padding: 4px;
+  }
+
+  .progress-card-inner {
+    padding: 14px 10px 12px;
   }
 
   .membership-card {

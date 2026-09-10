@@ -84,6 +84,7 @@ import navcomponent from '../component/nav/nav.vue';
 import { createVipTrade } from '../../api/module/web/vip';
 import { uploadImage } from '../../api/module/commone';
 import { get_market_list } from '../../api/module/web/vip';
+import { dateInputToApiIso } from '@/utils/dateFormat';
 
 const router = useRouter();
 
@@ -276,9 +277,13 @@ const handleSubmit = async () => {
     }
     
     // 构建提交数据
-    // 将选择的日期转换为ISO格式用于提交（使用00:00:00作为默认时间）
-    const selectedDateTime = new Date(`${selectedDate.value}T00:00:00`);
-    const isoTime = selectedDateTime.toISOString();
+    // 将选择的日期转为稳定日历日 ISO（避免时区少一天）
+    const isoTime = dateInputToApiIso(selectedDate.value);
+    if (!isoTime) {
+      alert('Please select a valid entry date');
+      isSaving.value = false;
+      return;
+    }
     
     const submitData = {
       market: market.value,
